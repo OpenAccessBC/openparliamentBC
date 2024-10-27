@@ -50,4 +50,10 @@ python manage.py createsuperuser
 
 Once the website is provided with some data, it should be mostly functional. Access on http://localhost:8000/ .
 
+To run the scraper and other jobs:
+```sh
+python manage.py job hansards
+```
+See `parliament/jobs.py` for a list of available jobs. These would normally be run with cron.
+
 Re-deploy with modified files using `docker-compose up --build`.
