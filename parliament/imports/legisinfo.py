@@ -78,7 +78,7 @@ class BillData(object):
         self._d = rj[0]
         return self
 
-def get_bill_list(session): # type: (Session) -> List(BillData)
+def get_bill_list(session):
     url = LEGISINFO_JSON_LIST_URL % dict(sessid=session.id)
     resp = requests.get(url)
     resp.raise_for_status()
@@ -86,7 +86,7 @@ def get_bill_list(session): # type: (Session) -> List(BillData)
     return [BillData(item) for item in jd]
 
 @transaction.atomic
-def import_bills(session): # type: (Session) -> None
+def import_bills(session):
     bill_list = get_bill_list(session)
     prev_session = _get_previous_session(session)
     for bd in bill_list:
