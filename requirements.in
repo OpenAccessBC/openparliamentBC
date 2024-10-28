@@ -13,7 +13,7 @@ pysolr
 requests
 psycopg
 webob
-oauth2client
+oauth2client # WARNING: deprecated
 
 # The following are only used in production
 whitenoise
@@ -22,3 +22,15 @@ gunicorn
 gevent # only used for gunicorn workers
 calmjs
 sentry-sdk
+
+# Typing
+#django-stubs
+#lxml-stubs
+#types-Markdown
+#types-requests
+#types-webob
+
+# Linting
+#pylint
+#mypy
+#djlint
