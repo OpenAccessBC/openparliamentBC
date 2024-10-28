@@ -22,15 +22,3 @@ gunicorn
 gevent # only used for gunicorn workers
 calmjs
 sentry-sdk
-
-# Typing
-#django-stubs
-#lxml-stubs
-#types-Markdown
-#types-requests
-#types-webob
-
-# Linting
-#pylint
-#mypy
-#djlint

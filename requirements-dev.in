@@ -1,0 +1,12 @@
+-r requirements.in
+
+# Linting
+pylint
+mypy
+
+# Typing
+django-stubs
+lxml-stubs
+types-Markdown
+types-requests
+types-webob

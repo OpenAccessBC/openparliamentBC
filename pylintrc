@@ -451,6 +451,7 @@ disable=raw-checker-failed,
         dangerous-default-value,
         unused-variable,
         unused-import,
+        unused-argument,
         logging-not-lazy,
         missing-timeout,
         protected-access
