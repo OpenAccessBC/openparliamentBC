@@ -66,5 +66,5 @@ def token_login(request, token):
     user.log_in(request)
 
     if lt.post_login_url:
-        redirect_url = lt.post_login_url        
+        redirect_url = lt.post_login_url
     return HttpResponseRedirect(redirect_url)

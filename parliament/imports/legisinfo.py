@@ -32,7 +32,7 @@ def _get_previous_session(session):
 
 class BillData(object):
     """
-    A wrapper for JSON bill data from parl.ca. 
+    A wrapper for JSON bill data from parl.ca.
     """
 
     def __init__(self, jsondata):
@@ -84,7 +84,7 @@ def get_bill_list(session): # type: (Session) -> List(BillData)
     resp.raise_for_status()
     jd = resp.json()
     return [BillData(item) for item in jd]
-    
+
 @transaction.atomic
 def import_bills(session): # type: (Session) -> None
     bill_list = get_bill_list(session)
@@ -94,8 +94,8 @@ def import_bills(session): # type: (Session) -> None
 
 def import_bill_by_id(legisinfo_id):
     """Imports a single bill based on its LEGISinfo id."""
-    
-    # This request should redirect from an ID to a canonical URL, which we 
+
+    # This request should redirect from an ID to a canonical URL, which we
     # can then tack /json on to
     url = LEGISINFO_BILL_ID_URL % {'id': legisinfo_id, 'lang': 'en'}
     resp = requests.get(url)
@@ -229,7 +229,7 @@ def _import_bill(bd, session, previous_session=None): # type: (BillData, Session
         bill.save()
     if getattr(bis, '_changed', False):
         bis.bill = bis.bill # bizarrely, the django orm makes you do this
-        bis.save()        
+        bis.save()
 
     if getattr(bill, '_newbill', False) and not session.end:
         bill.save_sponsor_activity()
@@ -248,4 +248,3 @@ def _import_bill(bd, session, previous_session=None): # type: (BillData, Session
             logger.warning("Could not get bill text for %s" % bill)
 
     return bill
-            

@@ -53,7 +53,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
     xml_fr = document.get_cached_xml('fr')
     pdoc_fr = alpheus_parse_string(xml_fr.read())
     xml_fr.close()
-    
+
     if document.date and document.date != pdoc_en.meta['date']:
         # Sometimes they get the date wrong
         if document.date != pdoc_fr.meta['date']:
@@ -182,7 +182,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
                 sequence=mapping[0],
                 slug=mapping[1]
             )
-        
+
     for s in statements:
         s.save()
 
@@ -320,7 +320,7 @@ def _build_tag(name, attrs):
     )
 
 def _test_has_paragraph_ids(elem):
-    """Do all, or almost all, of the paragraphs in this document have ID attributes? 
+    """Do all, or almost all, of the paragraphs in this document have ID attributes?
     Sometimes they're missing at first."""
     paratext = elem.xpath('//ParaText')
     paratext_with_id = [pt for pt in paratext if pt.get('id')]

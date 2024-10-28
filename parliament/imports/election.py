@@ -62,7 +62,7 @@ def import_ec_results(election, url="http://enr.elections.ca/DownloadResults.asp
                 party = Party.objects.get(pk=input().strip())
                 party.add_alternate_name(party_name)
                 print(repr(party.name))
-                
+
             Candidacy.objects.create_from_name(
                 first_name=first_name,
                 last_name=last_name,
@@ -111,5 +111,4 @@ PROVINCES_NORMALIZED = {
     'yt': 'YT',
     'yukon': 'YT',
     'yukon territory': 'YT',
-}        
-
+}

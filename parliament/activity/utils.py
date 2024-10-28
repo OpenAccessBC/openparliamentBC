@@ -33,14 +33,14 @@ ACTIVITY_MAX = {
     'statement': 8,
     'billsponsor': 7,
     'committee': 8,
-} 
+}
 def iter_recent(queryset):
     activity_counts = ACTIVITY_MAX.copy()
     for activity in queryset:
         if activity_counts[activity.variety]:
             activity_counts[activity.variety] -= 1
             yield activity
-            
+
 def prune(queryset):
     today = datetime.date.today()
     activity_counts = ACTIVITY_MAX.copy()
@@ -50,4 +50,3 @@ def prune(queryset):
         elif (today - activity.date).days >= 4: # only start pruning if it's a few days old
             activity.active = False
             activity.save()
-        

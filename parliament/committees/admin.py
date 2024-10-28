@@ -15,12 +15,12 @@ class MeetingAdmin(admin.ModelAdmin):
     list_filter = ('committee', 'date')
     raw_id_fields = ('evidence', 'activities')
     search_fields = ['number', 'committee__name_en', 'source_id']
-    
+
 class ReportAdmin(admin.ModelAdmin):
     list_display = ('committee', 'number', 'session', 'name', 'government_response')
     list_filter = ('committee', 'session', 'government_response')
     search_fields = ('name_en', 'number')
-    
+
 class ActivityAdmin(admin.ModelAdmin):
     list_display = ('name_en', 'committee', 'study')
     list_filter = ('committee', 'study')

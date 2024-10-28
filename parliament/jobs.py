@@ -16,10 +16,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 mps = update_mps_from_ourcommons
-        
+
 def votes():
     parlvotes.import_votes()
-    
+
 def bills():
     legisinfo.import_bills(Session.objects.current())
 
@@ -41,7 +41,7 @@ def committee_evidence():
         except Exception as e:
             logger.exception("Evidence parse failure on #%s: %r" % (document.id, e))
             continue
-    
+
 def committees(sess=None):
     if sess is None:
         sess = Session.objects.current()
@@ -56,11 +56,11 @@ def committees(sess=None):
 def committees_full():
     committees()
     committee_evidence()
-    
+
 @transaction.atomic
 def hansards_load():
     parl_document.fetch_latest_debates()
-        
+
 def hansards_parse():
     for hansard in Document.objects.filter(document_type=Document.DEBATE)\
       .annotate(scount=models.Count('statement'))\
@@ -75,11 +75,11 @@ def hansards_parse():
             # now reload the Hansard to get the date
             hansard = Document.objects.get(pk=hansard.id)
             hansard.save_activity()
-            
+
 def hansards():
     hansards_load()
     hansards_parse()
-    
+
 def corpus_for_debates():
     corpora.generate_for_debates()
 

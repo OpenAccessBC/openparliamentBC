@@ -15,17 +15,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 class HansardParser2009(HansardParser):
-    
+
     def __init__(self, hansard, html):
-        
+
         for regex in STARTUP_RE_2009:
             html = re.sub(regex[0], regex[1], html)
 
         super(HansardParser2009, self).__init__(hansard, html)
-        
+
         for x in self.soup.findAll('a', 'deleteMe'):
             x.findParent('div').extract()
-            
+
     def process_related_link(self, tag, string, current_politician=None):
         #print "PROCESSING RELATED for %s" % string
         resid = re.search(r'ResourceID=(\d+)', tag['href'])
@@ -60,7 +60,7 @@ class HansardParser2009(HansardParser):
             if pol == current_politician:
                 return string # When someone mentions her riding, don't link back to her
             return u'<pol id="%d" name="%s">%s</pol>' % (pol.id, escape(pol.name), string)
-    
+
     def get_text(self, cursor):
         text = u''
         for string in cursor.findAll(text=parsetools.r_hasText):
@@ -69,34 +69,34 @@ class HansardParser2009(HansardParser):
             else:
                 text += unicode(string)
         return text
-        
+
     def parse(self):
-        
+
         super(HansardParser2009, self).parse()
-        
+
         # Initialize variables
         t = ParseTracker()
         self.t = t
         member_refs = {}
-        
-        
+
+
         # Get the date
         c = self.soup.find(text='OFFICIAL REPORT (HANSARD)').findNext('h2')
         self.date = datetime.datetime.strptime(c.string.strip(), "%A, %B %d, %Y").date()
         self.hansard.date = self.date
         self.hansard.save()
-        
+
         c = c.findNext(text=r_housemet)
         match = re.search(r_housemet, c.string)
         t['timestamp'] = self.houseTime(match.group(1), match.group(2))
         t.setNext('timestamp', t['timestamp'])
-        
+
         # Move the pointer to the start
         c = c.next
-    
+
         # And start the big loop
         while c is not None:
-        
+
             # It's a string
             if not hasattr(c, 'name'):
                 pass
@@ -105,7 +105,7 @@ class HansardParser2009(HansardParser):
                 c = c.next
                 if not parsetools.isString(c): raise ParseException("Expecting string right after h2")
                 t.setNext('heading', parsetools.titleIfNecessary(parsetools.tameWhitespace(c.string.strip())))
-            
+
             # Topic
             elif c.name == 'h3':
                 top = c.find(text=r_letter)
@@ -117,7 +117,7 @@ class HansardParser2009(HansardParser):
                     c = top
                     t['topic_set'] = True
                     t.setNext('topic', parsetools.titleIfNecessary(parsetools.tameWhitespace(c.string.strip())))
-            
+
             elif c.name == 'h4':
                 if c.string == 'APPENDIX':
                     self.saveStatement(t)
@@ -133,7 +133,7 @@ class HansardParser2009(HansardParser):
                         date=self.date))
                 else:
                     raise ParseException("Couldn't match time %s" % c.attrs['name'])
-                
+
             elif c.name == 'b' and c.string:
                 # Something to do with written answers
                 match = r_honorific.search(c.string)
@@ -155,7 +155,7 @@ class HansardParser2009(HansardParser):
                 else:
                     if not c.string.startswith('Question'):
                         print "WARNING: Unexplained boldness: %s" % c.string
-                
+
             # div -- the biggie
             elif c.name == 'div':
                 origdiv = c
@@ -163,7 +163,7 @@ class HansardParser2009(HansardParser):
                     # We think it's a new speaker
                     # Save the current buffer
                     self.saveStatement(t)
-                
+
                     c = c.find('b')
                     if c.find('a'):
                         # There's a link...
@@ -203,7 +203,7 @@ class HansardParser2009(HansardParser):
                     #print c
                     if t['member_title'].endswith(':'): # Remove colon in e.g. Some hon. members:
                         t['member_title'] = t['member_title'][:-1]
-                    
+
                     # Sometimes we don't get a link for short statements -- see if we can identify by backreference
                     if t['member']:
                         member_refs[t['member_title']] = t['member']
@@ -212,7 +212,7 @@ class HansardParser2009(HansardParser):
                     elif t['member_title'] in member_refs:
                         t['member'] = member_refs[t['member_title']]
                         t['politician'] = t['member'].politician
-                    
+
                     c.findParent('b').extract() # We've got the title, now get the rest of the paragraph
                     c = origdiv
                     t.addText(self.get_text(c))
@@ -239,6 +239,6 @@ class HansardParser2009(HansardParser):
                 #if c.name == 'p':
                 #    print "P: ",
                 #    print c
-                
+
             c = c.next
         return self.statements

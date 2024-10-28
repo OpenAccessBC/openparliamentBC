@@ -21,7 +21,7 @@ class CommitteeManager(models.Manager):
             raise Committee.DoesNotExist()
 
 class Committee(models.Model):
-    
+
     name_en = models.TextField()
     short_name_en = models.TextField()
     name_fr = models.TextField(blank=True)
@@ -38,10 +38,10 @@ class Committee(models.Model):
 
     name = language_property('name')
     short_name = language_property('short_name')
-    
+
     class Meta:
         ordering = ['name_en']
-        
+
     def __str__(self):
         return self.name
 
@@ -58,7 +58,7 @@ class Committee(models.Model):
             while Committee.objects.filter(slug=self.slug).exists():
                 self.slug += '-' + random.choice(string.lowercase)
         super(Committee, self).save(*args, **kwargs)
-    
+
     def get_absolute_url(self):
         return reverse('committee', kwargs={'slug': self.slug})
 
@@ -121,16 +121,16 @@ class CommitteeInSession(models.Model):
 
 
 class CommitteeActivity(models.Model):
-    
+
     committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
 
     name_en = models.CharField(max_length=500)
     name_fr = models.CharField(max_length=500)
-    
+
     study = models.BooleanField(default=False) # study or activity
 
     name = language_property('name')
-    
+
     def __str__(self):
         return self.name
 
@@ -164,34 +164,34 @@ class CommitteeActivityInSession(models.Model):
         unique_together = [
             ('activity', 'session')
         ]
-        
+
 class CommitteeMeeting(models.Model):
-    
+
     date = models.DateField(db_index=True)
     start_time = models.TimeField()
     end_time = models.TimeField(blank=True, null=True)
     source_id = models.IntegerField(blank=True, null=True)
-    
+
     committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
     number = models.SmallIntegerField()
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
-    
+
     minutes = models.IntegerField(blank=True, null=True) #docid
     notice = models.IntegerField(blank=True, null=True)
     evidence = models.OneToOneField(Document, blank=True, null=True, on_delete=models.CASCADE)
-    
+
     in_camera = models.BooleanField(default=False)
     travel = models.BooleanField(default=False)
     webcast = models.BooleanField(default=False)
     televised = models.BooleanField(default=False)
-    
+
     activities = models.ManyToManyField(CommitteeActivity)
 
     class Meta:
         unique_together = [
             ('session', 'committee', 'number')
         ]
-    
+
     def __str__(self):
         return "%s on %s" % (self.committee.short_name, self.date)
 
@@ -217,7 +217,7 @@ class CommitteeMeeting(models.Model):
     @memoize_property
     def activities_list(self):
         return list(self.activities.all().order_by('-study'))
-    
+
     def activities_summary(self):
         activities = self.activities_list()
         if not activities:
@@ -250,14 +250,14 @@ class CommitteeMeeting(models.Model):
             settings.LANGUAGE_CODE[:2], self.session.id,
             self.committee.get_acronym(self.session), self.number,
             document_type)
-    
+
     @property
     def webcast_url(self):
         if not self.webcast:
             return None
         return 'https://www.ourcommons.ca/webcast/{}/{}/{}'.format(
             self.session.id, self.committee.get_acronym(self.session), self.number)
-    
+
     @property
     def datetime(self):
         return datetime.datetime.combine(self.date, self.start_time)
@@ -267,23 +267,23 @@ class CommitteeMeeting(models.Model):
         return self.datetime > datetime.datetime.now()
 
 class CommitteeReport(models.Model):
-    
+
     committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
-    
+
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     number = models.SmallIntegerField(blank=True, null=True) # watch this become a char
     name_en = models.CharField(max_length=500)
     name_fr = models.CharField(max_length=500, blank=True)
-    
+
     source_id = models.IntegerField(unique=True, db_index=True)
-    
+
     adopted_date = models.DateField(blank=True, null=True)
     presented_date = models.DateField(blank=True, null=True)
-    
+
     government_response = models.BooleanField(default=False)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
 
     name = language_property('name')
-    
+
     def __str__(self):
         return "%s report #%s" % (self.committee, self.number)

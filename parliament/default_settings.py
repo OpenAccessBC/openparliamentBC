@@ -72,7 +72,7 @@ COMPRESS_FILTERS = {
     'css': [
         'compressor.filters.css_default.CssAbsoluteFilter',
         'compressor.filters.cssmin.rCSSMinFilter'
-    ], 
+    ],
     'js': [
          'compressor.filters.jsmin.CalmjsFilter' # the rjsmin filter conflicts with some vendor js
     ]
@@ -204,5 +204,3 @@ LOGGING = {
         }
     },
 }
-
-

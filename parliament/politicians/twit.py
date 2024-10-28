@@ -65,10 +65,10 @@ def save_tweets():
             text = tweet['text'].replace('&lt;', '<').replace('&gt;', '>')
             activity.save_activity({'text': text}, politician=pol,
                 date=date, guid=guid, variety='twitter')
-            
+
 def get_id_from_screen_name(screen_name):
     return twitter_api_request('users/show', params={'screen_name': screen_name})['id']
-        
+
 def twitter_api_request(endpoint, params=None):
     url = 'https://api.twitter.com/1.1/' + endpoint + '.json'
     auth = OAuth1(

@@ -18,7 +18,7 @@ __all__ = ['parse_string', 'fetch_and_parse']
 
 def _n2s(o):
     return o if o is not None else ''
-        
+
 def _build_tag(name, attrs):
     return '<%s%s>' % (
         name,
@@ -31,21 +31,21 @@ def _build_tag(name, attrs):
 _r_whitespace = re.compile(r'\s+', re.UNICODE)
 def _tame_whitespace(s):
     return _r_whitespace.sub(' ', _n2s(s)).strip()
-    
+
 def _text_content(el, tail=False):
     return _tame_whitespace(
-        _n2s(el.text) + 
-        ''.join([_text_content(subel, True) for subel in el]) + 
+        _n2s(el.text) +
+        ''.join([_text_content(subel, True) for subel in el]) +
         (_n2s(el.tail) if tail else ''))
-        
+
 def _letters_only(s):
     return re.sub('[^a-zA-Z]', '', _n2s(s).lower())
-        
+
 def _smart_title(s):
     if s.isupper() or s.islower():
         return s.title()
     return s
-    
+
 def _following_char(el):
     """Returns the next non-whitespace character after this element,
     without moving up the tree."""
@@ -58,7 +58,7 @@ def _following_char(el):
         if txt:
             return txt[0]
     return ''
-    
+
 def _only_open(target):
     """Only execute the function if argument openclose == TAG_OPEN"""
     @wraps(target)
@@ -91,7 +91,7 @@ def _get_housemet_time(number, ampm):
         return datetime.datetime.strptime("%s:%s %s" % (hour, minute, ampm), "%I:%M %p").time()
     else:
         return datetime.time(hour=int(hour), minute=int(minute))
-        
+
 def _time_to_datetime(hour, minute, date):
     """Given hour, minute, and a datetime.date, returns a datetime.datetime.
 
@@ -104,15 +104,15 @@ def _time_to_datetime(hour, minute, date):
             date + datetime.timedelta(days=hour//24),
             datetime.time(hour=hour % 24, minute=minute)
         )
-        
+
 def _strip_person_name(n):
     return _r_honorific.sub('', _r_parens.sub('', _tame_whitespace(n))).strip()
-        
+
 class AlpheusError(Exception):
     pass
-        
+
 class Document(object):
-    
+
     BASE_HTML = """<!DOCTYPE html>
     <html lang="%(lang)s"><head>
     <meta charset="utf-8">
@@ -125,7 +125,7 @@ class Document(object):
     <script type="text/javascript" src="http://rhymeswithcycle.github.com/alpheus/alpheus.js"></script>
     </body></html>
     """
-    
+
     def as_html(self):
         if self.meta['document_type'].lower() == 'committee':
             if self.meta['language'].lower() == 'en':
@@ -138,13 +138,13 @@ class Document(object):
             else:
                 title = 'Débats du Chambre'
         title += ', ' + str(self.meta['date'])
-        
+
         metadata_rows = []
         for k, v in sorted(self.meta.items()):
             metadata_rows.append("%s<th>%s</th><td>%s</td></tr>" % (
                 _build_tag('tr', {'class': 'metadata', 'data-name': k, 'data-value': v}),
                 escape(k), escape(str(v))))
-        
+
         html = self.BASE_HTML % {
             'title': title,
             'lang': self.meta['language'],
@@ -152,29 +152,29 @@ class Document(object):
             'statements': '\n'.join((s.as_html() for s in self.statements))
         }
         return html
-        
+
     def __init__(self):
         self.meta = {}
-        
-    
+
+
 class Statement(object):
-    
+
     def __init__(self, attributes, more_attributes):
         self.meta = dict(attributes)
         self.meta.update(more_attributes)
         self.content = ''
-        
+
     def clean_up_content(self):
         self.content = _tame_whitespace(self.content)
         self.content = self.content.replace('</blockquote><blockquote>', '')
         if 'id' not in self.meta:
             self.meta['id'] = 'p' + re.search(r'data-HoCid="(\d+)"', self.content).group(1)
-        
+
     def as_html(self):
         def setval(in_key, out_key):
             if self.meta.get(in_key):
                 attrs[out_key] = str(self.meta[in_key])
-                
+
         attrs = {
             'class': 'statement',
             'data-timestamp': str(self.meta['timestamp']), #.strftime("%H:%M"),
@@ -192,12 +192,12 @@ class Statement(object):
 
 class ParseHandler(object):
     """This class contains the bulk of the parsing logic.
-    
+
     The parse tree is iterated through in document order. Every time we come
     across a tag (opening or closing) we call the handle_TagName method on
     a ParseHandler instance. That method is passed the Element object, and
     either TAG_OPEN or TAG_CLOSE."""
-    
+
     # Their contents will be discarded
     EXCLUDE_TAGS = [
         'CatchLine', # I don't really know what this tag means. It generally repeats a heading provided elsewhere
@@ -205,7 +205,7 @@ class ParseHandler(object):
         'QuestionID', # This is actually processed in handle_WrittenQuestionResponse
         'Appendix', # Too much of a catch-all category to process properly
     ]
-    
+
     # We include these tags, though we discard attributes and may change the name
     PASSTHROUGH_TAGS = {
         'I': 'em',
@@ -215,7 +215,7 @@ class ParseHandler(object):
         'row': 'tr',
         'entry': 'td',
     }
-    
+
     # We include the text contents of the tag. Tags in this list won't generate
     # "unknown tag" errors
     IGNORE_TAGS = ['Quote', 'QuotePara', 'ForceColumnBreak',
@@ -227,7 +227,7 @@ class ParseHandler(object):
                     'EditorsNotes',
                     etree.ProcessingInstruction] + list(PASSTHROUGH_TAGS.keys())
 
-        
+
     def __init__(self, document):
         self.statements = []
         self.current_statement = None
@@ -244,12 +244,12 @@ class ParseHandler(object):
         self.date = document.meta['date']
         self.main_statement_speaker = ['', '']
         (self.parliament, self.session) = (document.meta['parliament'], document.meta['session'])
-        
+
     def _initialize_statement(self):
         assert not self.current_statement
         self.current_statement = Statement(self.current_attributes, self.one_time_attributes)
         self.one_time_attributes = {}
-    
+
     def _add_code(self, s):
         """Add an unescaped value, i.e. HTML, to the current statement."""
         if not s:
@@ -257,12 +257,12 @@ class ParseHandler(object):
         if not self.current_statement:
             self._initialize_statement()
         self.current_statement.content += s
-        
+
     def _add_text(self, s):
         """Add text (that will be escaped) to the current statement."""
         if s:
             self._add_code(escape(s))
-        
+
     def _add_tag_text(self, el, openclose):
         """Add the text in this tag's text/tail, as appropriate, to the current statement."""
         if openclose == TAG_OPEN:
@@ -270,7 +270,7 @@ class ParseHandler(object):
                 self._add_text(el.text)
         else:
             self._add_text(el.tail)
-            
+
     def close_statement(self):
         """Whoever's currently speaking has stopped: finalize this Statement object."""
         if self.current_statement:
@@ -282,12 +282,12 @@ class ParseHandler(object):
                 raise AlpheusError("Trying to save a statement without content")
             self.statements.append(self.current_statement)
             self.current_statement = None
-            
+
     def get_final_statements(self):
         if self.current_statement and self.current_statement.content.strip():
             self.close_statement()
         return self.statements
-        
+
     def _new_person(self, hoc_id, description, affil_type=None):
         """Someone new has started speaking; save their information."""
         description = _tame_whitespace(description)
@@ -296,7 +296,7 @@ class ParseHandler(object):
             # If this "new person" is the same as the last person,
             # don't start a new statement
             if ((hoc_id and hoc_id == self.current_statement.meta.get('person_id'))
-              or ((not hoc_id) and 
+              or ((not hoc_id) and
               _letters_only(stripped_description) == _letters_only(_strip_person_name(self.current_statement.meta.get('person_attribution'))))):
                 if not _r_indeterminate.search(description):
                     # (Though if it's "An hon. member", two in a row *can* be different people.)
@@ -309,7 +309,7 @@ class ParseHandler(object):
             # If we don't have an ID, see if we previously got one for this person
             if stripped_description in self.people_seen:
                 self.one_time_attributes['person_id'] = self.people_seen[stripped_description]
-        
+
         # The "Affiliation Type" field is so far mysterious -- it has scores of
         # different values in use -- but I've made guesses at a few values
         if affil_type == '28':
@@ -320,13 +320,13 @@ class ParseHandler(object):
             self.one_time_attributes['person_type'] = 'analyst'
         elif not affil_type and stripped_description in self.people_types_seen:
             self.one_time_attributes['person_type'] = self.people_types_seen[stripped_description]
-            
+
         context_match = re.search(r'\s?\((.+)\)\s*$', description)
         if context_match:
             self.one_time_attributes['person_context'] = context_match.group(1)
         elif stripped_description in self.people_contexts:
             self.one_time_attributes['person_context'] = self.people_contexts[stripped_description]
-            
+
         for key in (description, stripped_description):
             # Save backreferences in case we later lack extra data
             if hoc_id:
@@ -335,17 +335,17 @@ class ParseHandler(object):
                 self.people_types_seen[key] = self.one_time_attributes['person_type']
             if self.one_time_attributes.get('person_context'):
                 self.people_contexts[key] = self.one_time_attributes['person_context']
-                
+
     def _is_person(self):
         """Do we know who's speaking the current text?"""
         if self.current_statement:
             return bool(self.current_statement.meta.get('person_attribution'))
         else:
             return bool(self.one_time_attributes.get('person_attribution'))
-    
+
     def handle_ParaText(self, el, openclose, procedural=None):
         if openclose == TAG_OPEN:
-            
+
             mytext = _n2s(el.text).strip()
             # ParaText has a bunch of special cases
             if _r_housemet.search(mytext) and el.getparent().tag == 'Intro':
@@ -354,11 +354,11 @@ class ParseHandler(object):
                 self.current_attributes['timestamp'] = datetime.datetime.combine(
                     self.date, _get_housemet_time(match.group('number'), match.group('ampm')))
                 return NO_DESCEND
-            
+
             sub = list(el)
 
             # If the paragraph is immediately followed by a B or Affiliation tag,
-            # that usually means it's actually something being said by someone else    
+            # that usually means it's actually something being said by someone else
             if (
                     (not mytext)
                     and sub and sub[0].tag in ('B', 'Affiliation') and sub[0].text and sub[0].text.strip()
@@ -367,7 +367,7 @@ class ParseHandler(object):
                     # it's a B or Affiliation tag, which has stuff both within it and directly after
                     and (
                         # there's a colon
-                        sub[0].text.strip().endswith(':') 
+                        sub[0].text.strip().endswith(':')
                         or _following_char(sub[0]) == ':'
                         # or the paragraph is tagged as an interjection
                         or el.get('Interjection')
@@ -402,12 +402,12 @@ class ParseHandler(object):
                 if self.one_liner[1] == el.getparent():
                     self._new_person(self.main_statement_speaker[0], self.main_statement_speaker[1])
                 self.one_liner = None
-                
+
             self.in_para = True
-            
+
             if not self._is_person():
                 procedural = True
-                
+
             if mytext.startswith('moved') or mytext.startswith('demande'):
                 procedural = True
                 nxt = el.getnext()
@@ -417,10 +417,10 @@ class ParseHandler(object):
                 if nxt is not None and nxt.text:
                     # After a motion, there's an unnecessary "He said:" on the next phrase
                     nxt.text = re.sub(r'^\s*([S]?[hH]e said:|--)\s*', '', nxt.text)
-                    
+
             if mytext and mytext[0] in ('(', '['):
                 procedural = True
-                      
+
             p_attrs = {
                 'data-HoCid': el.get('id', '0')
             }
@@ -434,10 +434,10 @@ class ParseHandler(object):
                     self.one_time_attributes['has_non_procedural'] = True
                 if self.current_attributes.get('language'):
                     p_attrs['data-originallang'] = self.current_attributes['language']
-            
+
             if el.xpath('.//QuotePara'):
                 self._add_code('<blockquote>')
-            self._add_code(_build_tag('p', p_attrs)) 
+            self._add_code(_build_tag('p', p_attrs))
             self._add_tag_text(el, openclose)
         else:
             assert self.in_para
@@ -446,7 +446,7 @@ class ParseHandler(object):
             if el.xpath('.//QuotePara'):
                 self._add_code('</blockquote>')
             assert not _n2s(el.tail).strip()
-                        
+
     def handle_ProceduralText(self, el, openclose):
         assert not _n2s(el.tail).strip()
         if el.get('TocType') == 'TPC':
@@ -458,34 +458,34 @@ class ParseHandler(object):
                 #self._add_code(' -->')
         else:
             return self.handle_ParaText(el, openclose, procedural=True)
-            
+
     handle_ThroneSpeechPara = handle_ParaText
-    
+
     @_only_open
     def handle_ThroneSpeech(self, el, openclose):
-        self._new_person(None, 
-            "The Governor General" if self.document_language[0] == 'e' 
+        self._new_person(None,
+            "The Governor General" if self.document_language[0] == 'e'
             else "Le gouverneur général")
-            
+
     def handle_B(self, el, openclose):
         # Fallout from new-speaker special case in ParaText
         if not el.get('alpheus_skip_text'):
             self._add_code('<%sstrong>' % ('/' if openclose == TAG_CLOSE else ''))
         self._add_tag_text(el, openclose)
-            
+
     def handle_Verse(self, el, openclose):
         if openclose == TAG_OPEN:
             self._add_code('<span class="verse">')
         else:
             self._add_code('</span>')
         self._add_tag_text(el, openclose)
-            
+
     def handle_Line(self, el, openclose):
         # Appears within <Poetry> and <Verse> tags
         if openclose == TAG_CLOSE:
             self._add_code('<br>')
         self._add_tag_text(el, openclose)
-    
+
     @_only_open
     def handle_PersonSpeaking(self, el, openclose):
         try:
@@ -504,17 +504,17 @@ class ParseHandler(object):
                 logger.warning("Looks like there's content in PersonSpeaking: %s" % content)
                 self._add_text(content)
         return NO_DESCEND
-        
+
     handle_Questioner = handle_PersonSpeaking
     handle_Responder = handle_PersonSpeaking
-        
+
     def handle_Intervention(self, el, openclose):
         if openclose == TAG_OPEN:
             self.one_time_attributes['intervention_type'] = el.get('Type')
             self.one_time_attributes['id'] = el.get('id')
         else:
             self.close_statement()
-    
+
     @_only_open
     def handle_FloorLanguage(self, el, openclose):
         lang = el.get('language', '').lower()
@@ -523,7 +523,7 @@ class ParseHandler(object):
         else:
             self.current_attributes['language'] = None
         return NO_DESCEND
-    
+
     @_only_open
     def handle_Timestamp(self, el, openclose):
         if el.get('Hr'):
@@ -534,31 +534,31 @@ class ParseHandler(object):
                 # statement
                 self.current_statement.meta['timestamp'] = self.current_attributes['timestamp']
         return NO_DESCEND
-        
+
     def handle_SubjectOfBusinessQualifier(self, el, openclose):
         self.current_attributes['h3'] = _text_content(el)
         return NO_DESCEND
-        
+
     def handle_SubjectOfBusinessTitle(self, el, openclose):
         self.current_attributes['h2'] = _text_content(el)
         return NO_DESCEND
-        
+
     def handle_SubjectOfBusiness(self, el, openclose):
         if openclose == TAG_CLOSE\
           and 'h3' in self.current_attributes:
             del self.current_attributes['h3']
-            
+
     def handle_OrderOfBusiness(self, el, openclose):
         if openclose == TAG_CLOSE:
             if 'h1' in self.current_attributes:
                 del self.current_attributes['h1']
             if 'h2' in self.current_attributes:
                 del self.current_attributes['h2']
-        
+
     def handle_OrderOfBusinessTitle(self, el, openclose):
         self.current_attributes['h1'] = _smart_title(_text_content(el))
         return NO_DESCEND
-        
+
     def handle_WrittenQuestionResponse(self, el, openclose):
         if openclose == TAG_OPEN:
             if el.xpath('QuestionID'):
@@ -568,19 +568,19 @@ class ParseHandler(object):
         else:
             if self.current_attributes.get('h3', '').lower().startswith('question'):
                 del self.current_attributes['h3']
-    
+
     def handle_QuestionContent(self, el, openclose):
         if openclose == TAG_OPEN:
             self.one_time_attributes['written_question'] = 'question'
         else:
             self.close_statement()
-    
+
     def handle_ResponseContent(self, el, openclose):
         if openclose == TAG_OPEN:
             self.one_time_attributes['written_question'] = 'response'
         else:
             self.close_statement()
-        
+
     def handle_Affiliation(self, el, openclose):
         if (not el.get('alpheus_skip_text')) and el.get('DbId'):
             if openclose == TAG_OPEN:
@@ -594,7 +594,7 @@ class ParseHandler(object):
             else:
                 self._add_code('</a>')
         self._add_tag_text(el, openclose)
-            
+
     def handle_Document(self, el, openclose):
         if el.get('DbId'):
             if openclose == TAG_OPEN:
@@ -608,18 +608,18 @@ class ParseHandler(object):
             else:
                 self._add_code('</a>')
         self._add_tag_text(el, openclose)
-        
+
     def handle_Division(self, el, openclose):
         num = el.get('DivisionNumber')
         url = 'http://www.parl.gc.ca/HouseChamberBusiness/ChamberVoteDetail.aspx?Language=%s&Mode=1&Parl=%s&Ses=%s&Vote=%s' %(
             self.document_language[0].upper(), self.parliament, self.session, num)
         self._add_code('%s%sVote #%s</a></p>' % (
             _build_tag('p', {'class': 'division procedural'}),
-            _build_tag('a', {'class': 'related_link vote', 'href': url, 
+            _build_tag('a', {'class': 'related_link vote', 'href': url,
                     'data-number': num, 'data-HoCid': el.get('id')}),
             num))
         return NO_DESCEND
-        
+
     def _default_handler(self, el, openclose):
         if el.tag in self.EXCLUDE_TAGS:
             return NO_DESCEND
@@ -631,20 +631,20 @@ class ParseHandler(object):
             self._add_tag_text(el, openclose)
         if openclose == TAG_OPEN and el.tag not in self.IGNORE_TAGS:
             raise AlpheusError("I don't know how to handle tag %s" % el.tag)
-        
+
     def __getattr__(self, name):
         # Route requests where we don't have a handler to the default
         if name.startswith('handle_'):
             return self._default_handler
-        raise AttributeError("ParseHandler has no attribute %r" % name)        
-    
+        raise AttributeError("ParseHandler has no attribute %r" % name)
+
 NO_DESCEND = -1
 TAG_OPEN = 1
 TAG_CLOSE = 2
-            
+
 def parse_tree(tree):
     document = Document()
-    
+
     # Start by getting metadata
     def _get_meta(key):
         return str(tree.xpath('//ExtractedItem[@Name="%s"]' % key)[0].text)
@@ -655,27 +655,27 @@ def parse_tree(tree):
     )
     document.meta['parliament'] = int(_get_meta('ParliamentNumber'))
     document.meta['session'] = int(_get_meta('SessionNumber'))
-    
+
     hansard_tag = tree.xpath('/Hansard')[0]
     document.meta['language'] = hansard_tag.get('{http://www.w3.org/XML/1998/namespace}lang').lower()
-    
+
     # The ID in the Hansard tag is *not* the same as the DocId in parl.gc.ca URLs
     # So to avoid confusion, we won't include it in the output
     #document.meta['id'] = hansard_tag.get('id')
-    
+
     document.meta['document_type'] = _get_meta('MetaDocumentCategory')
-    
+
     if document.meta['document_type'] == 'Committee':
         document.meta['committee_acronym'] = _get_meta('Acronyme')
         document.meta['committee_name_en'] = _get_meta('InstitutionDebateEn')
         document.meta['committee_name_fr'] = _get_meta('InstitutionDebateFr')
         #TODO: in camera
-        
+
     document.meta['document_number'] = _get_meta('Number').split()[-1].lstrip('0')
-    
+
     # Now we can move on to the content of the document
     handler = ParseHandler(document)
-    
+
     def _explore_element(el):
         # Recursive depth-first search of the XML tree
         el_handler = getattr(handler, 'handle_' + str(el.tag))
@@ -683,17 +683,17 @@ def parse_tree(tree):
             for subelement in el:
                 _explore_element(subelement)
             el_handler(el, TAG_CLOSE)
-        
+
     _explore_element(tree.xpath('//HansardBody')[0])
-    
+
     document.statements = handler.get_final_statements()
     return document
-    
+
 def parse_string(s: str):
     s = s.replace('<B />', '').replace('<ParaText />', '') # Some empty tags can gum up the works
     s = s.replace('&ccedil;', '&#231;').replace('&eacute;', '&#233;') # Fix invalid entities
     return parse_tree(etree.fromstring(s))
-    
+
 def fetch_and_parse(doc_id, lang):
     import urllib.request, urllib.error, urllib.parse
     if doc_id == 'hansard':
@@ -711,7 +711,7 @@ def fetch_and_parse(doc_id, lang):
     doc.meta['xml_url'] = url
     doc.meta['html_url'] = url.replace('&xml=true', '')
     return doc
-                
+
 def main():
     import optparse
     optparser = optparse.OptionParser(description="Transforms Hansard XML from the Canadian House of Commons into "
@@ -722,14 +722,14 @@ def main():
         help="Document ID (e.g. 5069607) on parl.gc.ca; it'll be fetched and processed", metavar="ID")
     optparser.add_option("-l", "--language", dest="language", metavar="[E,F]", default="E",
         help="Language of the document to download. Only necessary if alpheus is downloading from parl.gc.ca.")
-    
+
     group = optparse.OptionGroup(optparser, "Debugging Options")
     group.add_option("--print-names", dest="print_names", action="store_true",
         help="Instead of outputting HTML, print a list of names of people speaking.")
     group.add_option("--pdb", dest="pdb", action="store_true",
         help="Drop into the Python debugger on exception")
     optparser.add_option_group(group)
-    
+
     (options, args) = optparser.parse_args()
     try:
         if options.filename:
@@ -750,6 +750,6 @@ def main():
     else:
         html = document.as_html()
         print(html.encode('utf8'))
-    
+
 if __name__ == '__main__':
     main()

@@ -81,7 +81,7 @@ def document_view(request, document, meeting=None, slug=None):
     per_page = 25
     if 'singlepage' in request.GET:
         per_page = 50000
-    
+
     statement_qs = Statement.objects.filter(document=document)\
         .select_related('member__politician', 'member__riding', 'member__party')
     paginator = Paginator(statement_qs, per_page)
@@ -104,13 +104,13 @@ def document_view(request, document, meeting=None, slug=None):
         statements = paginator.page(page)
     except (EmptyPage, InvalidPage):
         statements = paginator.page(paginator.num_pages)
-    
+
     if highlight_statement is not None:
         try:
             highlight_statement = [s for s in statements.object_list if s.sequence == highlight_statement][0]
         except IndexError:
             raise Http404
-        
+
     ctx = {
         'document': document,
         'page': statements,
@@ -222,7 +222,7 @@ def statement_permalink(request, doc, statement, template, **kwargs):
     else:
         who = statement.who
     title = who
-    
+
     if statement.topic:
         title += ' on %s' % statement.topic
     elif 'committee' in kwargs:
@@ -241,7 +241,7 @@ def statement_permalink(request, doc, statement, template, **kwargs):
     }
     ctx.update(kwargs)
     return HttpResponse(t.render(ctx, request))
-    
+
 def document_cache(request, document_id, language):
     document = get_object_or_404(Document, pk=document_id)
     xmlfile = document.get_cached_xml(language)

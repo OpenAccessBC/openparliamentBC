@@ -9,7 +9,7 @@ register = template.Library()
 @register.filter(name='expand_province')
 def expand_province(value):
     return PROVINCE_LOOKUP.get(value, None)
-    
+
 @register.filter(name='heshe')
 def heshe(pol):
     if pol.gender == 'F':
@@ -18,7 +18,7 @@ def heshe(pol):
         return 'He'
     else:
         return 'He/she'
-        
+
 @register.filter(name='hisher')
 def heshe(pol):
     if pol.gender == 'F':
@@ -27,7 +27,7 @@ def heshe(pol):
         return 'His'
     else:
         return 'Their'
-        
+
 @register.filter(name='himher')
 def himher(pol):
     if pol.gender == 'F':
@@ -36,7 +36,7 @@ def himher(pol):
         return 'Him'
     else:
         return 'Them'
-        
+
 @register.filter(name='mrms')
 def mrms(pol):
     if pol.gender == 'M':
@@ -45,16 +45,16 @@ def mrms(pol):
         return 'Ms.'
     else:
         return 'Mr./Ms.'
-        
+
 @register.filter(name='month_num')
 def month_num(month):
     return datetime.date(2010, month, 1).strftime("%B")
-    
+
 @register.filter(name='strip_act')
 def strip_act(value):
     value = re.sub(r'An Act (to )?([a-z])', lambda m: m.group(2).upper(), value)
     return re.sub(r' Act$', '', value)
-    
+
 @register.filter(name='time_since')
 def time_since(value):
     today = datetime.date.today()
@@ -83,7 +83,7 @@ def time_since(value):
         return 'Three months ago'
     else:
         return 'More than three months ago'
-        
+
 @register.filter(name='english_list')
 def english_list(value, arg=', '):
     if not type(value) == list:
@@ -96,11 +96,11 @@ def english_list(value, arg=', '):
         return "%s and %s" % (value[0], value[1])
     else:
         return "%s%s and %s" % (arg.join(value[0:-1]), arg, value[-1])
-        
+
 @register.filter(name='list_prefix')
 def list_prefix(value, arg):
     return ["%s%s" % (arg, i) for i in value]
-    
+
 @register.filter(name='list_filter')
 def list_filter(value, arg):
     return [x for x in value if x != arg]

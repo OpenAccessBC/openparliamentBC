@@ -11,7 +11,7 @@ from .models import Haiku
 
 @never_cache
 def haiku(request, haiku_id=None):
-    
+
     if haiku_id:
         haikus = [get_object_or_404(Haiku, pk=haiku_id)]
     else:
@@ -19,7 +19,7 @@ def haiku(request, haiku_id=None):
             haikus = Haiku.objects.filter(worthy=True).order_by('?')[:10]
         else:
             haikus = Haiku.objects.filter(worthy=True).order_by('?')[:1]
-    
+
     if is_ajax(request):
         #time.sleep(2)
         return HttpResponse(json.dumps([[haiku.line1, haiku.line2, haiku.line3, haiku.attribution_url, haiku.attribution, haiku.id] for haiku in haikus]),

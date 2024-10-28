@@ -58,7 +58,7 @@ def ngram_iterator(tokens, n=2):
 class FrequencyModel(dict):
     """
     Given an iterable of strings, constructs an object mapping each string
-    to the probability that a randomly chosen string will be it (that is, 
+    to the probability that a randomly chosen string will be it (that is,
     # of occurences of string / # total number of items).
     """
 
@@ -114,14 +114,14 @@ class FrequencyDiffResult(dict):
         return nlargest(n, iter(self.items()), key=itemgetter(1))
 
 class WordCounter(dict):
-    
+
     def __init__(self, stopwords=STOPWORDS):
         self.stopwords = stopwords
         super(WordCounter, self).__init__(self)
-    
+
     def __missing__(self, key):
         return 0
-        
+
     def __setitem__(self, key, value):
         if key not in self.stopwords:
             super(WordCounter, self).__setitem__(key, value)
@@ -130,34 +130,33 @@ class WordCounter(dict):
         if n is None:
             return sorted(iter(self.items()), key=itemgetter(1), reverse=True)
         return nlargest(n, iter(self.items()), key=itemgetter(1))
-        
+
 class WordAndAttributeCounter(object):
-    
+
     def __init__(self, stopwords=STOPWORDS):
         self.counter = defaultdict(WordAttributeCount)
         self.stopwords = stopwords
-        
+
     def add(self, word, attribute):
         if word not in self.stopwords and len(word) > 2:
             self.counter[word].add(attribute)
-        
+
     def most_common(self, n=None):
         if n is None:
             return sorted(iter(self.counter.items()), key=lambda x: x[1].count, reverse=True)
         return nlargest(n, iter(self.counter.items()), key=lambda x: x[1].count)
-        
+
 class WordAttributeCount(object):
-    
+
     __slots__ = ('count', 'attributes')
-    
+
     def __init__(self):
         self.attributes = defaultdict(int)
         self.count = 0
-        
+
     def add(self, attribute):
         self.attributes[attribute] += 1
         self.count += 1
-        
+
     def winning_attribute(self):
         return nlargest(1, iter(self.attributes.items()), key=itemgetter(1))[0][0]
-

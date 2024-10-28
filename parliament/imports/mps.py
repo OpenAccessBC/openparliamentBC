@@ -261,4 +261,3 @@ def _scrape_ourcommons_row(row):
         offices.append(o)
     d['offices'] = offices
     return d
-        

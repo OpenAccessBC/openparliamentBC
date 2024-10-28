@@ -40,10 +40,10 @@ class NoStatementManager(models.Manager):
             .exclude(scount__gt=0)
 
 class Document(models.Model):
-    
+
     DEBATE = 'D'
     EVIDENCE = 'E'
-    
+
     document_type = models.CharField(max_length=1, db_index=True, choices=(
         ('D', 'Debate'),
         ('E', 'Committee Evidence'),
@@ -51,9 +51,9 @@ class Document(models.Model):
     date = models.DateField(blank=True, null=True)
     number = models.CharField(max_length=6, blank=True) # there exist 'numbers' with letters
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
-    
+
     source_id = models.IntegerField(unique=True, db_index=True)
-    
+
     most_frequent_word = models.CharField(max_length=20, blank=True)
     wordcloud = models.ImageField(upload_to='autoimg/wordcloud', blank=True, null=True)
 
@@ -69,17 +69,17 @@ class Document(models.Model):
     debates = DebateManager()
     evidence = EvidenceManager()
     without_statements = NoStatementManager()
-    
+
     class Meta:
         ordering = ('-date',)
-    
+
     def __str__ (self):
         if self.document_type == self.DEBATE:
             return "Hansard #%s for %s (#%s/#%s)" % (self.number, self.date, self.id, self.source_id)
         else:
             return "%s evidence for %s (#%s/#%s)" % (
                 self.committeemeeting.committee.short_name, self.date, self.id, self.source_id)
-        
+
     @memoize_property
     def get_absolute_url(self):
         if self.document_type == self.DEBATE:
@@ -123,7 +123,7 @@ class Document(models.Model):
             }
         elif self.document_type == self.EVIDENCE:
             return self.committeemeeting.evidence_url
-        
+
     def _topics(self, l):
         topics = []
         last_topic = ''
@@ -132,15 +132,15 @@ class Document(models.Model):
                 last_topic = statement[0]
                 topics.append((statement[0], statement[1]))
         return topics
-        
+
     def topics(self):
         """Returns a tuple with (topic, statement slug) for every topic mentioned."""
         return self._topics(self.statement_set.all().values_list('h2_' + settings.LANGUAGE_CODE, 'slug'))
-        
+
     def headings(self):
         """Returns a tuple with (heading, statement slug) for every heading mentioned."""
         return self._topics(self.statement_set.all().values_list('h1_' + settings.LANGUAGE_CODE, 'slug'))
-    
+
     def topics_with_qp(self):
         """Returns the same as topics(), but with a link to Question Period at the start of the list."""
         statements = self.statement_set.all().values_list(
@@ -202,7 +202,7 @@ class Document(models.Model):
         return OrderedDict(
             [(k, v) for k, v in list(self.speaker_summary().items()) if v['politician']]
         )
-    
+
     def save_activity(self):
         statements = self.statement_set.filter(procedural=False).select_related('member', 'politician')
         politicians = set([s.politician for s in statements if s.politician])
@@ -315,10 +315,10 @@ class Statement(models.Model):
         ('R', 'Response')
     ))
     statement_type = models.CharField(max_length=35, blank=True)
-    
+
     bills = models.ManyToManyField('bills.Bill', blank=True)
     mentioned_politicians = models.ManyToManyField(Politician, blank=True, related_name='statements_with_mentions')
-        
+
     class Meta:
         ordering = ('sequence',)
         unique_together = (
@@ -337,7 +337,7 @@ class Statement(models.Model):
         if self.wordcount_en is None:
             self._generate_wordcounts()
         if ((not self.procedural) and self.wordcount <= 300
-            and ( 
+            and (
                 (parsetools.r_notamember.search(self.who) and re.search(r'(Speaker|Chair|président)', self.who))
                 or (not self.who)
                 or not any(p for p in self.content_en.split('\n') if 'class="procedural"' not in p)
@@ -347,11 +347,11 @@ class Statement(models.Model):
         if not self.urlcache:
             self.generate_url()
         super(Statement, self).save(*args, **kwargs)
-            
+
     @property
     def date(self):
         return datetime.date(self.time.year, self.time.month, self.time.day)
-    
+
     def generate_url(self):
         self.urlcache = "%s%s/" % (
             self.document.get_absolute_url(),
@@ -410,7 +410,7 @@ class Statement(models.Model):
             .replace('&amp;', '&')
         ).strip()
 
-    def search_dict(self):      
+    def search_dict(self):
         name = self.name_info
         d = {
             "text": self.text_plain(),
@@ -432,10 +432,10 @@ class Statement(models.Model):
         d['politician'] = name['display_name']
         d['searchtext'] = f"{name['display_name']} {name['post'] if name['post'] else ''} {d.get('party', '')} {d['topic']} {d['text']}"
         return d
-    
+
     def search_should_index(self):
         return True
-    
+
     @classmethod
     def search_get_qs(cls):
         qs = cls.objects.all().prefetch_related(
@@ -484,7 +484,7 @@ class Statement(models.Model):
     @property
     def topic(self):
         return self.h2
-        
+
     def to_api_dict(self, representation):
         d = dict(
             time=str(self.time) if self.time else None,
@@ -502,9 +502,9 @@ class Statement(models.Model):
                 d[h] = {'en': getattr(self, h + '_en'), 'fr': getattr(self, h + '_fr')}
         d['document_url'] = d['url'][:d['url'].rstrip('/').rfind('/')+1]
         return d
-    
+
     @property
-    @memoize_property    
+    @memoize_property
     def name_info(self):
         info = {
             'post': None,
@@ -570,4 +570,3 @@ class OldSequenceMapping(models.Model):
 
     def __str__(self):
         return "%s -> %s" % (self.sequence, self.slug)
-            

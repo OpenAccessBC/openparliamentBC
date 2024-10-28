@@ -9,7 +9,7 @@ from parliament.text_analysis.frequencymodel import FrequencyModel
 
 def _get_background_model_path(corpus_name, n):
     # Sanitize corpus_name, since it might be user input
-    corpus_name = re.sub(r'[^a-z0-9-]', '', corpus_name) 
+    corpus_name = re.sub(r'[^a-z0-9-]', '', corpus_name)
     return os.path.join(settings.PARLIAMENT_LANGUAGE_MODEL_PATH, '%s.%dgram' % (corpus_name, n))
 
 def load_background_model(corpus_name, n):

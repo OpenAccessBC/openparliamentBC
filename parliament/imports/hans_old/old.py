@@ -20,14 +20,14 @@ from parliament.imports.hans_old.common import *
 
 r_bill = re.compile(r'[bB]ill C-(\d+)')
 class HansardParser1994(HansardParser):
-    
+
     def __init__(self, hansard, html):
-        
+
         for regex in STARTUP_RE_1994:
             html = re.sub(regex[0], regex[1], html)
 
         super(HansardParser1994, self).__init__(hansard, html)
-        
+
     def replace_bill_link(self, billmatch):
         billnumber = int(billmatch.group(1))
         try:
@@ -38,19 +38,19 @@ class HansardParser1994(HansardParser):
         result = u'<bill id="%d" name="%s">%s</bill>' % (bill.id, escape(bill.name), "Bill C-%s" % billnumber)
         #print "REPLACING %s with %s" % (billmatch.group(0), result)
         return result
-    
+
     def label_bill_links(self, txt):
         return r_bill.sub(self.replace_bill_link, txt)
-    
+
     def parse(self):
-        
+
         super(HansardParser1994, self).parse()
 
         # Initialize variables
         t = ParseTracker()
         members = []
         session = self.hansard.session
-                
+
         # Get the date
         try:
             #c = self.soup.find('h1', align=re.compile(r'CENTER', re.I)).findNext(text='HOUSE OF COMMONS').findNext(('b', 'h4'))
@@ -62,17 +62,17 @@ class HansardParser1994(HansardParser):
             raise ParseException("Couldn't navigate to date. %s" % c)
         self.date = datetime.datetime.strptime(c.string.strip(), "%A, %B %d, %Y").date()
         self.hansard.date = self.date
-        self.hansard.save()  
+        self.hansard.save()
 
         # And the time
         c = c.findNext(text=r_housemet)
         match = re.search(r_housemet, c.string)
         t['timestamp'] = self.houseTime(match.group(1), match.group(2))
         t.setNext('timestamp', t['timestamp'])
-        
+
         # Move the pointer to the start
         c = c.next
-    
+
         # And start the big loop
         while c is not None:
 
@@ -92,15 +92,15 @@ class HansardParser1994(HansardParser):
                                             or c.parent.name=='ul'
                                             or c.parent.parent.name=='ul'
                                             or c.parent.parent.name=='blockquote'))
-            
+
             elif c.name == 'h2' and c.has_key('align') and c['align'].lower() == 'center':
                 # Heading
                 c = c.findNext(text=r_letter)
-                
+
                 #c = c.next
                 #if not parsetools.isString(c): raise ParseException("Expecting string right after h2")
                 t.setNext('heading', parsetools.titleIfNecessary(parsetools.tameWhitespace(c.string.strip())))
-            
+
             elif (c.name == 'h3' and c.has_key('align') and c['align'].lower() == 'center') or (c.name == 'center' and (c.find('h3') or c.find('b'))):
                 # Topic
                 if c.find(text=r_letter):
@@ -130,7 +130,7 @@ class HansardParser1994(HansardParser):
                 # A heading we don't care about (hopefully!)
                 if c.nextSibling is not None:
                     c = c.nextSibling.previous
-                else: 
+                else:
                     c = c.next
             elif c.name == 'table':
                 # We don't want tables, right?
@@ -175,7 +175,7 @@ class HansardParser1994(HansardParser):
                     # 3. It's the name of a new speaker
                     # Save the current buffer
                     self.saveStatement(t)
-                    
+
                     # And start wrangling. First, get the colon out
                     member = None
                     t['member_title'] = parsetools.tameWhitespace(c.string.strip())
@@ -300,7 +300,7 @@ class HansardParser1994(HansardParser):
                                 if VERBOSE: print "Saving gender (%s) for %s" % (gender, t['member_title'])
                                 pol.gender = gender
                                 pol.save()
-                            
+
                         # Okay! We finally have our member!
                         t['member'] = member
                         t['politician'] = member.politician
@@ -317,7 +317,7 @@ class HansardParser1994(HansardParser):
                     c = c.next
                 else:
                     raise ParseException("Unexplained boldness! %s\n**\n%s" % (c, c.parent))
-            
+
             # Okay, so after that detour we're back at the indent level of the main for loop
             # We're also done with the possible tags we care about, so advance the cursor and loop back...
             c = c.next

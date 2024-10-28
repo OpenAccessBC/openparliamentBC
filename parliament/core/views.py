@@ -26,7 +26,7 @@ def home(request):
             key=latest_hansard.get_text_analysis_url())
     }
     return HttpResponse(t.render(c, request))
-    
+
 @never_cache
 def closed(request, message=None):
     if not message:
@@ -48,7 +48,7 @@ def disable_on_readonly_db(view):
     if settings.PARLIAMENT_DB_READONLY:
         return db_readonly
     return view
-    
+
 def flatpage_response(request, title, message):
     t = loader.get_template("flatpages/default.html")
     c = {
@@ -58,25 +58,24 @@ def flatpage_response(request, title, message):
         },
     }
     return HttpResponse(t.render(c, request))
-    
+
 class SiteNewsFeed(Feed):
-    
+
     title = "openparliament.ca: Site news"
     link = "http://openparliament.ca/"
     description = "Announcements about the openparliament.ca site"
-    
+
     def items(self):
         return SiteNews.public.all()[:6]
-        
+
     def item_title(self, item):
         return item.title
-        
+
     def item_description(self, item):
         return markdown(item.text)
-        
+
     def item_link(self):
         return 'http://openparliament.ca/'
-        
+
     def item_guid(self, item):
         return str(item.id)
-    

@@ -85,7 +85,7 @@ def import_votes():
         for voter in detailroot.findall('VoteParticipant'):
             pol = Politician.objects.get_by_parl_mp_id(voter.find('PersonId').text,
                 session=session, riding_name=voter.find('ConstituencyName').text)
-            # name = (voter.find('PersonOfficialFirstName').text 
+            # name = (voter.find('PersonOfficialFirstName').text
             #     + ' ' + voter.find('PersonOfficialLastName').text)
             # riding = Riding.objects.get_by_name(voter.find('ConstituencyName').text)
             # pol = Politician.objects.get_by_name(name=name, session=session, riding=riding)

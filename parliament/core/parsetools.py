@@ -28,28 +28,28 @@ def time_to_datetime(hour, minute, date):
 def removeAccents(s: str) -> str:
     nkfd_form = unicodedata.normalize('NFKD', str(s))
     return "".join([c for c in nkfd_form if not unicodedata.combining(c)])
-    
+
 def stripHonorific(s):
     for hon in ('The Honourable ', 'The Right Honourable ', 'The Rt. ', 'The '):
         s = s.replace(hon, '')
     return re.sub(r'^[A-Z][a-z]+\. ', '', s)
-    
+
 def titleIfNecessary(s):
     if not re.search(r'[a-z]', s):
         s = s.title()
     return s
-    
+
 r_hasText = re.compile(r'\S', re.UNICODE)
 def getText(tag):
     return ''.join(tag.findAll(text=r_hasText))
 
-r_extraWhitespace = re.compile(r'\s\s*', re.UNICODE)    
+r_extraWhitespace = re.compile(r'\s\s*', re.UNICODE)
 def tameWhitespace(s):
     return re.sub(r_extraWhitespace, ' ', s.replace("\n", ' '))
-    
+
 def sane_quotes(s):
     return s.replace('``', '"').replace("''", '"')
-    
+
 def slugify(s, allow_numbers=False):
     if allow_numbers:
         pattern = r'[^a-zA-Z0-9]'
@@ -99,10 +99,10 @@ def munge_postcode (code):
         if re.search(r'^[ABCEGHJKLMNPRSTVXYZ]\d[A-Z] \d[A-Z]\d$', code):
             return code
     return None
-    
+
 def none_to_empty(s):
     return s if s is not None else ''
-    
+
 def etree_extract_text(elem):
     text = ''
     for x in elem.getiterator():

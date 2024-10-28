@@ -336,4 +336,4 @@ class PoliticianTextAnalysisView(TextAnalysisView):
             request.pol.set_info('favourite_word', word)
         return analysis
 
-analysis = PoliticianTextAnalysisView.as_view()   
+analysis = PoliticianTextAnalysisView.as_view()

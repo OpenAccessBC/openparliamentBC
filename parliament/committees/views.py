@@ -98,7 +98,7 @@ class CommitteeView(ModelDetailView):
                 reverse('committee_analysis', kwargs={'committee_slug': slug})),
         }
         return HttpResponse(t.render(c, request))
-committee = CommitteeView.as_view()        
+committee = CommitteeView.as_view()
 
 def committee_year_archive(request, slug, year):
     cmte = get_object_or_404(Committee, slug=slug)
@@ -119,7 +119,7 @@ def committee_year_archive(request, slug, year):
         'studies': studies,
         'year': year
     })
-    
+
 def committee_activity(request, activity_id):
     activity = get_object_or_404(CommitteeActivity, id=activity_id)
 
@@ -235,7 +235,7 @@ class CommitteeMeetingStatementView(ModelDetailView):
         return {
             'document_speeches_url': reverse('speeches') + '?' +
                 urlencode({'document': result['document_url']}),
-        }        
+        }
 
     def get_html(self, request, **kwargs):
         return committee_meeting(request, **kwargs)
@@ -255,6 +255,3 @@ def evidence_permalink(request, committee_slug, session_id, number, slug):
 
     return statement_permalink(request, doc, statement, "committees/evidence_permalink.html",
         meeting=meeting, committee=meeting.committee)
-
-
-

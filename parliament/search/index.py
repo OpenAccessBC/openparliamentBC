@@ -49,7 +49,7 @@ def delete_handler(instance, **kwargs):
 if getattr(settings, 'PARLIAMENT_TRACK_INDEXING_TASKS', False):
     signals.post_save.connect(save_handler)
     signals.post_delete.connect(delete_handler)
-   
+
 def get_search_dict(obj):
     d = obj.search_dict()
     d['django_ct'] = get_content_type(obj)
@@ -70,5 +70,3 @@ def index_objects(model_objs):
     prepared_objs = [get_search_dict(o)
                         for o in model_objs if o.search_should_index()]
     get_pysolr_instance().add(prepared_objs)
-
-

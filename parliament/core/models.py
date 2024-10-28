@@ -35,19 +35,19 @@ class InternalXref(models.Model):
     text_value = models.CharField(max_length=250, blank=True, db_index=True)
     int_value = models.IntegerField(blank=True, null=True, db_index=True)
     target_id = models.IntegerField(db_index=True)
-    
+
     # CURRENT SCHEMAS
     # party_names
     # bill_callbackid
     # session_legisin -- LEGISinfo ID for a session
     # edid_postcode -- the EDID -- which points to a riding, but is NOT the primary  key -- for a postcode
     schema = models.CharField(max_length=15, db_index=True)
-    
+
     def __str__(self):
         return "%s: %s %s for %s" % (self.schema, self.text_value, self.int_value, self.target_id)
 
 class PartyManager(models.Manager):
-    
+
     def get_by_name(self, name):
         x = InternalXref.objects.filter(schema='party_names', text_value=name.strip().lower())
         if len(x) == 0:
@@ -56,22 +56,22 @@ class PartyManager(models.Manager):
             raise Exception("More than one party matched %s" % name.strip().lower())
         else:
             return self.get_queryset().get(pk=x[0].target_id)
-            
+
 class Party(models.Model):
     """A federal political party."""
     name_en = models.CharField(max_length=100)
     name_fr = models.CharField(max_length=100, blank=True)
-    
+
     short_name_en = models.CharField(max_length=100, blank=True)
     short_name_fr = models.CharField(max_length=100, blank=True)
 
     slug = models.CharField(max_length=10, blank=True)
-    
+
     name = language_property('name')
     short_name = language_property('short_name')
 
     objects = PartyManager()
-    
+
     class Meta:
         verbose_name_plural = 'Parties'
 
@@ -105,62 +105,62 @@ class Party(models.Model):
         else:
             if x[0].target_id != self.id:
                 raise Exception("Name %s already points to a different party" % name.strip().lower())
-                
+
     def __str__(self):
         return self.name
 
 class Person(models.Model):
     """Abstract base class for models representing a person."""
-    
+
     name = models.CharField(max_length=100)
     name_given = models.CharField("Given name", max_length=50, blank=True)
     name_family = models.CharField("Family name", max_length=50, blank=True)
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         abstract = True
         ordering = ('name',)
 
 class PoliticianManager(models.Manager):
-    
+
     def elected(self):
         """Returns a QuerySet of all politicians that were once elected to office."""
         return self.get_queryset().annotate(
             electedcount=models.Count('electedmember')).filter(electedcount__gte=1)
-            
+
     def never_elected(self):
         """Returns a QuerySet of all politicians that were never elected as MPs.
-        
+
         (at least during the time period covered by our database)"""
         return self.get_queryset().filter(electedmember__isnull=True)
-        
+
     def current(self):
         """Returns a QuerySet of all current MPs."""
         return self.get_queryset().filter(electedmember__end_date__isnull=True,
             electedmember__start_date__isnull=False).distinct()
-        
+
     def elected_but_not_current(self):
         """Returns a QuerySet of former MPs."""
         return self.get_queryset().exclude(electedmember__end_date__isnull=True)
-    
+
     def filter_by_name(self, name):
         """Returns a list of politicians matching a given name."""
-        return [i.politician for i in 
+        return [i.politician for i in
             PoliticianInfo.sr_objects.filter(schema='alternate_name', value=parsetools.normalizeName(name))]
-    
+
     def get_by_name(self, name, session=None, riding=None, election=None, party=None, saveAlternate=True, strictMatch=False):
         """ Return a Politician by name. Uses a bunch of methods to try and deal with variations in names.
         If given any of a session, riding, election, or party, returns only politicians who match.
         If given session and optinally riding, tries to match the name more laxly.
-        
+
         saveAlternate: If we have Thomas Mulcair and we match, via session/riding, to Tom Mulcair, save Tom
             in the alternate names table
         strictMatch: Even if given a session, don't try last-name-only matching.
-        
+
         """
-        
+
         # Alternate names for a pol are in the InternalXref table. Assemble a list of possibilities
         poss = PoliticianInfo.sr_objects.filter(schema='alternate_name', value=parsetools.normalizeName(name))
         if len(poss) >= 1:
@@ -230,7 +230,7 @@ class PoliticianManager(models.Manager):
                     (parlid, x_mp_id, pol))
             pol.set_info('parl_mp_id', parlid, overwrite=False)
             return self.get_queryset().get(id=pol.id)
-            
+
     def get_by_parl_affil_id(self, parlid, session=None, riding_name=None):
         """
         Find a Politician object, based on one of Parliament's affiliation IDs.
@@ -260,7 +260,7 @@ class PoliticianManager(models.Manager):
                         % (parlid, pol, parl_mp_id, mpid_info.politician))
             except PoliticianInfo.DoesNotExist:
                 pol.set_info('parl_mp_id', parl_mp_id, overwrite=False)
-            
+
             pol.set_info_multivalued('parl_affil_id', parlid)
             return self.get_queryset().get(id=pol.id)
 
@@ -277,7 +277,7 @@ class PoliticianManager(models.Manager):
         polname = xml_doc.findtext('MemberOfParliamentRole/PersonOfficialFirstName'
             ) + ' ' + xml_doc.findtext('MemberOfParliamentRole/PersonOfficialLastName')
         polriding = xml_doc.findtext('MemberOfParliamentRole/ConstituencyName')
-                    
+
         try:
             riding = Riding.objects.get_by_name(polriding)
         except Riding.DoesNotExist:
@@ -304,7 +304,7 @@ class Politician(Person):
     headshot = models.ImageField(upload_to='polpics', blank=True, null=True)
     headshot_thumbnail = models.ImageField(blank=True, null=True, upload_to='polpics/thumbnail')
     slug = models.CharField(max_length=30, blank=True, db_index=True)
-    
+
     objects = PoliticianManager()
 
     def to_api_dict(self, representation):
@@ -352,7 +352,7 @@ class Politician(Person):
     def alternate_names(self):
         """Returns a list of ways of writing this politician's name."""
         return self.politicianinfo_set.filter(schema='alternate_name').values_list('value', flat=True)
-        
+
     def add_slug(self):
         """Assigns a slug to this politician, unless there's a conflict."""
         if self.slug:
@@ -363,7 +363,7 @@ class Politician(Person):
             return False
         self.slug = slug
         self.save()
-        
+
     @property
     @memoize_property
     def current_member(self):
@@ -375,7 +375,7 @@ class Politician(Person):
             return False
 
     @property
-    @memoize_property        
+    @memoize_property
     def latest_member(self):
         """If this politician has been an MP, returns the most recent ElectedMember object.
         Returns None if the politician has never been elected."""
@@ -393,11 +393,11 @@ class Politician(Person):
             return self.candidacy_set.order_by('-election__date').select_related('election')[0]
         except IndexError:
             return None
-        
+
     def save(self, *args, **kwargs):
         super(Politician, self).save(*args, **kwargs)
         self.add_alternate_name(self.name)
-            
+
     def get_absolute_url(self):
         if self.slug:
             return reverse('politician', kwargs={'pol_slug': self.slug})
@@ -406,7 +406,7 @@ class Politician(Person):
     @property
     def identifier(self):
         return self.slug if self.slug else self.id
-        
+
     # temporary, hackish, for stupid api framework
     @property
     def url(self):
@@ -418,19 +418,19 @@ class Politician(Person):
         if parlid:
             return f"https://www.ourcommons.ca/members/{settings.LANGUAGE_CODE}/{self.identifier}({parlid})"
         return None
-        
+
     def get_contact_url(self):
         if self.slug:
             return reverse('politician_contact', kwargs={'pol_slug': self.slug})
         return reverse('politician_contact', kwargs={'pol_id': self.id})
-            
+
     @memoize_property
     def info(self):
         """Returns a dictionary of PoliticianInfo attributes for this politician.
         e.g. politician.info()['web_site']
         """
         return dict([i for i in self.politicianinfo_set.all().values_list('schema', 'value')])
-        
+
     @memoize_property
     def info_multivalued(self):
         """Returns a dictionary of PoliticianInfo attributes for this politician,
@@ -440,7 +440,7 @@ class Politician(Person):
         for i in self.politicianinfo_set.all().values_list('schema', 'value'):
             info.setdefault(i[0], []).append(i[1])
         return info
-        
+
     def set_info(self, key, value, overwrite=True):
         try:
             info = self.politicianinfo_set.get(schema=key)
@@ -458,7 +458,7 @@ class Politician(Person):
             info = PoliticianInfo(politician=self, schema=key)
         info.value = str(value)
         info.save()
-        
+
     def set_info_multivalued(self, key, value):
         PoliticianInfo.objects.get_or_create(politician=self, schema=key, value=str(value))
 
@@ -504,13 +504,13 @@ class Politician(Person):
     @classmethod
     def search_get_qs(cls):
         return cls.objects.elected()
-    
+
     def search_should_index(self):
         # Only index politicians who've been elected
         return bool(self.latest_member)
-    
+
     def search_dict(self):
-        member = self.latest_member        
+        member = self.latest_member
         d = {
             'text': '',
             'politician': self.name,
@@ -534,12 +534,12 @@ class Politician(Person):
 
 class PoliticianInfoManager(models.Manager):
     """Custom manager ensures we always pull in the politician FK."""
-    
+
     def get_queryset(self):
         return super(PoliticianInfoManager, self).get_queryset()\
             .select_related('politician')
 
-# Not necessarily a full list           
+# Not necessarily a full list
 POLITICIAN_INFO_SCHEMAS = (
     'alternate_name',
     'twitter',
@@ -548,7 +548,7 @@ POLITICIAN_INFO_SCHEMAS = (
     'freebase_id',
     'wikipedia_id'
 )
-            
+
 class PoliticianInfo(models.Model):
     """Key-value store for attributes of a Politician."""
     politician = models.ForeignKey(Politician, on_delete=models.CASCADE)
@@ -556,22 +556,22 @@ class PoliticianInfo(models.Model):
     value = models.TextField()
 
     created = models.DateTimeField(blank=True, null=True, default=datetime.datetime.now)
-    
+
     objects = models.Manager()
     sr_objects = PoliticianInfoManager()
 
     def __str__(self):
         return "%s: %s" % (self.politician, self.schema)
-        
+
     @property
     def int_value(self):
         return int(self.value)
 
 class SessionManager(models.Manager):
-    
+
     def with_bills(self):
         return self.get_queryset().filter(bill__number_only__gt=1).distinct()
-    
+
     def current(self):
         return self.get_queryset().order_by('-start')[0]
 
@@ -589,7 +589,7 @@ class SessionManager(models.Manager):
 
 class Session(models.Model):
     "A session of Parliament."
-    
+
     id = models.CharField(max_length=4, primary_key=True)
     name = models.CharField(max_length=100)
     start = models.DateField()
@@ -598,18 +598,18 @@ class Session(models.Model):
     sessnum = models.IntegerField(blank=True, null=True)
 
     objects = SessionManager()
-    
+
     class Meta:
         ordering = ('-start',)
 
     def __str__(self):
         return self.name
-        
+
     def has_votes(self):
         return bool(self.votequestion_set.all().count())
-    
+
 class RidingManager(models.Manager):
-    
+
     # FIXME: This should really be in the database, not the model
     FIX_RIDING = {
         'richmond-arthabasca': 'richmond-arthabaska',
@@ -634,7 +634,7 @@ class RidingManager(models.Manager):
         'sint-hubert': 'saint-hubert',
         #'edmonton-mill-woods-beaumont': 'edmonton-beaumont',
     }
-    
+
     def get_by_name(self, name):
         slug = parsetools.slugify(name)
         if slug in RidingManager.FIX_RIDING:
@@ -677,45 +677,45 @@ PROVINCE_LOOKUP = dict(PROVINCE_CHOICES)
 
 class Riding(models.Model):
     "A federal riding."
-    
+
     name_en = models.CharField(max_length=200)
     name_fr = models.CharField(blank=True, max_length=200)
     province = models.CharField(max_length=2, choices=PROVINCE_CHOICES)
     slug = models.CharField(max_length=60, unique=True, db_index=True)
     edid = models.IntegerField(blank=True, null=True, db_index=True)
     current = models.BooleanField(blank=True, default=False)
-    
+
     objects = RidingManager()
 
     name = language_property('name')
-    
+
     class Meta:
         ordering = ('province', 'name_en')
-        
+
     def save(self):
         if not self.slug:
             self.slug = parsetools.slugify(self.name_en)
         super(Riding, self).save()
-        
+
     @property
     def dashed_name(self):
         return self.name.replace('--', '—')
-        
+
     def __str__(self):
         return "%s (%s)" % (self.dashed_name, self.get_province_display())
-        
+
 class ElectedMemberManager(models.Manager):
-    
+
     def current(self):
         return self.get_queryset().filter(end_date__isnull=True)
-        
+
     def former(self):
         return self.get_queryset().filter(end_date__isnull=False)
-    
+
     def on_date(self, date):
         return self.get_queryset().filter(models.Q(start_date__lte=date)
             & (models.Q(end_date__isnull=True) | models.Q(end_date__gte=date)))
-    
+
     def get_by_pol(self, politician, date=None, session=None):
         if not date and not session:
             raise Exception("Provide either a date or a session to get_by_pol.")
@@ -728,7 +728,7 @@ class ElectedMemberManager(models.Manager):
             if not len(qs):
                 raise ElectedMember.DoesNotExist("No elected member for %s, session %s" % (politician, session))
             return qs[0]
-    
+
 class ElectedMember(models.Model):
     """Represents one person, elected to a given riding for a given party."""
     sessions = models.ManyToManyField(Session)
@@ -737,9 +737,9 @@ class ElectedMember(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE)
     start_date = models.DateField(db_index=True)
     end_date = models.DateField(blank=True, null=True, db_index=True)
-    
+
     objects = ElectedMemberManager()
-    
+
     def __str__ (self):
         if self.end_date:
             return "%s (%s) was the member from %s from %s to %s" % (self.politician, self.party, self.riding, self.start_date, self.end_date)
@@ -768,24 +768,23 @@ class ElectedMember(models.Model):
 
     def get_absolute_url(self):
         return reverse('politician_membership', kwargs={'member_id': self.id})
-            
+
     @property
     def current(self):
         return not bool(self.end_date)
-        
+
 class SiteNews(models.Model):
     """Entries for the semi-blog on the openparliament homepage."""
     date = models.DateTimeField(default=datetime.datetime.now)
     title = models.CharField(max_length=200)
     text = models.TextField()
     active = models.BooleanField(default=True)
-    
+
     objects = models.Manager()
     public = ActiveManager()
 
     def html(self):
         return mark_safe(markdown(self.text))
-    
+
     class Meta:
         ordering = ('-date',)
-

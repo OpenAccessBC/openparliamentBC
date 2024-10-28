@@ -45,7 +45,7 @@ def delete_invalid_pol_pics():
             os.unlink(p.headshot.path)
             p.headshot = None
             p.save()
-            
+
 def delete_invalid_pol_urls():
     for pol in Politician.objects.filter(politicianinfo__schema='web_site').distinct():
         site = pol.info()['web_site']
@@ -56,7 +56,7 @@ def delete_invalid_pol_urls():
             print("REMOVING %s " % site)
             print(e)
             pol.politicianinfo_set.filter(schema='web_site').delete()
-        
+
 def export_words(outfile, queryset=None):
     if queryset is None:
         queryset = Statement.objects.all()
@@ -70,7 +70,7 @@ def export_tokenized_words(outfile, queryset):
         outfile.write(' ')
 
 def corpus_for_pol(pol):
-    
+
     r_splitter = re.compile(r'[^\w\'\-]+', re.UNICODE)
     states = Statement.objects.filter(member__politician=pol).order_by('time', 'sequence')
     words = []
@@ -80,8 +80,8 @@ def corpus_for_pol(pol):
 
 r_splitter = re.compile(r'[^\w\'\-]+', re.UNICODE)
 def spark_index(bucketsize, bigrams=False):
-    
-    
+
+
     index = defaultdict(int)
     bucketidx = 0
     bucketcount = 0
@@ -98,7 +98,7 @@ def spark_index(bucketsize, bigrams=False):
             index = defaultdict(int)
             bucketcount = 0
             bucketidx += 1
-            
+
 def populate_members_by():
     for by in Election.objects.filter(byelection=True):
         print(str(by))
@@ -122,7 +122,7 @@ def populate_members(election, session, start_date):
                 politician=candidate, start_date=start_date,
                 party=winner.party, riding=winner.riding)
             em.sessions.add(session)
-            
+
 def copy_members(from_session, to_session):
     raise Exception("Not yet implemented after ElectedMember refactor")
     for member in ElectedMember.objects.filter(session=from_session):
@@ -156,8 +156,8 @@ def replace_links(old, new, allow_self_relation=False):
                 raise Exception("Relation to self!")
             print(relation.field.name)
             for obj in relation.related_model._default_manager.filter(**{relation.field.name: old}):
-                getattr(obj, relation.field.name).remove(old)    
-                getattr(obj, relation.field.name).add(new)        
+                getattr(obj, relation.field.name).remove(old)
+                getattr(obj, relation.field.name).add(new)
 
 def _merge_pols(good, bad):
     #ElectedMember.objects.filter(politician=bad).update(politician=good)
@@ -185,7 +185,7 @@ def _merge_pols(good, bad):
 
 def merge_by_party(parties):
     raise Exception("Not yet implemented after ElectedMember refactor")
-    
+
     dupelist = Politician.objects.values('name').annotate(namecount=Count('name')).filter(namecount__gt=1).order_by('-namecount')
     for dupeset in dupelist:
         pols = Politician.objects.filter(name=dupeset['name'])
@@ -231,7 +231,7 @@ def merge_by_party(parties):
             print("Merged %s" % good)
 
 def merge_polnames():
-    
+
     def _printout(pol):
         for em in ElectedMember.objects.filter(politician=pol):
             print(em)
@@ -257,7 +257,7 @@ def merge_polnames():
                 else:
                     break
             print("Done!")
-    
+
 @transaction.atomic
 def merge_pols():
     print("Enter ID of primary pol object: ")
@@ -279,7 +279,7 @@ def merge_pols():
     if yn == 'y':
         _merge_pols(good, bad)
         print("Done!")
-        
+
 def fix_mac():
     """ Alexa Mcdonough -> Alexa McDonough """
     for p in Politician.objects.filter(models.Q(name_family__startswith='Mc')|models.Q(name_family__startswith='Mac')):
@@ -291,7 +291,7 @@ def fix_mac():
         p.name = p.name.replace(nforig, p.name_family)
         print(p.name)
         p.save()
-        
+
 def check_for_feeds(urls):
     for url in urls:
         try:
@@ -304,7 +304,7 @@ def check_for_feeds(urls):
         for feed in soup.findAll('link', type='application/rss+xml'):
             print("FEED ON %s" % url)
             print(feed)
-            
+
 def twitter_from_csv(infile):
     reader = csv.DictReader(infile)
     session = Session.objects.current()
@@ -313,13 +313,13 @@ def twitter_from_csv(infile):
         surname = line['Surname'].decode('utf8')
         pol = Politician.objects.get_by_name(' '.join([name, surname]), session=session)
         PoliticianInfo.objects.get_or_create(politician=pol, schema='twitter', value=line['twitter'].strip())
-        
+
 def twitter_to_list():
     from twitter import Twitter
     twit = Twitter(settings.TWITTER_USERNAME, settings.TWITTER_PASSWORD)
     for t in PoliticianInfo.objects.filter(schema='twitter'):
         twit.openparlca.mps.members(id=t.value)
-        
+
 def slugs_for_pols(qs=None):
     if not qs:
         qs = Politician.objects.current()
@@ -330,7 +330,7 @@ def slugs_for_pols(qs=None):
         else:
             pol.slug = slug
             pol.save()
-            
+
 def wikipedia_from_freebase():
     import freebase
     for info in PoliticianInfo.sr_objects.filter(schema='freebase_id'):
@@ -346,7 +346,7 @@ def wikipedia_from_freebase():
             # freebase.api.mqlkey.unquotekey
             wiki_id = result['key'][0]['value']
             info.politician.set_info('wikipedia_id', wiki_id)
-            
+
 def freebase_id_from_parl_id():
     import freebase
     import time
@@ -373,7 +373,7 @@ def freebase_id_from_parl_id():
             freebase_id = result['id'][0]
             PoliticianInfo(politician=info.politician, schema='freebase_id', value=freebase_id).save()
             print("Saved: %s" % freebase_id)
-            
+
 def pol_urls_to_ids():
     for pol in Politician.objects.exclude(parlpage=''):
         if 'Item' in pol.parlpage and 'parlinfo_id' not in pol.info():
@@ -384,7 +384,7 @@ def pol_urls_to_ids():
             print(pol.parlpage)
             match = re.search(r'Key=(\d+)', pol.parlpage)
             pol.set_info('parl_id', match.group(1))
-            
+
 def export_statements(outfile, qs):
     for s in qs.iterator():
         if not s.speaker:

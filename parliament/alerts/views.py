@@ -37,7 +37,7 @@ def politician_hansard_signup(request):
             (request.POST if request.method == 'POST' else request.GET).get('politician', '')))
     except ValueError:
         raise Http404
- 
+
     pol = get_object_or_404(Politician, pk=politician_id)
     success = False
     if request.method == 'POST':
@@ -79,7 +79,7 @@ def politician_hansard_signup(request):
         if request.authenticated_email:
             initial['email'] = request.authenticated_email
         form = PoliticianAlertForm(initial=initial)
-        
+
     c = {
         'form': form,
         'success': success,
@@ -218,7 +218,7 @@ def unsubscribe(request, key):
 def bounce_webhook(request):
     """
     Simple view to process bounce reports delivered via webhook.
-    
+
     Currently support Mandrill and Amazon SES.
     """
     sns_message_type = request.META.get('HTTP_X_AMZ_SNS_MESSAGE_TYPE')
@@ -235,7 +235,7 @@ def bounce_webhook(request):
             else:
                 mail_admins("Unhandled SES notification", request.body)
                 return HttpResponse('OK')
-            
+
             for recipient in recipients:
                 if ntype == 'Bounce' and data['bounce']['bounceType'] in ('Transient', 'Undetermined'):
                     try:

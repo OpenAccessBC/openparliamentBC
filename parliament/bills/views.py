@@ -98,7 +98,7 @@ class BillDetailView(ModelDetailView):
             t = loader.get_template("bills/bill_detail.html")
         return HttpResponse(t.render(c, request))
 bill = vary_on_headers('X-Requested-With')(BillDetailView.as_view())
-    
+
 class BillListView(ModelListView):
 
     resource_name = 'Bills'
@@ -214,7 +214,7 @@ class VoteListView(ModelListView):
         }
         return HttpResponse(t.render(c, request))
 votes_for_session = VoteListView.as_view()
-        
+
 def vote_pk_redirect(request, vote_id):
     vote = get_object_or_404(VoteQuestion, pk=vote_id)
     return HttpResponsePermanentRedirect(
@@ -284,21 +284,21 @@ class BillListFeed(Feed):
     title = 'Bills in the House of Commons'
     description = 'New bills introduced to the House, from openparliament.ca.'
     link = "/bills/"
-    
+
     def items(self):
         return Bill.objects.filter(introduced__isnull=False).order_by('-introduced', 'number_only')[:25]
-    
+
     def item_title(self, item):
         return "Bill %s (%s)" % (item.number,
             "Private member's" if item.privatemember else "Government")
-    
+
     def item_description(self, item):
         return item.name
-        
+
     def item_link(self, item):
         return item.get_absolute_url()
-        
-    
+
+
 class BillFeed(Feed):
 
     def get_object(self, request, bill_id):

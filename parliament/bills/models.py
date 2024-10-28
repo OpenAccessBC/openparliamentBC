@@ -56,12 +56,12 @@ class BillManager(models.Manager):
             return bill
 
     def recently_active(self, number=12):
-        return Bill.objects.filter(status_date__isnull=False).exclude(models.Q(privatemember=True) 
+        return Bill.objects.filter(status_date__isnull=False).exclude(models.Q(privatemember=True)
             & models.Q(status_code='Introduced')).order_by('-status_date')[:number]
 
 
 @register_search_model
-class Bill(models.Model): 
+class Bill(models.Model):
     CHAMBERS = (
         ('C', 'House'),
         ('S', 'Senate'),
@@ -138,25 +138,25 @@ class Bill(models.Model):
     introduced = models.DateField(blank=True, null=True)
     text_docid = models.IntegerField(blank=True, null=True,
         help_text="The parl.gc.ca document ID of the latest version of the bill's text")
-    
+
     objects = BillManager()
 
     name = language_property('name')
     short_title = language_property('short_title')
-   
+
     class Meta:
         ordering = ('privatemember', 'institution', 'number_only')
-    
+
     def __str__(self):
         return "%s - %s" % (self.number, self.name)
-        
+
     def get_absolute_url(self):
         return self.url_for_session(self.session)
 
     def url_for_session(self, session):
         return reverse('bill', kwargs={
             'session_id': session.id, 'bill_number': self.number})
-        
+
     def get_legisinfo_url(self, lang='en'):
         return LEGISINFO_BILL_URL % {
             'lang': lang,
@@ -164,10 +164,10 @@ class Bill(models.Model):
             'parliament': self.session.parliamentnum,
             'session': self.session.sessnum
         }
-        
+
     legisinfo_url = property(get_legisinfo_url)
-        
-    def get_billtext_url(self, lang='en'): 
+
+    def get_billtext_url(self, lang='en'):
         if not self.text_docid:
             return None
         url = PARLIAMENT_DOCVIEWER_URL % {
@@ -196,7 +196,7 @@ class Bill(models.Model):
     @property
     def latest_date(self):
         return self.status_date if self.status_date else self.introduced
-        
+
     def save(self, *args, **kwargs):
         if not self.number_only:
             self.number_only = int(re.sub(r'\D', '', self.number))
@@ -216,7 +216,7 @@ class Bill(models.Model):
                 date=self.introduced if self.introduced else (self.added - datetime.timedelta(days=1)),
                 variety='billsponsor',
             )
-        
+
     def get_session(self):
         """Returns the most recent session this bill belongs to."""
         try:
@@ -249,7 +249,7 @@ class Bill(models.Model):
                     if s['CommitteeAcronym'] == acronym]
                 session = "%s-%s" % (stage['ParliamentNumber'], stage['SessionNumber'])
                 cmte = Committee.objects.get_by_acronym(acronym, session)
-                return CommitteeMeeting.objects.filter(committee=cmte, 
+                return CommitteeMeeting.objects.filter(committee=cmte,
                     session=session, number__in=numbers)
         return CommitteeMeeting.objects.none()
 
@@ -287,7 +287,7 @@ class Bill(models.Model):
             h2 = Counter(speech_headings).most_common(1)[0][0]
             qs = qs.filter(h2_en=h2)
         return qs
-        
+
     session = property(get_session)
 
     @property
@@ -301,7 +301,7 @@ class Bill(models.Model):
     @property
     def dormant(self):
         return (self.status_date and (datetime.date.today() - self.status_date).days > 150)
-    
+
     def search_dict(self):
         d = {
             'text': self.get_text(),
@@ -323,10 +323,10 @@ class Bill(models.Model):
         if len(d['title']) >= 150:
             d['title'] = self.short_title if self.short_title else (self.name[:140] + '…')
         return d
-    
+
     def search_should_index(self):
         return True # index all bills
-    
+
     @classmethod
     def search_get_qs(cls):
         return Bill.objects.all().prefetch_related(
@@ -457,14 +457,14 @@ class BillText(models.Model):
             return ''
         return mark_safe('<p>' + summary.replace('\n', '<br>') + '</p>')
 
-        
+
 VOTE_RESULT_CHOICES = (
     ('Y', 'Passed'), # Agreed to
     ('N', 'Failed'), # Negatived
     ('T', 'Tie'),
 )
 class VoteQuestion(models.Model):
-    
+
     bill = models.ForeignKey(Bill, blank=True, null=True, on_delete=models.CASCADE)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     number = models.PositiveIntegerField()
@@ -479,10 +479,10 @@ class VoteQuestion(models.Model):
         blank=True, null=True, on_delete=models.SET_NULL)
 
     description = language_property('description')
-    
+
     def __str__(self):
         return "Vote #%s on %s" % (self.number, self.date)
-        
+
     class Meta:
         ordering=('-date', '-number')
 
@@ -515,37 +515,37 @@ class VoteQuestion(models.Model):
     def label_absent_members(self):
         for member in ElectedMember.objects.on_date(self.date).exclude(membervote__votequestion=self):
             MemberVote(votequestion=self, member=member, politician_id=member.politician_id, vote='A').save()
-            
+
     def label_party_votes(self):
         """Create PartyVote objects representing the party-line vote; label individual dissenting votes."""
         membervotes = self.membervote_set.select_related('member', 'member__party').all()
         parties = defaultdict(lambda: defaultdict(int))
-        
+
         for mv in membervotes:
             if mv.member.party.name != 'Independent':
                 parties[mv.member.party][mv.vote] += 1
-        
+
         partyvotes = {}
         for party in parties:
             # Find the most common vote
             votes = sorted(list(parties[party].items()), key=lambda i: i[1])
             partyvotes[party] = votes[-1][0]
-            
+
             # Find how many people voted with the majority
             yn = (parties[party]['Y'], parties[party]['N'])
             try:
                 disagreement = float(min(yn))/sum(yn)
             except ZeroDivisionError:
                 disagreement = 0.0
-                
+
             # If more than 15% of the party voted against the party majority,
             # label this as a free vote.
             if disagreement >= 0.15:
                 partyvotes[party] = 'F'
-            
+
             PartyVote.objects.filter(party=party, votequestion=self).delete()
             PartyVote.objects.create(party=party, votequestion=self, vote=partyvotes[party], disagreement=disagreement)
-        
+
         for mv in membervotes:
             if mv.member.party.name != 'Independent' \
               and mv.vote != partyvotes[mv.member.party] \
@@ -553,7 +553,7 @@ class VoteQuestion(models.Model):
               and partyvotes[mv.member.party] in ('Y', 'N'):
                 mv.dissent = True
                 mv.save()
-            
+
     def get_absolute_url(self):
         return reverse('vote', kwargs={
             'session_id': self.session_id, 'number': self.number})
@@ -565,16 +565,16 @@ VOTE_CHOICES = [
     ('A', "Didn't vote"),
 ]
 class MemberVote(models.Model):
-    
+
     votequestion = models.ForeignKey(VoteQuestion, on_delete=models.CASCADE)
     member = models.ForeignKey(ElectedMember, on_delete=models.CASCADE)
     politician = models.ForeignKey(Politician, on_delete=models.CASCADE)
     vote = models.CharField(max_length=1, choices=VOTE_CHOICES)
     dissent = models.BooleanField(default=False, db_index=True)
-    
+
     def __str__(self):
         return '%s voted %s on %s' % (self.politician, self.get_vote_display(), self.votequestion)
-            
+
     def save_activity(self):
         activity.save_activity(self, politician=self.politician, date=self.votequestion.date)
 
@@ -587,16 +587,16 @@ class MemberVote(models.Model):
             'ballot': self.get_vote_display(),
         }
 
-VOTE_CHOICES_PARTY = VOTE_CHOICES + [('F', "Free vote")]            
+VOTE_CHOICES_PARTY = VOTE_CHOICES + [('F', "Free vote")]
 class PartyVote(models.Model):
-    
+
     votequestion = models.ForeignKey(VoteQuestion, on_delete=models.CASCADE)
     party = models.ForeignKey(Party, on_delete=models.CASCADE)
     vote = models.CharField(max_length=1, choices=VOTE_CHOICES_PARTY)
     disagreement = models.FloatField(null=True)
-    
+
     class Meta:
         unique_together = ('votequestion', 'party')
-    
+
     def __str__(self):
         return '%s voted %s on %s' % (self.party, self.get_vote_display(), self.votequestion)

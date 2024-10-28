@@ -33,12 +33,12 @@ from parliament.imports.hans_old import current, old
 def qp(id):
     """Utility quick-parse function. Takes a Hansard ID"""
     return parseAndSave(Document.objects.get(pk=id))
-    
+
 def soup(id):
     cache = loadHansard(Hansard.objects.get(pk=id))
     parser = _getParser(cache.hansard, cache.getHTML())
     return parser.soup
-    
+
 def _getParser(hansard, html):
     if hansard.session.start.year < 2006:
         return old.HansardParser1994(hansard, html)
@@ -53,7 +53,7 @@ def parseAndSave(arg, auto_reparse=None):
         cache = arg
     else:
         raise Exception("Invalid argument to parseAndSave")
-        
+
     if Statement.objects.filter(hansard=cache.hansard).count() > 0:
         if not auto_reparse:
             print "There are already Statements for %s." % cache.hansard
@@ -63,9 +63,9 @@ def parseAndSave(arg, auto_reparse=None):
                 return False
         for statement in Statement.objects.filter(hansard=cache.hansard):
             statement.delete()
-    
+
     parser = _getParser(cache.hansard, cache.getHTML())
-    
+
     statements = parser.parse()
     for statement in statements:
         #try:
@@ -73,7 +73,7 @@ def parseAndSave(arg, auto_reparse=None):
         statement.save_relationships()
         #except Exception, e:
         #    print "Error saving statement: %s %s" % (statement.sequence, statement.who)
-        #    raise e 
+        #    raise e
     return True
 
 def _getHansardNumber(page):
@@ -87,7 +87,7 @@ def _getHansardNumber(page):
             return re.sub('^0+', '', match.group(1))
         else:
             raise Exception("Couldn't parse number from Hansard title: %s" % title)
-            
+
 def hansards_from_calendar(session=None):
     if not session:
         session = Session.objects.current()
@@ -108,8 +108,8 @@ def hansards_from_calendar(session=None):
         try:
             loadHansard(url=hurl, session=session)
         except Exception, e:
-            print "Failure on %s: %s" % (hurl, e)            
-            
+            print "Failure on %s: %s" % (hurl, e)
+
 def loadHansard(hansard=None, url=None, session=None):
     if hansard:
         try:
