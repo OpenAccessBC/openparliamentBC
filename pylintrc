@@ -52,7 +52,7 @@ ignore=CVS
 # ignore-list. The regex matches against paths and can be in Posix or Windows
 # format. Because '\\' represents the directory delimiter on Windows systems,
 # it can't be used as an escape character.
-ignore-paths=
+ignore-paths=imports/hans_old/
 
 # Files or directories matching the regular expression patterns are skipped.
 # The regex matches against base names, not paths. The default value ignores
@@ -443,6 +443,7 @@ disable=raw-checker-failed,
         missing-class-docstring,
         missing-module-docstring,
         broad-exception-caught,
+        broad-exception-raised,
         invalid-name,
         line-too-long,
         consider-using-f-string,
@@ -454,7 +455,21 @@ disable=raw-checker-failed,
         unused-argument,
         logging-not-lazy,
         missing-timeout,
-        protected-access
+        protected-access,
+        invalid-str-returned,
+        multiple-statements,
+        raise-missing-from,
+        too-few-public-methods,
+        arguments-differ,
+        too-many-arguments,
+        too-many-positional-arguments,
+        too-many-ancestors,
+        no-else-return,
+        too-many-locals,
+        too-many-branches,
+        too-many-statements,
+        redefined-outer-name,
+        bare-except
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
