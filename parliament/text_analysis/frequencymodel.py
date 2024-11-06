@@ -1,10 +1,10 @@
 #coding: utf-8
 
+import itertools
+import re
 from collections import defaultdict
 from heapq import nlargest
-import itertools
 from operator import itemgetter
-import re
 
 STOPWORDS = frozenset(["i", "me", "my", "myself", "we", "our", "ours", "ourselves",
     "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself",

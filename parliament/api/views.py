@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from parliament.hansards.models import Document
 from parliament.utils.views import JSONView
 
+
 class LegacyAPIHansardListView(JSONView):
 
     wrap = False

@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from parliament.core.models import Politician
 
+
 class SmokeTests(TestCase):
 
     fixtures = ['parties', 'ridings', 'sessions', 'politicians']

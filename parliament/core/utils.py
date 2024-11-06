@@ -1,18 +1,19 @@
 import json
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
+import logging
+import string
+import urllib.error
+import urllib.parse
+import urllib.request
 from functools import wraps
-
-from django.db import models
-from django.conf import settings
-from django.contrib import staticfiles
-from django.urls import reverse
-from django.http import HttpResponsePermanentRedirect
 
 from compressor.filters import CompilerFilter
 from compressor.storage import CompressorFileStorage
+from django.conf import settings
+from django.contrib import staticfiles
+from django.db import models
+from django.http import HttpResponsePermanentRedirect
+from django.urls import reverse
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -72,7 +73,7 @@ def get_twitter_share_url(url, description, add_plug=True):
     return 'http://twitter.com/home?' + urllib.parse.urlencode({'status': message})
 
 #http://stackoverflow.com/questions/561486/how-to-convert-an-integer-to-the-shortest-url-safe-string-in-python
-import string
+
 ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
            string.digits + '-_'
 ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))

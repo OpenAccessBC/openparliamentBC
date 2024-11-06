@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from parliament.accounts.models import User, LoginToken
+from parliament.accounts.models import LoginToken, User
+
 
 class UserAdmin(admin.ModelAdmin):
 

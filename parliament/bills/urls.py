@@ -1,8 +1,7 @@
-from django.urls import re_path
-from django.urls import reverse
 from django.http import HttpResponsePermanentRedirect
+from django.urls import re_path, reverse
 
-from parliament.bills.views import BillFeed, BillListFeed, bill, bills_for_session, index, bill_pk_redirect
+from parliament.bills.views import BillFeed, BillListFeed, bill, bill_pk_redirect, bills_for_session, index
 
 urlpatterns = [
     re_path(r'^(?P<session_id>\d+-\d)/(?P<bill_number>[CS]-[0-9A-Z]+)/$', bill, name='bill'),

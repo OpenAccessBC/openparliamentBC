@@ -1,17 +1,16 @@
-import email
 import datetime
+import email
+import logging
 import time
 
+import requests
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-
-import requests
 from requests_oauthlib import OAuth1
 
-from parliament.core.models import Politician
 from parliament.activity import utils as activity
+from parliament.core.models import Politician
 
-import logging
 logger = logging.getLogger(__name__)
 
 def save_tweets():

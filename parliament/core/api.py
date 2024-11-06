@@ -3,12 +3,11 @@ import re
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import HttpResponse, Http404, HttpResponseBadRequest
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.middleware.cache import FetchFromCacheMiddleware as DjangoFetchFromCacheMiddleware
 from django.shortcuts import render
 from django.utils.html import escape
 from django.views.generic import View
-
 from webob.acceptparse import MIMEAccept
 
 

@@ -1,8 +1,8 @@
-import traceback
 import sys
+import traceback
 
-from django.core.management.base import BaseCommand
 from django.core.mail import mail_admins
+from django.core.management.base import BaseCommand
 
 try:
     from pudb import post_mortem
@@ -10,6 +10,7 @@ except ImportError:
     from pdb import post_mortem
 
 from parliament import jobs
+
 
 class Command(BaseCommand):
     help = "Runs a job, which is a no-arguments function in the project's jobs.py"

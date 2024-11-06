@@ -1,5 +1,6 @@
 # A hack used to coax django-compressor to properly generate bundles
-from .default_settings import *
+# pylint: disable-next=wildcard-import,unused-wildcard-import
+from .default_settings import * # noqa: F401,F403
 
 DEBUG = False
 COMPRESS_ENABLED = True

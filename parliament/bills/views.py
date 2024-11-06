@@ -2,20 +2,21 @@ import datetime
 from urllib.parse import urlencode
 
 from django.contrib.syndication.views import Feed
-from django.urls import reverse
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
+from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.template.defaultfilters import date as format_date
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.decorators.vary import vary_on_headers
 
-from parliament.bills.models import Bill, VoteQuestion, MemberVote, BillInSession
-from parliament.core.api import ModelListView, ModelDetailView, APIFilters
+from parliament.bills.models import Bill, BillInSession, MemberVote, VoteQuestion
+from parliament.core.api import APIFilters, ModelDetailView, ModelListView
 from parliament.core.models import Session
 from parliament.core.utils import is_ajax
-from parliament.hansards.models import Statement, Document
+from parliament.hansards.models import Statement
+
 
 def bill_pk_redirect(request, bill_id):
     bill = get_object_or_404(Bill, pk=bill_id)

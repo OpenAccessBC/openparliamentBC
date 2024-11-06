@@ -1,5 +1,6 @@
 from parliament.text_analysis.corpora import load_background_model
-from parliament.text_analysis.frequencymodel import FrequencyModel, STOPWORDS
+from parliament.text_analysis.frequencymodel import STOPWORDS, FrequencyModel
+
 
 def analyze_statements(statements, corpus_name):
     results = []

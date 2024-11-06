@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from parliament.search.models import *
+from parliament.search.models import IndexingTask
+
 
 class IndexingTaskAdmin(admin.ModelAdmin):
 

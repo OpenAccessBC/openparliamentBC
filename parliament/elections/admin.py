@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from parliament.elections.models import *
+from parliament.elections.models import Candidacy, Election
+
 
 class CandidacyOptions (admin.ModelAdmin):
 

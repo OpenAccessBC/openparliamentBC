@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from parliament.alerts.models import *
+from parliament.alerts.models import PoliticianAlert, SeenItem, Subscription, Topic
+
 
 class PoliticianAlertAdmin(admin.ModelAdmin):
 

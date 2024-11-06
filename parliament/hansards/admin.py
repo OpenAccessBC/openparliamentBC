@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from parliament.hansards.models import *
+from parliament.hansards.models import Document, Statement
+
 
 class DocumentOptions(admin.ModelAdmin):
     list_display=('number', 'date', 'session', 'document_type', 'committeemeeting')

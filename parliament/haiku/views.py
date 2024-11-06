@@ -1,13 +1,14 @@
 import json
 
-from django.template import loader
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.template import loader
 from django.views.decorators.cache import never_cache
 
 from parliament.core.utils import is_ajax
 
 from .models import Haiku
+
 
 @never_cache
 def haiku(request, haiku_id=None):

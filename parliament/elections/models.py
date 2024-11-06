@@ -1,11 +1,11 @@
-from decimal import Decimal
+import logging
 from collections import defaultdict
+from decimal import Decimal
 
 from django.db import models
 
-from parliament.core.models import Politician, Riding, Party, ElectedMember
+from parliament.core.models import ElectedMember, Party, Politician, Riding
 
-import logging
 logger = logging.getLogger(__name__)
 
 class Election (models.Model):

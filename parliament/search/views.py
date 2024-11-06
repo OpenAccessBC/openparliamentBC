@@ -2,21 +2,22 @@
 
 import logging
 import re
-import urllib.request, urllib.parse, urllib.error
+import urllib.error
+import urllib.parse
+import urllib.request
 from urllib.parse import urljoin
 
+import requests
 from django.conf import settings
 from django.contrib.syndication.views import Feed
-from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.utils.safestring import mark_safe
 from django.views.decorators.vary import vary_on_headers
 
-import requests
-
-from parliament.core.models import Politician, Session, ElectedMember, Riding, InternalXref
-from parliament.core.views import closed, flatpage_response
+from parliament.core.models import ElectedMember, InternalXref, Politician, Riding, Session
 from parliament.core.utils import is_ajax
+from parliament.core.views import closed, flatpage_response
 from parliament.search.solr import SearchQuery
 from parliament.search.utils import SearchPaginator
 from parliament.utils.views import adaptive_redirect

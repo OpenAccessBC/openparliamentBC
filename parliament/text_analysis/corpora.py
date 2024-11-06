@@ -1,11 +1,12 @@
 import datetime
 import os.path
-import pickle as pickle
+import pickle
 import re
 
 from django.conf import settings
 
 from parliament.text_analysis.frequencymodel import FrequencyModel
+
 
 def _get_background_model_path(corpus_name, n):
     # Sanitize corpus_name, since it might be user input
@@ -37,9 +38,9 @@ def generate_for_old_debates():
         generate_background_models('debates-%d' % year, qs)
 
 def generate_for_committees():
-    from parliament.hansards.models import Statement
     from parliament.committees.models import Committee, CommitteeMeeting
     from parliament.core.models import Session
+    from parliament.hansards.models import Statement
     for committee in Committee.objects.filter(sessions=Session.objects.current()):
         since = datetime.date.today() - datetime.timedelta(days=365 * 3)
         document_ids = CommitteeMeeting.objects.filter(committee=committee, date__gte=since).values_list(

@@ -4,15 +4,13 @@ import re
 import time
 from urllib.parse import urljoin
 
+import lxml.etree
+import lxml.html
+import requests
 from django.db import transaction
 
-import lxml.html
-import lxml.etree
-import requests
-
-from parliament.committees.models import (Committee, CommitteeMeeting,
-    CommitteeActivity, CommitteeActivityInSession,
-    CommitteeInSession)
+from parliament.committees.models import (Committee, CommitteeActivity, CommitteeActivityInSession, CommitteeInSession,
+                                          CommitteeMeeting)
 from parliament.core.models import Session
 from parliament.hansards.models import Document
 

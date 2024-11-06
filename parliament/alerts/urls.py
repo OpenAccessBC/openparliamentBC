@@ -1,7 +1,7 @@
 from django.urls import re_path
 
-from parliament.alerts.views import (politician_hansard_signup, unsubscribe,
-    alerts_list, create_alert, modify_alert, politician_hansard_subscribe)
+from parliament.alerts.views import (alerts_list, create_alert, modify_alert, politician_hansard_signup,
+                                     politician_hansard_subscribe, unsubscribe)
 
 urlpatterns = [
     re_path(r'^pol_hansard_signup/$', politician_hansard_signup, name='alerts_pol_signup'),

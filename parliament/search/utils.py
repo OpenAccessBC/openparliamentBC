@@ -1,9 +1,6 @@
-from collections import namedtuple
 import math
 import re
-import urllib.request, urllib.parse, urllib.error
-
-from django.utils.safestring import mark_safe
+from collections import namedtuple
 
 _FakePaginator = namedtuple('FakePaginator', 'num_pages count')
 

@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.template import defaultfilters
 
-from parliament.hansards.models import Statement
 
 def validate_first_line(line):
     if not re.search(r'^[A-Z]', line):

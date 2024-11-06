@@ -11,6 +11,7 @@ from django.utils.safestring import mark_safe
 
 from parliament.text_analysis.analyze import analyze_statements
 
+
 class TextAnalysisManager(models.Manager):
 
     def get_or_create_from_statements(self, key, qs, corpus_name,

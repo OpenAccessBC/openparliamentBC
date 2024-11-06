@@ -5,25 +5,23 @@ These transcripts are either House Hansards, or House committee evidence.
 Most of the heavily-lifting code has been put in a separate module
 called alpheus.
 """
-from difflib import SequenceMatcher
+import logging
 import re
 import sys
-import urllib.request, urllib.error, urllib.parse
+from difflib import SequenceMatcher
 from xml.sax.saxutils import quoteattr
 
-from django.urls import reverse
-from django.db import transaction
-from django.db.models import Max
-
-from .alpheus import parse_string as alpheus_parse_string
-from lxml import etree
 import requests
+from django.db import transaction
+from django.urls import reverse
+from lxml import etree
 
 from parliament.bills.models import Bill, BillInSession, VoteQuestion
-from parliament.core.models import Politician, ElectedMember, Session
-from parliament.hansards.models import Statement, Document, OldSequenceMapping
+from parliament.core.models import ElectedMember, Politician, Session
+from parliament.hansards.models import Document, OldSequenceMapping, Statement
 
-import logging
+from .alpheus import parse_string as alpheus_parse_string
+
 logger = logging.getLogger(__name__)
 
 @transaction.atomic

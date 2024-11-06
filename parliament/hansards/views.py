@@ -1,20 +1,21 @@
 import datetime
 from urllib.parse import urlencode
 
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.urls import reverse
-from django.http import HttpResponse, Http404, HttpResponsePermanentRedirect, HttpResponseRedirect
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
+from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
-from django.views.generic.dates import (ArchiveIndexView, YearArchiveView, MonthArchiveView)
+from django.urls import reverse
 from django.views.decorators.vary import vary_on_headers
+from django.views.generic.dates import ArchiveIndexView, MonthArchiveView, YearArchiveView
 
 from parliament.committees.models import CommitteeMeeting
-from parliament.core.api import ModelDetailView, ModelListView, APIFilters, BadRequest
+from parliament.core.api import APIFilters, BadRequest, ModelDetailView, ModelListView
 from parliament.core.utils import is_ajax
 from parliament.hansards.models import Document, Statement
 from parliament.text_analysis.models import TextAnalysis
 from parliament.text_analysis.views import TextAnalysisView
+
 
 def _get_hansard(year, month, day):
     try:

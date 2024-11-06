@@ -1,7 +1,9 @@
 from django.contrib.sitemaps import Sitemap
+
+from parliament.bills.models import Bill, VoteQuestion
 from parliament.core.models import Politician
 from parliament.hansards.models import Document
-from parliament.bills.models import Bill, VoteQuestion
+
 
 class PoliticianSitemap(Sitemap):
 

@@ -9,8 +9,9 @@ from django.urls import reverse
 from parliament.core.models import Session
 from parliament.core.parsetools import slugify
 from parliament.core.templatetags.ours import english_list
-from parliament.core.utils import memoize_property, language_property
+from parliament.core.utils import language_property, memoize_property
 from parliament.hansards.models import Document
+
 
 class CommitteeManager(models.Manager):
 

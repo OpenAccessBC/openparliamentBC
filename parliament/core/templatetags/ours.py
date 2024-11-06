@@ -1,4 +1,5 @@
-import datetime, re, types
+import datetime
+import re
 
 from django import template
 

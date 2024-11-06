@@ -1,12 +1,8 @@
-import re
 from urllib.parse import urljoin
 
-import lxml.html
 import lxml.etree
-from lxml.html.clean import clean
+import lxml.html
 import requests
-
-from parliament.imports import CannotScrapeException
 
 
 def get_bill_text_xml(bill_or_url):

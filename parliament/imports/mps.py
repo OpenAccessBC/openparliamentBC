@@ -1,15 +1,15 @@
 # coding: utf-8
 
+import hashlib
 import logging
 from time import sleep
-import hashlib
 from urllib.parse import urljoin
-from django.db import transaction
 
 import lxml.html
 import requests
+from django.db import transaction
 
-from parliament.core.models import Politician, Session, Riding, Party
+from parliament.core.models import Party, Politician, Riding, Session
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,10 @@
-from django import http
-from django.shortcuts import render
-from django.conf import settings
+import datetime
+import re
 
-import datetime, re
+from django import http
+from django.conf import settings
+from django.shortcuts import render
+
 
 def memcached_status(request):
 

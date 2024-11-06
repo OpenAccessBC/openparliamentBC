@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import migrations, models
 import datetime
+
+from django.db import migrations, models
+
 import parliament.accounts.models
 
 

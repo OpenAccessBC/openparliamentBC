@@ -1,9 +1,9 @@
 from django.conf import settings
-
 from oauth2client import client, crypt
 
 from parliament.accounts.models import User
 from parliament.utils.views import JSONView
+
 
 def google_info_from_token(token):
     idinfo = client.verify_id_token(token, settings.GOOGLE_CLIENT_ID)

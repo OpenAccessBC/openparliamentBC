@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from parliament.hansards.models import Document, OldSequenceMapping
 
+
 def hansard_redirect(request, hansard_id=None, hansard_date=None, sequence=None, only=False):
     if not (hansard_id or hansard_date):
         raise Http404

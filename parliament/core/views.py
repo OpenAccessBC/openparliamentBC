@@ -2,16 +2,17 @@ import datetime
 
 from django.conf import settings
 from django.contrib.syndication.views import Feed
-from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.http import HttpResponse
 from django.template import loader
 from django.utils.html import conditional_escape
 from django.views.decorators.cache import never_cache
 
-from parliament.core.models import Session, SiteNews
 from parliament.bills.models import VoteQuestion
-from parliament.hansards.models import Document
+from parliament.core.models import Session, SiteNews
 from parliament.core.templatetags.markup import markdown
+from parliament.hansards.models import Document
 from parliament.text_analysis.models import TextAnalysis
+
 
 def home(request):
     t = loader.get_template("home.html")

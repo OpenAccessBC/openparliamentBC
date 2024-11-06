@@ -1,9 +1,8 @@
 import haikufinder
-
 from django.core.exceptions import ValidationError
 
-from parliament.hansards.models import Statement
 from .models import Haiku
+
 
 def gen_haiku(qs):
     for statement in qs:

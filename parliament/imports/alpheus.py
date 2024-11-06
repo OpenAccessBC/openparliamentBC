@@ -1,16 +1,16 @@
 #coding: utf-8
 
-from html import escape as stdlib_escape
 import datetime
-from functools import wraps
+import logging
+import optparse
 import re
 import sys
+from functools import wraps
+from html import escape as stdlib_escape
 from xml.sax.saxutils import quoteattr
 
 from lxml import etree
-import lxml.html
 
-import logging
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 
@@ -695,7 +695,9 @@ def parse_string(s: str):
     return parse_tree(etree.fromstring(s))
 
 def fetch_and_parse(doc_id, lang):
-    import urllib.request, urllib.error, urllib.parse
+    import urllib.error
+    import urllib.parse
+    import urllib.request
     if doc_id == 'hansard':
         url = 'http://parl.gc.ca/HousePublications/Publication.aspx?Pub=%s&Language=%s&Mode=1&xml=true' % (
             doc_id, lang[0].upper())
@@ -713,7 +715,6 @@ def fetch_and_parse(doc_id, lang):
     return doc
 
 def main():
-    import optparse
     optparser = optparse.OptionParser(description="Transforms Hansard XML from the Canadian House of Commons into "
         "an easy-to-process HTML format. If no options are specified, reads XML from stdin.")
     optparser.add_option("-f", "--file", dest="filename",

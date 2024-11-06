@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from parliament.bills.models import *
+from parliament.bills.models import Bill, BillEvent, BillInSession, BillText, MemberVote, PartyVote, VoteQuestion
+
 
 class BillOptions(admin.ModelAdmin):
     search_fields = ['number']

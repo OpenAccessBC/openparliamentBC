@@ -1,13 +1,11 @@
 from decimal import Decimal
-import re
-import urllib.request, urllib.error, urllib.parse
 
-from django.db import transaction
 import requests
+from django.db import transaction
 
-from parliament.core import parsetools
-from parliament.core.models import Riding, Party, Politician, ElectedMember
+from parliament.core.models import Party, Riding
 from parliament.elections.models import Candidacy
+
 
 @transaction.atomic
 def import_ec_results(election, url="http://enr.elections.ca/DownloadResults.aspx",

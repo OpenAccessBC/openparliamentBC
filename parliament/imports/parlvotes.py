@@ -1,15 +1,13 @@
 import datetime
-
-from lxml import etree
-import requests
-
-from django.db import transaction
-
-from parliament.bills.models import Bill, VoteQuestion, MemberVote
-from parliament.core.models import ElectedMember, Politician, Riding, Session
-from parliament.core import parsetools
-
 import logging
+
+import requests
+from django.db import transaction
+from lxml import etree
+
+from parliament.bills.models import Bill, MemberVote, VoteQuestion
+from parliament.core.models import ElectedMember, Politician, Session
+
 logger = logging.getLogger(__name__)
 
 VOTELIST_URL = 'https://www.ourcommons.ca/members/{lang}/votes/xml'

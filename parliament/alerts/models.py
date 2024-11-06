@@ -1,21 +1,21 @@
 import base64
 import datetime
 import hashlib
+import logging
 import re
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.signing import Signer
-from django.urls import reverse
 from django.db import models
 from django.template import loader
+from django.urls import reverse
 
 from parliament.core.models import Politician
 from parliament.core.templatetags.ours import english_list
 from parliament.core.utils import ActiveManager
 from parliament.search.solr import SearchQuery
 
-import logging
 logger = logging.getLogger(__name__)
 
 

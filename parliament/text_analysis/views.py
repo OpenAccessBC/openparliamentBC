@@ -1,8 +1,9 @@
 from django.conf import settings
-from django.http import HttpResponse, Http404
+from django.http import Http404, HttpResponse
 from django.views.generic import View
 
 from parliament.text_analysis.models import TextAnalysis
+
 
 class TextAnalysisView(View):
     """Returns JSON text analysis data. Subclasses must define get_qs."""

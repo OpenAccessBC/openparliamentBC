@@ -1,11 +1,11 @@
-from base64 import urlsafe_b64encode
 import datetime
 import os
+from base64 import urlsafe_b64encode
 
-from django.urls import reverse
 from django.core.mail import send_mail
 from django.db import models
 from django.template import loader
+from django.urls import reverse
 
 
 class User(models.Model):

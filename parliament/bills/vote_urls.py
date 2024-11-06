@@ -1,6 +1,6 @@
 from django.urls import re_path
 
-from parliament.bills.views import votes_for_session, vote_pk_redirect, ballots, vote
+from parliament.bills.views import ballots, vote, vote_pk_redirect, votes_for_session
 
 urlpatterns = [
     re_path(r'^$', votes_for_session, name='votes'),

@@ -1,24 +1,24 @@
 #coding: utf-8
 
-from collections import defaultdict, OrderedDict
 import datetime
+import logging
 import os
 import re
+from collections import OrderedDict, defaultdict
 
-from django.db import models
 from django.conf import settings
-from django.urls import reverse
+from django.db import models
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 
-from parliament.core.models import Session, ElectedMember, Politician
-from parliament.core import parsetools
-from parliament.core.utils import memoize_property, language_property
 from parliament.activity import utils as activity
+from parliament.core import parsetools
+from parliament.core.models import ElectedMember, Politician, Session
+from parliament.core.utils import language_property, memoize_property
 from parliament.search.index import register_search_model
 
-import logging
 logger = logging.getLogger(__name__)
 
 class DebateManager(models.Manager):

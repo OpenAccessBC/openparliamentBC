@@ -1,6 +1,9 @@
 from django.urls import re_path
 
-from parliament.committees.views import *
+from parliament.committees.views import (CommitteeAnalysisView, CommitteeMeetingListView, committee, committee_activity,
+                                         committee_id_redirect, committee_list, committee_meeting,
+                                         committee_meeting_statement, committee_year_archive, evidence_analysis,
+                                         evidence_permalink)
 
 urlpatterns = [
     re_path(r'^$', committee_list, name='committee_list'),

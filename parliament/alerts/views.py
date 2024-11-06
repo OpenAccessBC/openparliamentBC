@@ -2,18 +2,17 @@ import datetime
 import json
 import re
 
-from django.template import loader
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import get_object_or_404, render
 from django import forms
 from django.conf import settings
 from django.contrib import messages
-from django.urls import reverse
 from django.core.exceptions import PermissionDenied
-from django.core.mail import send_mail, mail_admins
-from django.core.signing import Signer, TimestampSigner, BadSignature
+from django.core.mail import mail_admins, send_mail
+from django.core.signing import BadSignature, Signer, TimestampSigner
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.template import loader
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
-
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Invisible
 
@@ -22,6 +21,7 @@ from parliament.alerts.models import Subscription
 from parliament.core.models import Politician
 from parliament.core.views import disable_on_readonly_db
 from parliament.utils.views import JSONView
+
 
 class PoliticianAlertForm(forms.Form):
 

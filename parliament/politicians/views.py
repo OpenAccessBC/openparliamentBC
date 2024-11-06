@@ -5,20 +5,20 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.syndication.views import Feed
-from django.urls import reverse
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.http import HttpResponse, Http404, HttpResponsePermanentRedirect
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
+from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
+from django.urls import reverse
 from django.views.decorators.vary import vary_on_headers
 
-from parliament.activity.models import Activity
 from parliament.activity import utils as activity
-from parliament.core.api import ModelListView, ModelDetailView, APIFilters
-from parliament.core.models import Politician, ElectedMember
+from parliament.activity.models import Activity
+from parliament.core.api import APIFilters, ModelDetailView, ModelListView
+from parliament.core.models import ElectedMember, Politician
 from parliament.core.utils import feed_wrapper, is_ajax
-from parliament.hansards.models import Statement, Document
+from parliament.hansards.models import Document, Statement
 from parliament.text_analysis.models import TextAnalysis
 from parliament.text_analysis.views import TextAnalysisView
 from parliament.utils.views import JSONView

@@ -1,7 +1,7 @@
 from django.urls import re_path
 
 from parliament.accounts.google import GoogleLoginEndpointView
-from parliament.accounts.views import current_account, token_login, create_token, logout
+from parliament.accounts.views import create_token, current_account, logout, token_login
 from parliament.core.views import disable_on_readonly_db
 
 urlpatterns = [

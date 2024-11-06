@@ -1,14 +1,13 @@
-import feedparser
 import datetime
 import hashlib
+import logging
 
-from django.utils.http import urlquote
+import feedparser
 from BeautifulSoup import BeautifulSoup
 from django.utils.html import strip_tags
+from django.utils.http import urlquote
 
 from parliament.activity import utils as activity
-
-import logging
 
 logger = logging.getLogger(__name__)
 

@@ -2,18 +2,24 @@
 
 Production code should NOT import from this file."""
 
-import sys, re, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, os, csv
-from collections import defaultdict
+import csv
+import os
+import re
+import sys
+import urllib.error
 import urllib.parse
+import urllib.request
+from collections import defaultdict
 
-from django.db import transaction, models
-from django.db.models import Count
-from django.core.files import File
 from django.conf import settings
+from django.core.files import File
+from django.db import models, transaction
+from django.db.models import Count
 
-from parliament.core.models import *
+from parliament.core.models import ElectedMember, Politician, PoliticianInfo, Session
+from parliament.elections.models import Candidacy, Election
 from parliament.hansards.models import Statement
-from parliament.elections.models import Election, Candidacy
+
 
 def load_pol_pic(pol):
     print("#%d: %s" % (pol.id, pol))
@@ -349,7 +355,6 @@ def wikipedia_from_freebase():
 
 def freebase_id_from_parl_id():
     import freebase
-    import time
     for info in PoliticianInfo.sr_objects.filter(schema='parl_id').order_by('value'):
         if PoliticianInfo.objects.filter(politician=info.politician, schema='freebase_id').exists():
             continue
@@ -363,7 +368,6 @@ def freebase_id_from_parl_id():
         }
         result = freebase.mqlread(query)
         print("result: %s" % result)
-        #time.sleep(1)
         if not result:
             try:
                 print("Nothing for %s (%s)" % (info.value, info.politician))

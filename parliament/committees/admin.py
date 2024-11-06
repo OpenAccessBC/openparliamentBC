@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from parliament.committees.models import *
+from parliament.committees.models import (Committee, CommitteeActivity, CommitteeInSession, CommitteeMeeting,
+                                          CommitteeReport)
+
 
 class CommitteeAdmin(admin.ModelAdmin):
     list_display = ('short_name', 'slug', 'latest_session', 'display')

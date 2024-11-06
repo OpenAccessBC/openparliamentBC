@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from parliament.core.models import *
+from parliament.core.models import (ElectedMember, InternalXref, Party, Politician, PoliticianInfo, Riding, Session,
+                                    SiteNews, models)
+
 
 class PoliticianInfoInline(admin.TabularInline):
     model = PoliticianInfo

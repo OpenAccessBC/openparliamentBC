@@ -1,9 +1,10 @@
-from django.template import loader
+import logging
+
 from django.core.mail import send_mail
+from django.template import loader
 
 from parliament.alerts.models import PoliticianAlert
 
-import logging
 logger = logging.getLogger(__name__)
 
 

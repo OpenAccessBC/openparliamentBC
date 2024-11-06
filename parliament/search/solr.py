@@ -1,14 +1,13 @@
 """Search tools that interface with Solr."""
 
-from calendar import monthrange
 import datetime
 import re
+from calendar import monthrange
 
+import pysolr
 from django.conf import settings
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-
-import pysolr
 
 from parliament.core.utils import memoize_property
 from parliament.search.utils import BaseSearchQuery

@@ -1,29 +1,27 @@
 # coding: utf-8
 
 import datetime
+import logging
 import re
-from urllib.parse import urljoin
 from io import BytesIO
-
-from django.conf import settings
-from django.core.cache import cache
-from django.core.files.base import ContentFile
-from django.urls import reverse
-from django.db import models
-from django.template.defaultfilters import slugify
-from django.utils.safestring import mark_safe
+from urllib.parse import urljoin
 
 import lxml.etree
 import lxml.html
-from markdown import markdown
 import requests
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.db import models
+from django.template.defaultfilters import slugify
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+from markdown import markdown
 from PIL import Image, ImageOps
 
 from parliament.core import parsetools
-from parliament.core.utils import memoize_property, ActiveManager, language_property
+from parliament.core.utils import ActiveManager, language_property, memoize_property
 from parliament.search.index import register_search_model
 
-import logging
 logger = logging.getLogger(__name__)
 
 #POL_AFFIL_ID_LOOKUP_URL = 'https://www.ourcommons.ca/Parliamentarians/en/members/profileredirect?affiliationId=%s'

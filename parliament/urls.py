@@ -1,13 +1,13 @@
-from django.urls import include, path, re_path
-from django.conf.urls.static import static
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap as sitemap_view
+from django.urls import include, path, re_path
 
 from parliament.core.api import docs as api_docs
 from parliament.core.api import no_robots
 from parliament.core.sitemap import sitemaps
-from parliament.core.views import SiteNewsFeed, home, closed
+from parliament.core.views import SiteNewsFeed, closed, home
 from parliament.hansards.views import document_redirect, speeches
 
 urlpatterns = [

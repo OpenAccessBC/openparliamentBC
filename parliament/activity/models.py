@@ -3,6 +3,7 @@ from django.db import models
 from parliament.core.models import Politician
 from parliament.core.utils import ActiveManager
 
+
 class Activity(models.Model):
 
     date = models.DateField(db_index=True)

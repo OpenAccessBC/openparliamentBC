@@ -1,21 +1,21 @@
 import datetime
-from collections import Counter, defaultdict
 import json
+import logging
 import re
+from collections import Counter, defaultdict
 
 from django.conf import settings
-from django.urls import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+from parliament.activity import utils as activity
 from parliament.committees.models import Committee, CommitteeMeeting
-from parliament.core.models import Session, ElectedMember, Politician, Party
+from parliament.core.models import ElectedMember, Party, Politician, Session
 from parliament.core.utils import language_property, memoize_property
 from parliament.hansards.models import Document, Statement
-from parliament.activity import utils as activity
 from parliament.search.index import register_search_model
 
-import logging
 logger = logging.getLogger(__name__)
 
 LEGISINFO_BILL_URL = 'https://www.parl.ca/legisinfo/%(lang)s/bill/%(parliament)s-%(session)s/%(bill)s'

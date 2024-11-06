@@ -1,5 +1,8 @@
 from django.urls import re_path
-from parliament.politicians.views import *
+
+from parliament.politicians.views import (PoliticianActivityFeed, PoliticianMembershipListView,
+                                          PoliticianMembershipView, analysis, contact, current_mps, former_mps,
+                                          hide_activity, politician, politician_autocomplete, politician_statement_feed)
 
 urlpatterns = [
     re_path(r'^(?P<pol_id>\d+)/rss/statements/$', politician_statement_feed, name="politician_statement_feed"),

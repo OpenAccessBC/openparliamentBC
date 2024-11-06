@@ -6,6 +6,7 @@ from django.template import loader
 
 from parliament.activity.models import Activity
 
+
 def save_activity(obj, politician, date, guid=None, variety=None):
     if not getattr(settings, 'PARLIAMENT_SAVE_ACTIVITIES', True):
         return

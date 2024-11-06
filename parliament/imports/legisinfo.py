@@ -1,20 +1,16 @@
 import datetime
 import json
+import logging
 import re
 
-from django.core.exceptions import ObjectDoesNotExist
+import requests
 from django.db import transaction
 
-import requests
-
-from parliament.bills.models import Bill, BillInSession, BillText, BillEvent, LEGISINFO_BILL_ID_URL
-from parliament.committees.models import Committee, CommitteeMeeting
-from parliament.core.models import Session, Politician, ElectedMember
-from parliament.hansards.models import Document
+from parliament.bills.models import LEGISINFO_BILL_ID_URL, Bill, BillInSession, BillText
+from parliament.core.models import ElectedMember, Politician, Session
 from parliament.imports import CannotScrapeException
 from parliament.imports.billtext import get_plain_bill_text
 
-import logging
 logger = logging.getLogger(__name__)
 
 LEGISINFO_DETAIL_URL = 'https://www.parl.ca/LegisInfo/en/bill/%(parlnum)s-%(sessnum)s/%(billnumber)s/json'

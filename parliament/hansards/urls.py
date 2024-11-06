@@ -1,7 +1,7 @@
-from django.urls import re_path, include
+from django.urls import include, re_path
 
-from parliament.hansards.views import (index, by_year, by_month, hansard,
-    hansard_analysis, hansard_statement, debate_permalink, document_cache)
+from parliament.hansards.views import (by_month, by_year, debate_permalink, document_cache, hansard, hansard_analysis,
+                                       hansard_statement, index)
 
 urlpatterns = [
     re_path(r'^$', index, name='debates'),
