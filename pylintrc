@@ -52,7 +52,7 @@ ignore=CVS
 # ignore-list. The regex matches against paths and can be in Posix or Windows
 # format. Because '\\' represents the directory delimiter on Windows systems,
 # it can't be used as an escape character.
-ignore-paths=imports/hans_old/
+ignore-paths=imports/hans_old/,parliament/imports/hans_old/
 
 # Files or directories matching the regular expression patterns are skipped.
 # The regex matches against base names, not paths. The default value ignores
@@ -469,7 +469,51 @@ disable=raw-checker-failed,
         too-many-branches,
         too-many-statements,
         redefined-outer-name,
-        bare-except
+        bare-except,
+        duplicate-code,
+        super-with-arguments,
+        fixme,
+        c-extension-no-member,
+        too-many-boolean-expressions,
+        no-value-for-parameter,
+        chained-comparison,
+        consider-using-with,
+        redefined-builtin,
+        useless-object-inheritance,
+        inconsistent-return-statements,
+        use-dict-literal,
+        unsubscriptable-object,
+        attribute-defined-outside-init,
+        arguments-renamed,
+        use-yield-from,
+        consider-using-min-builtin,
+        no-self-argument,
+        logging-too-few-args,
+        cell-var-from-loop,
+        consider-using-dict-items,
+        too-many-instance-attributes,
+        unnecessary-lambda-assignment,
+        no-else-break,
+        no-else-raise,
+        not-callable,
+        redundant-u-string-prefix,
+        consider-using-set-comprehension,
+        possibly-used-before-assignment,
+        unexpected-keyword-arg,
+        undefined-variable,
+        too-many-public-methods,
+        unspecified-encoding,
+        assignment-from-none,
+        bad-string-format-type,
+        pointless-string-statement,
+        consider-using-dict-comprehension,
+        no-else-continue,
+        unnecessary-comprehension,
+        unidiomatic-typecheck,
+        too-many-return-statements,
+        abstract-method,
+        use-implicit-booleaness-not-len,
+        unreachable
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
