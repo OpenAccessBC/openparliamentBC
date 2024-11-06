@@ -11,7 +11,6 @@ import urllib.parse
 import urllib.request
 from collections import defaultdict
 
-from django.conf import settings
 from django.core.files import File
 from django.db import models, transaction
 from django.db.models import Count
@@ -288,7 +287,7 @@ def merge_pols():
 
 def fix_mac():
     """ Alexa Mcdonough -> Alexa McDonough """
-    for p in Politician.objects.filter(models.Q(name_family__startswith='Mc')|models.Q(name_family__startswith='Mac')):
+    for p in Politician.objects.filter(models.Q(name_family__startswith='Mc') | models.Q(name_family__startswith='Mac')):
         nforig = p.name_family
         def mac_replace(match):
             return match.group(1) + match.group(2).upper()
@@ -320,11 +319,11 @@ def twitter_from_csv(infile):
         pol = Politician.objects.get_by_name(' '.join([name, surname]), session=session)
         PoliticianInfo.objects.get_or_create(politician=pol, schema='twitter', value=line['twitter'].strip())
 
-def twitter_to_list():
-    from twitter import Twitter
-    twit = Twitter(settings.TWITTER_USERNAME, settings.TWITTER_PASSWORD)
-    for t in PoliticianInfo.objects.filter(schema='twitter'):
-        twit.openparlca.mps.members(id=t.value)
+#def twitter_to_list():
+#    from twitter import Twitter
+#    twit = Twitter(settings.TWITTER_USERNAME, settings.TWITTER_PASSWORD)
+#    for t in PoliticianInfo.objects.filter(schema='twitter'):
+#        twit.openparlca.mps.members(id=t.value)
 
 def slugs_for_pols(qs=None):
     if not qs:
@@ -337,46 +336,46 @@ def slugs_for_pols(qs=None):
             pol.slug = slug
             pol.save()
 
-def wikipedia_from_freebase():
-    import freebase
-    for info in PoliticianInfo.sr_objects.filter(schema='freebase_id'):
-        query = {
-            'id': info.value,
-            'key': [{
-                'namespace': '/wikipedia/en_id',
-                'value': None
-            }]
-        }
-        result = freebase.mqlread(query)
-        if result:
-            # freebase.api.mqlkey.unquotekey
-            wiki_id = result['key'][0]['value']
-            info.politician.set_info('wikipedia_id', wiki_id)
-
-def freebase_id_from_parl_id():
-    import freebase
-    for info in PoliticianInfo.sr_objects.filter(schema='parl_id').order_by('value'):
-        if PoliticianInfo.objects.filter(politician=info.politician, schema='freebase_id').exists():
-            continue
-        query = {
-            'type': '/base/cdnpolitics/member_of_parliament',
-            'id': [],
-            'key': {
-                'namespace': '/source/ca/gov/house',
-                'value': info.value
-            }
-        }
-        result = freebase.mqlread(query)
-        print("result: %s" % result)
-        if not result:
-            try:
-                print("Nothing for %s (%s)" % (info.value, info.politician))
-            except:
-                pass
-        else:
-            freebase_id = result['id'][0]
-            PoliticianInfo(politician=info.politician, schema='freebase_id', value=freebase_id).save()
-            print("Saved: %s" % freebase_id)
+#def wikipedia_from_freebase():
+#    import freebase
+#    for info in PoliticianInfo.sr_objects.filter(schema='freebase_id'):
+#        query = {
+#            'id': info.value,
+#            'key': [{
+#                'namespace': '/wikipedia/en_id',
+#                'value': None
+#            }]
+#        }
+#        result = freebase.mqlread(query)
+#        if result:
+#            # freebase.api.mqlkey.unquotekey
+#            wiki_id = result['key'][0]['value']
+#            info.politician.set_info('wikipedia_id', wiki_id)
+#
+#def freebase_id_from_parl_id():
+#    import freebase
+#    for info in PoliticianInfo.sr_objects.filter(schema='parl_id').order_by('value'):
+#        if PoliticianInfo.objects.filter(politician=info.politician, schema='freebase_id').exists():
+#            continue
+#        query = {
+#            'type': '/base/cdnpolitics/member_of_parliament',
+#            'id': [],
+#            'key': {
+#                'namespace': '/source/ca/gov/house',
+#                'value': info.value
+#            }
+#        }
+#        result = freebase.mqlread(query)
+#        print("result: %s" % result)
+#        if not result:
+#            try:
+#                print("Nothing for %s (%s)" % (info.value, info.politician))
+#            except:
+#                pass
+#        else:
+#            freebase_id = result['id'][0]
+#            PoliticianInfo(politician=info.politician, schema='freebase_id', value=freebase_id).save()
+#            print("Saved: %s" % freebase_id)
 
 def pol_urls_to_ids():
     for pol in Politician.objects.exclude(parlpage=''):

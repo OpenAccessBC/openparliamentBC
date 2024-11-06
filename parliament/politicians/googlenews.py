@@ -1,11 +1,11 @@
 import datetime
 import hashlib
 import logging
+from urllib.parse import quote
 
 import feedparser
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from django.utils.html import strip_tags
-from django.utils.http import urlquote
 
 from parliament.activity import utils as activity
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 GOOGLE_NEWS_URL = 'https://news.google.ca/news?pz=1&cf=all&ned=ca&hl=en&as_maxm=3&q=%s&as_qdr=a&as_drrb=q&as_mind=25&as_minm=2&cf=all&as_maxd=27&scoring=n&output=rss'
 def get_feed(pol):
-    return feedparser.parse(GOOGLE_NEWS_URL % urlquote(get_query_string(pol)))
+    return feedparser.parse(GOOGLE_NEWS_URL % quote(get_query_string(pol)))
 
 def get_query_string(pol):
     if 'googlenews_query' in pol.info():

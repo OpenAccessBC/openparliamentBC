@@ -22,3 +22,6 @@ gunicorn
 gevent # only used for gunicorn workers
 calmjs
 sentry-sdk
+feedparser
+beautifulsoup4
+requests_oauthlib
