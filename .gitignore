@@ -27,3 +27,4 @@ hansard-cache/
 docker-compose.yml
 venv/
 .venv/
+.mypy_cache
