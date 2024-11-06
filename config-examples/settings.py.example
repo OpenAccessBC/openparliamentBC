@@ -1,5 +1,8 @@
+import os
 
-from .default_settings import *
+# pylint: disable-next=wildcard-import,unused-wildcard-import
+from .default_settings import * # noqa: F401,F403
+from .default_settings import PROJ_ROOT
 
 DEBUG = True
 
@@ -15,12 +18,6 @@ DATABASES = {
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     },
-}
-
-import dj_database_url
-
-DATABASES = {
-    'default': dj_database_url.config()
 }
 
 HANSARD_CACHE_DIR = os.path.join(PROJ_ROOT, 'hansard-cache')

@@ -13,6 +13,7 @@ models.dot
 local/
 design/
 settings.py
+parliament/settings.py
 pip-log.txt
 logs/
 mediafiles/
