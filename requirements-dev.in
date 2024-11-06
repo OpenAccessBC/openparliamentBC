@@ -1,8 +1,10 @@
 -r requirements.in
 
-# Linting
+# Linting and formatting
 pylint
 mypy
+flake8
+isort
 
 # Typing
 django-stubs

@@ -1,14 +1,15 @@
 # coding: utf-8
 
 import logging
-from parliament.core.models import Politician, Session, Riding, Party
-from django.db import transaction
 from time import sleep
 import hashlib
 from urllib.parse import urljoin
+from django.db import transaction
 
 import lxml.html
 import requests
+
+from parliament.core.models import Politician, Session, Riding, Party
 
 logger = logging.getLogger(__name__)
 
@@ -145,9 +146,9 @@ def update_ridings_from_represent(boundary_set='federal-electoral-districts'):
 # https://github.com/opencivicdata/scrapers-ca/blob/master/ca/people.py
 
 """
-The CSV at http://www.parl.gc.ca/Parliamentarians/en/members/export?output=CSV
-accessible from http://www.parl.gc.ca/Parliamentarians/en/members has no
-contact information or photo URLs.
+# The CSV at http://www.parl.gc.ca/Parliamentarians/en/members/export?output=CSV
+# accessible from http://www.parl.gc.ca/Parliamentarians/en/members has no
+# contact information or photo URLs.
 """
 
 def _scrape_url(url):
