@@ -32,7 +32,7 @@ class BillDetailView(ModelDetailView):
         return BillInSession.objects.select_related(
             'bill', 'sponsor_politician').get(session=session_id, bill__number=bill_number)
 
-    def get_related_resources(self, request, qs, result):
+    def get_related_resources(self, request, obj, result):
         return {
             'bills_url': reverse('bills')
         }

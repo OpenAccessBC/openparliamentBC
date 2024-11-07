@@ -264,17 +264,17 @@ class PoliticianStatementFeed(Feed):
         return Statement.objects.filter(
             member__politician=pol, document__document_type=Document.DEBATE).order_by('-time')[:12]
 
-    def item_title(self, statement):
-        return statement.topic
+    def item_title(self, item):
+        return item.topic
 
-    def item_link(self, statement):
-        return statement.get_absolute_url()
+    def item_link(self, item):
+        return item.get_absolute_url()
 
-    def item_description(self, statement):
-        return statement.text_html(language=self.language)
+    def item_description(self, item):
+        return item.text_html(language=self.language)
 
-    def item_pubdate(self, statement):
-        return statement.time
+    def item_pubdate(self, item):
+        return item.time
 
 
 politician_statement_feed = feed_wrapper(PoliticianStatementFeed)
@@ -301,12 +301,12 @@ class PoliticianActivityFeed(Feed):
     def items(self, pol):
         return activity.iter_recent(Activity.objects.filter(politician=pol))
 
-    def item_title(self, activity):
+    def item_title(self, item):
         # FIXME wrap in try
-        return r_title.search(activity.payload).group(1)
+        return r_title.search(item.payload).group(1)
 
-    def item_link(self, activity):
-        match = r_link.search(activity.payload)
+    def item_link(self, item):
+        match = r_link.search(item.payload)
         if match:
             return match.group(1)
         else:
@@ -316,13 +316,13 @@ class PoliticianActivityFeed(Feed):
     def item_guid(self, activity):
         return activity.guid
 
-    def item_description(self, activity):
-        payload = r_excerpt.sub('<br><span style="display: block; border-left: 1px dotted #AAAAAA; margin-left: 2em; padding-left: 1em; font-style: italic; margin-top: 5px;">', activity.payload_wrapped())
+    def item_description(self, item):
+        payload = r_excerpt.sub('<br><span style="display: block; border-left: 1px dotted #AAAAAA; margin-left: 2em; padding-left: 1em; font-style: italic; margin-top: 5px;">', item.payload_wrapped())
         payload = r_title.sub('', payload)
         return payload
 
-    def item_pubdate(self, activity):
-        return datetime.datetime(activity.date.year, activity.date.month, activity.date.day)
+    def item_pubdate(self, item):
+        return datetime.datetime(item.date.year, item.date.month, item.date.day)
 
 
 class PoliticianTextAnalysisView(TextAnalysisView):

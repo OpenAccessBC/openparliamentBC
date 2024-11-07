@@ -24,6 +24,7 @@ class Command(BaseCommand):
         try:
             getattr(jobs, jobname)()
         except Exception as e:
+            tb = ""
             try:
                 if options.get('pdb'):
                     post_mortem()

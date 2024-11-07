@@ -61,7 +61,7 @@ class CommitteeView(ModelDetailView):
     def get_object(self, request, slug):
         return get_object_or_404(Committee, slug=slug)
 
-    def get_related_resources(self, request, qs, result):
+    def get_related_resources(self, request, obj, result):
         return {
             'meetings_url': reverse('committee_meetings') + '?' + urlencode({'committee': self.kwargs['slug']}),
             'committees_url': reverse('committee_list')
@@ -248,7 +248,7 @@ class CommitteeMeetingStatementView(ModelDetailView):
         meeting = _get_meeting(committee_slug, session_id, number)
         return meeting.evidence.statement_set.get(slug=slug)
 
-    def get_related_resources(self, request, qs, result):
+    def get_related_resources(self, request, obj, result):
         return {
             'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
         }

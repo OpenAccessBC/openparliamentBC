@@ -71,17 +71,17 @@ class APIView(View):
             request.get_host().lower().startswith(settings.PARLIAMENT_API_HOST) or request.GET.get('format'))
 
         if request.api_request:
-            format = self.get_api_format(request)
-            if not format:
+            api_format = self.get_api_format(request)
+            if not api_format:
                 return self.format_not_allowed(request)
         else:
             # No format negotiation on non-API requests
-            format = 'html'
+            api_format = 'html'
 
             if hasattr(self, 'get_json'):
                 request.apibrowser_url = '//' + settings.PARLIAMENT_API_HOST + request.path
 
-        handler = getattr(self, '_'.join((method, format)), None)
+        handler = getattr(self, '_'.join((method, api_format)), None)
         if handler is None:
             if method == 'get':
                 return self.format_not_allowed(request)
@@ -91,7 +91,7 @@ class APIView(View):
         except BadRequest as e:
             return HttpResponseBadRequest(escape(str(e)), content_type='text/plain')
 
-        processor = getattr(self, 'process_' + format, self.process_default)
+        processor = getattr(self, 'process_' + api_format, self.process_default)
         resp = processor(result, request, **kwargs)
 
         if self.allow_cors and method == 'get' and request.META.get('HTTP_ORIGIN'):

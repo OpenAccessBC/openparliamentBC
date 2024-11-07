@@ -56,7 +56,7 @@ class HansardStatementView(ModelDetailView):
             slug=slug
         )
 
-    def get_related_resources(self, request, qs, result):
+    def get_related_resources(self, request, obj, result):
         return {
             'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
         }
@@ -143,8 +143,10 @@ def document_view(request, document, meeting=None, slug=None):
             t = loader.get_template("hansards/hansard_detail.html")
         elif document.document_type == Document.EVIDENCE:
             t = loader.get_template("committees/meeting_evidence.html")
-        ctx['wordcloud_js'] = TextAnalysis.objects.get_wordcloud_js(
-            key=document.get_text_analysis_url())
+        else:
+            raise Http404
+
+        ctx['wordcloud_js'] = TextAnalysis.objects.get_wordcloud_js(key=document.get_text_analysis_url())
 
     return HttpResponse(t.render(ctx, request))
 

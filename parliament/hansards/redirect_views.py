@@ -19,8 +19,8 @@ def hansard_redirect(request, hansard_id=None, hansard_date=None, sequence=None,
 
     if sequence:
         try:
-            map = OldSequenceMapping.objects.get(document=doc, sequence=sequence)
-            sequence = map.slug
+            seq_mapping = OldSequenceMapping.objects.get(document=doc, sequence=sequence)
+            sequence = seq_mapping.slug
         except OldSequenceMapping.DoesNotExist:
             pass
         url += '%s/' % sequence
