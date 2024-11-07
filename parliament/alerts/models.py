@@ -135,7 +135,7 @@ class SeenItem(models.Model):
 class SubscriptionManager(models.Manager):
 
     def get_or_create_by_query(self, query, user):
-        topic, created = Topic.objects.get_or_create_by_query(query)
+        topic, _ = Topic.objects.get_or_create_by_query(query)
         return self.get_or_create(topic=topic, user=user)
 
 

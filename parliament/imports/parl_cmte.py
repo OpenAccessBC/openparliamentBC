@@ -122,7 +122,7 @@ def import_committee_documents(session):
         # subcommittees last
         try:
             import_committee_meetings(comm, session)
-        except requests.exceptions.HTTPError as e:
+        except requests.exceptions.HTTPError:
             logger.exception("Error importing committee %s, #%s", (comm, comm.id))
         # import_committee_reports(comm, session)
         # time.sleep(1)

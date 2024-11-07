@@ -760,7 +760,7 @@ def main():
         help="Drop into the Python debugger on exception")
     optparser.add_option_group(group)
 
-    (options, args) = optparser.parse_args()
+    (options, _) = optparser.parse_args()
     try:
         if options.filename:
             document = parse_file(open(options.filename))
@@ -768,7 +768,7 @@ def main():
             document = fetch_and_parse(options.docid, options.language[0].upper())
         else:
             document = parse_file(sys.stdin)
-    except Exception as e:
+    except Exception:
         if options.pdb:
             import pdb; pdb.post_mortem()
         else:

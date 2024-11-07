@@ -53,7 +53,8 @@ def statements_token_iterator(statements, statement_separator=None):
 def ngram_iterator(tokens, n=2):
     sub_iterators = itertools.tee(tokens, n)
     for i, iterator in enumerate(sub_iterators[1:]):
-        for x in range(i + 1):
+        # TODO: consume(iterator, i + 1)
+        for _ in range(i + 1):
             # Advance the iterator i+1 times
             next(iterator, None)
     for words in zip(*sub_iterators):
@@ -90,7 +91,7 @@ class FrequencyModel(dict):
         background model.
         """
         r = FrequencyDiffResult()
-        for k, v in self.items():
+        for k, _ in self.items():
             if k not in STOPWORDS:
                 r[k] = self[k] - other[k]
         return r

@@ -242,7 +242,7 @@ def _scrape_ourcommons_row(row):
 
     # Constituency Office contacts
     # Some people has more than one, e.g. https://www.ourcommons.ca/Members/en/ben-lobb(35600)#contact
-    for i, constituency_office_el in enumerate(mp_page.xpath('.//div[@class="ce-mip-contact-constituency-office-container"]/div')):
+    for _, constituency_office_el in enumerate(mp_page.xpath('.//div[@class="ce-mip-contact-constituency-office-container"]/div')):
         address = constituency_office_el.xpath('./p[1]')[0]
         address = address.text_content().strip().splitlines()
         address = [a.strip() for a in address]

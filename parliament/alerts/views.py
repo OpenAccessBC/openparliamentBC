@@ -134,7 +134,7 @@ class CreateAlertView(JSONView):
             return self.redirect(reverse('alerts_list'))
         user = User.objects.get(email=user_email)
         try:
-            subscription = Subscription.objects.get_or_create_by_query(query, user)
+            Subscription.objects.get_or_create_by_query(query, user)
             return True
         except ValueError:
             raise NotImplementedError
@@ -182,8 +182,8 @@ def politician_hansard_subscribe(request, signed_key):
         if not pol.current_member:
             raise Http404
 
-        user, created = User.objects.get_or_create(email=email)
-        sub, created = Subscription.objects.get_or_create_by_query(
+        user, _ = User.objects.get_or_create(email=email)
+        sub, _ = Subscription.objects.get_or_create_by_query(
             _generate_query_for_politician(pol), user)
         if not sub.active:
             sub.active = True

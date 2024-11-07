@@ -18,7 +18,7 @@ def get_user_from_google_token(token):
     idinfo = google_info_from_token(token)
     assert idinfo['email']
     assert idinfo['email_verified']
-    user, created = User.objects.get_or_create(email=idinfo['email'].lower().strip())
+    user, _ = User.objects.get_or_create(email=idinfo['email'].lower().strip())
     if not user.name:
         user.name = idinfo['name']
         user.save()

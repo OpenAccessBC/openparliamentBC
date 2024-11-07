@@ -34,7 +34,7 @@ def load_pol_pic(pol):
         print("Blank photo")
         return
     imgurl = urllib.parse.urljoin(pol.parlpage, imgurl)
-    test = urllib.request.urlopen(imgurl)
+    # test = urllib.request.urlopen(imgurl)
     content = urllib.request.urlretrieve(imgurl)
     # filename = urlparse.urlparse(imgurl).path.split('/')[-1]
     pol.headshot.save(str(pol.id) + ".jpg", File(open(content[0])), save=True)

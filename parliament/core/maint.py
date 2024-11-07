@@ -37,7 +37,7 @@ def memcached_status(request):
         line = host.readline().split(None, 2)
         if line[0] == "END":
             break
-        stat, key, value = line
+        _, key, value = line
         try:
             # convert to native type, if possible
             value = int(value)

@@ -236,7 +236,7 @@ class Document(models.Model):
                     assert len(topics) == 1
                     if wordcount < 80:
                         continue
-                    (seq, text, url) = list(topics.values())[0]
+                    (_, text, url) = list(topics.values())[0]
                     activity.save_activity({
                         'meeting': self.committeemeeting,
                         'committee': self.committeemeeting.committee,

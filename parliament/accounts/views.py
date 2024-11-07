@@ -69,7 +69,7 @@ def token_login(request, token):
         messages.error(request, str(e))
         return HttpResponseRedirect(redirect_url)
 
-    user, created = User.objects.get_or_create(email=lt.email)
+    user, _ = User.objects.get_or_create(email=lt.email)
     user.log_in(request)
 
     if lt.post_login_url:

@@ -55,7 +55,7 @@ def committees(sess=None):
             return
     try:
         parl_cmte.import_committee_list(session=sess)
-    except Exception as e:
+    except Exception:
         logger.exception("Committee list import failure")
     parl_cmte.import_committee_documents(sess)
 
