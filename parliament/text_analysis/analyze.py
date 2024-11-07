@@ -30,13 +30,13 @@ def analyze_statements(statements, corpus_name):
             if count >= opts['max_count']:
                 continue
             words = item[0].split(' ')
-            #if sum(word in seen for word in words) / float(len(words)) < 0.6:
+            # if sum(word in seen for word in words) / float(len(words)) < 0.6:
             if words[0] not in seen and words[-1] not in seen:
                 seen.update(words)
                 results.append({
                     "text": item[0],
                     "score": item[1] * 1000
-                    #"size": _log_scale(item[1], opts['range'])
+                    # "size": _log_scale(item[1], opts['range'])
                 })
-    #results.sort(key=lambda r: r['size'], reverse=True)
+    # results.sort(key=lambda r: r['size'], reverse=True)
     return results

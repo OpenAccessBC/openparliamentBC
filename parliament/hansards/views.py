@@ -91,7 +91,7 @@ def document_view(request, document, meeting=None, slug=None):
                 highlight_statement = int(slug)
             else:
                 highlight_statement = statement_qs.filter(slug=slug).values_list('sequence', flat=True)[0]
-            page = int(highlight_statement/per_page) + 1
+            page = int(highlight_statement / per_page) + 1
         else:
             page = int(request.GET.get('page', '1'))
     except (ValueError, IndexError):
@@ -235,7 +235,7 @@ def statement_permalink(request, doc, statement, template, **kwargs):
         'statement': statement,
         'statements_full_date': True,
         'statement_url': statement.get_absolute_url(),
-        #'statements_context_link': True
+        # 'statements_context_link': True
     }
     ctx.update(kwargs)
     return HttpResponse(t.render(ctx, request))
@@ -276,7 +276,7 @@ class DebateIndexView(TitleAdder, ArchiveIndexView, APIArchiveView):
     queryset = Document.debates.all()
     date_field = 'date'
     template_name = "hansards/hansard_archive.html"
-    page_title='The Debates of the House of Commons'
+    page_title = 'The Debates of the House of Commons'
 index = DebateIndexView.as_view()
 
 class DebateYearArchive(TitleAdder, YearArchiveView, APIArchiveView):

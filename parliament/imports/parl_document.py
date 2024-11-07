@@ -243,9 +243,9 @@ def _align_sequences(new_statements, old_statements):
                 candidates = news
             else:
                 logger.warning("No new statements for %s" % speaker)
-                candidates = new_statements # Calculate similarity with all possibilities
+                candidates = new_statements  # Calculate similarity with all possibilities
             for old in olds:
-                scores = ( (cand, calculate_similarity(old, cand)) for cand in candidates )
+                scores = ((cand, calculate_similarity(old, cand)) for cand in candidates)
                 choice, score = max(scores, key=lambda s: s[1])
                 chosen.add(choice)
                 if score < 0.75:
@@ -318,7 +318,7 @@ def _process_related_link(match, statement):
 def _build_tag(name, attrs):
     return '<%s%s>' % (
         name,
-        ''.join([" %s=%s" % (k, quoteattr(str(v))) for k,v in sorted(attrs.items())])
+        ''.join([" %s=%s" % (k, quoteattr(str(v))) for k, v in sorted(attrs.items())])
     )
 
 def _test_has_paragraph_ids(elem):

@@ -31,7 +31,7 @@ def news_items_for_pol(pol):
     items = []
     for i in feed['entries'][:10]:
         if 'URL is deprecated' in i.title:
-            continue # temp fix
+            continue  # temp fix
         item = {'url': i.link}
         title_elements = i.title.split('-')
         item['source'] = title_elements.pop().strip()

@@ -131,7 +131,7 @@ class CommitteeActivity(models.Model):
     name_en = models.CharField(max_length=500)
     name_fr = models.CharField(max_length=500)
 
-    study = models.BooleanField(default=False) # study or activity
+    study = models.BooleanField(default=False)  # study or activity
 
     name = language_property('name')
 
@@ -180,7 +180,7 @@ class CommitteeMeeting(models.Model):
     number = models.SmallIntegerField()
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
 
-    minutes = models.IntegerField(blank=True, null=True) #docid
+    minutes = models.IntegerField(blank=True, null=True)  # docid
     notice = models.IntegerField(blank=True, null=True)
     evidence = models.OneToOneField(Document, blank=True, null=True, on_delete=models.CASCADE)
 
@@ -275,7 +275,7 @@ class CommitteeReport(models.Model):
     committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
 
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
-    number = models.SmallIntegerField(blank=True, null=True) # watch this become a char
+    number = models.SmallIntegerField(blank=True, null=True)  # watch this become a char
     name_en = models.CharField(max_length=500)
     name_fr = models.CharField(max_length=500, blank=True)
 

@@ -15,7 +15,7 @@ def expand_province(value):
 def heshe(pol):
     if pol.gender == 'F':
         return 'She'
-    elif pol.gender =='M':
+    elif pol.gender == 'M':
         return 'He'
     else:
         return 'He/she'

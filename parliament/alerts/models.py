@@ -56,7 +56,7 @@ class Topic(models.Model):
             user_params={'sort': 'date desc'},
             full_text=self.politician_hansard_alert,
             solr_params={
-                'mm': '100%' # match all query terms
+                'mm': '100%'  # match all query terms
             })
 
         # Only look for items newer than 60 days

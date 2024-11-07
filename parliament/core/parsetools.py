@@ -11,7 +11,7 @@ r_parens = re.compile(r'\s*\(.+\)\s*$')
 
 def time(hour, minute):
     if hour >= 24:
-        hour = hour % 24 # no, really. the house of commons is so badass they meet at 25 o'clock
+        hour = hour % 24  # no, really. the house of commons is so badass they meet at 25 o'clock
     return datetime.time(hour=hour, minute=minute)
 
 def time_to_datetime(hour, minute, date):
@@ -23,7 +23,7 @@ def time_to_datetime(hour, minute, date):
         return datetime.datetime.combine(date, datetime.time(hour=hour, minute=minute))
     else:
         return datetime.datetime.combine(
-            date + datetime.timedelta(days=hour//24),
+            date + datetime.timedelta(days=hour // 24),
             datetime.time(hour=hour % 24, minute=minute)
         )
 
@@ -93,10 +93,10 @@ def munge_time(time):
     else:
         return None
 
-def munge_postcode (code):
+def munge_postcode(code):
     if code:
         code = code.upper()
-        if len(code) == 6: # Add a space if there isn't one
+        if len(code) == 6:  # Add a space if there isn't one
             code = code[:3] + ' ' + code[3:]
         if re.search(r'^[ABCEGHJKLMNPRSTVXYZ]\d[A-Z] \d[A-Z]\d$', code):
             return code

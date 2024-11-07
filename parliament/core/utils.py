@@ -66,13 +66,13 @@ def get_twitter_share_url(url, description, add_plug=True):
         shorturl = longurl
 
     if (len(description) + len(shorturl)) > 139:
-        description = description[:136-len(shorturl)] + '...'
+        description = description[:136 - len(shorturl)] + '...'
     elif add_plug and (len(description) + len(shorturl) + len(PLUG)) < 140:
         description += PLUG
     message = "%s %s" % (description, shorturl)
     return 'http://twitter.com/home?' + urllib.parse.urlencode({'status': message})
 
-#http://stackoverflow.com/questions/561486/how-to-convert-an-integer-to-the-shortest-url-safe-string-in-python
+# http://stackoverflow.com/questions/561486/how-to-convert-an-integer-to-the-shortest-url-safe-string-in-python
 
 ALPHABET = string.ascii_uppercase + string.ascii_lowercase + string.digits + '-_'
 ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))

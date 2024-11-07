@@ -17,7 +17,7 @@ class Activity(models.Model):
     public = ActiveManager()
 
     class Meta:
-        ordering = ('-date','-id')
+        ordering = ('-date', '-id')
         verbose_name_plural = 'Activities'
 
     def payload_wrapped(self):

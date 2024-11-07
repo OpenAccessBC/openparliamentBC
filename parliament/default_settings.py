@@ -74,7 +74,7 @@ COMPRESS_FILTERS = {
         'compressor.filters.cssmin.rCSSMinFilter'
     ],
     'js': [
-        'compressor.filters.jsmin.CalmjsFilter' # the rjsmin filter conflicts with some vendor js
+        'compressor.filters.jsmin.CalmjsFilter'  # the rjsmin filter conflicts with some vendor js
     ]
 }
 COMPRESS_ROOT = os.path.realpath(os.path.join(PROJ_ROOT, '..', '..', 'frontend_bundles'))
@@ -85,7 +85,7 @@ PARLIAMENT_GENERATE_TEXT_ANALYSIS = False
 APPEND_SLASH = False
 
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_AGE = 60*60*24*60  # 60 days
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 60  # 60 days
 SESSION_COOKIE_SECURE = True
 
 PARLIAMENT_API_HOST = 'api.openparliament.ca'
@@ -123,11 +123,11 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'parliament.accounts.middleware.AuthenticatedEmailMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'parliament.core.api.FetchFromCacheMiddleware',
 ]

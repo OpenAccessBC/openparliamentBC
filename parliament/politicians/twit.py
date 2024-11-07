@@ -54,7 +54,7 @@ def save_tweets():
                 email.utils.mktime_tz(
                     email.utils.parsedate_tz(tweet['created_at'])
                 )
-            ) # fuck you, time formats
+            )  # fuck you, time formats
             if date < OLDEST:
                 continue
 

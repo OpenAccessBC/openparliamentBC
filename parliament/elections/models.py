@@ -15,7 +15,7 @@ class Election (models.Model):
     class Meta:
         ordering = ('-date',)
 
-    def __str__ (self):
+    def __str__(self):
         if self.byelection:
             return "Byelection of %s" % self.date
         else:
@@ -141,5 +141,5 @@ class Candidacy (models.Model):
             self.candidate.add_slug()
         return member
 
-    def __str__ (self):
+    def __str__(self):
         return "%s (%s) was a candidate in %s in the %s" % (self.candidate, self.party, self.riding, self.election)

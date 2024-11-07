@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 
 import datetime
 import logging
@@ -24,7 +24,7 @@ def _build_tag(name, attrs):
         name,
         ''.join((
             " %s=%s" % (k, quoteattr(str(v)))
-            for k,v in sorted(attrs.items())
+            for k, v in sorted(attrs.items())
         ))
     )
 
@@ -101,7 +101,7 @@ def _time_to_datetime(hour, minute, date):
         return datetime.datetime.combine(date, datetime.time(hour=hour, minute=minute))
     else:
         return datetime.datetime.combine(
-            date + datetime.timedelta(days=hour//24),
+            date + datetime.timedelta(days=hour // 24),
             datetime.time(hour=hour % 24, minute=minute)
         )
 
@@ -177,7 +177,7 @@ class Statement(object):
 
         attrs = {
             'class': 'statement',
-            'data-timestamp': str(self.meta['timestamp']), #.strftime("%H:%M"),
+            'data-timestamp': str(self.meta['timestamp']),  # .strftime("%H:%M"),
         }
         setval('id', 'id')
         setval('person_attribution', 'data-person-speaking-attribution')
@@ -200,10 +200,10 @@ class ParseHandler(object):
 
     # Their contents will be discarded
     EXCLUDE_TAGS = [
-        'CatchLine', # I don't really know what this tag means. It generally repeats a heading provided elsewhere
+        'CatchLine',  # I don't really know what this tag means. It generally repeats a heading provided elsewhere
         'Prayer',
-        'QuestionID', # This is actually processed in handle_WrittenQuestionResponse
-        'Appendix', # Too much of a catch-all category to process properly
+        'QuestionID',  # This is actually processed in handle_WrittenQuestionResponse
+        'Appendix',  # Too much of a catch-all category to process properly
     ]
 
     # We include these tags, though we discard attributes and may change the name
@@ -274,7 +274,7 @@ class ParseHandler(object):
     def close_statement(self):
         """Whoever's currently speaking has stopped: finalize this Statement object."""
         if self.current_statement:
-            #if not self.current_statement.meta.get('has_non_procedural'):
+            # if not self.current_statement.meta.get('has_non_procedural'):
             #    for key in ('person_attribution', 'person_id', 'person_type'):
             #        self.current_statement.meta.pop(key, None)
             self.current_statement.clean_up_content()
@@ -454,9 +454,9 @@ class ParseHandler(object):
             if openclose == TAG_OPEN:
                 # These are headings we've decided we're not interested in
                 return NO_DESCEND
-                #self._add_code('<!-- ProceduralText ')
-                #self._add_tag_text(el, openclose)
-                #self._add_code(' -->')
+                # self._add_code('<!-- ProceduralText ')
+                # self._add_tag_text(el, openclose)
+                # self._add_code(' -->')
         else:
             return self.handle_ParaText(el, openclose, procedural=True)
 
@@ -612,7 +612,7 @@ class ParseHandler(object):
 
     def handle_Division(self, el, openclose):
         num = el.get('DivisionNumber')
-        url = 'http://www.parl.gc.ca/HouseChamberBusiness/ChamberVoteDetail.aspx?Language=%s&Mode=1&Parl=%s&Ses=%s&Vote=%s' %(
+        url = 'http://www.parl.gc.ca/HouseChamberBusiness/ChamberVoteDetail.aspx?Language=%s&Mode=1&Parl=%s&Ses=%s&Vote=%s' % (
             self.document_language[0].upper(), self.parliament, self.session, num)
         self._add_code('%s%sVote #%s</a></p>' % (
             _build_tag('p', {'class': 'division procedural'}),
@@ -661,7 +661,7 @@ def parse_tree(tree):
 
     # The ID in the Hansard tag is *not* the same as the DocId in parl.gc.ca URLs
     # So to avoid confusion, we won't include it in the output
-    #document.meta['id'] = hansard_tag.get('id')
+    # document.meta['id'] = hansard_tag.get('id')
 
     document.meta['document_type'] = _get_meta('MetaDocumentCategory')
 
@@ -669,7 +669,7 @@ def parse_tree(tree):
         document.meta['committee_acronym'] = _get_meta('Acronyme')
         document.meta['committee_name_en'] = _get_meta('InstitutionDebateEn')
         document.meta['committee_name_fr'] = _get_meta('InstitutionDebateFr')
-        #TODO: in camera
+        # TODO: in camera
 
     document.meta['document_number'] = _get_meta('Number').split()[-1].lstrip('0')
 
@@ -690,8 +690,8 @@ def parse_tree(tree):
     return document
 
 def parse_string(s: str):
-    s = s.replace('<B />', '').replace('<ParaText />', '') # Some empty tags can gum up the works
-    s = s.replace('&ccedil;', '&#231;').replace('&eacute;', '&#233;') # Fix invalid entities
+    s = s.replace('<B />', '').replace('<ParaText />', '')  # Some empty tags can gum up the works
+    s = s.replace('&ccedil;', '&#231;').replace('&eacute;', '&#233;')  # Fix invalid entities
     return parse_tree(etree.fromstring(s))
 
 def fetch_and_parse(doc_id, lang):
@@ -750,7 +750,7 @@ def main():
             import pdb; pdb.post_mortem()
         else:
             raise
-    #sys.stderr.write("Parsed %d statements\n" % len(document.statements))
+    # sys.stderr.write("Parsed %d statements\n" % len(document.statements))
     if options.print_names:
         for s in document.statements:
             print(s.meta.get('person_attribution', '').encode('utf8'))

@@ -21,7 +21,7 @@ urlpatterns = [
     re_path(r'^alerts/', include('parliament.alerts.urls')),
     re_path(r'^committees/', include('parliament.committees.urls')),
     re_path(r'^speeches/', speeches, name='speeches'),
-    #re_path(r'^about/$', 'django.views.generic.simple.direct_to_template', {'template': 'about/about.html'}, name='about'),
+    # re_path(r'^about/$', 'django.views.generic.simple.direct_to_template', {'template': 'about/about.html'}, name='about'),
     re_path(r'^api/$', api_docs),
     re_path(r'^api/', include('parliament.api.urls')),
     re_path(r'^accounts/', include('parliament.accounts.urls')),

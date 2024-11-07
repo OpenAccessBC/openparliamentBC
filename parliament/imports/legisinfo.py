@@ -123,7 +123,7 @@ def _update(obj, field, value):
         setattr(obj, field, value)
         obj._changed = True
 
-def _import_bill(bd, session, previous_session=None): # type: (BillData, Session, Session) -> None
+def _import_bill(bd, session, previous_session=None):  # type: (BillData, Session, Session) -> None
 
     if previous_session is None:
         previous_session = _get_previous_session(session)
@@ -224,7 +224,7 @@ def _import_bill(bd, session, previous_session=None): # type: (BillData, Session
     if getattr(bill, '_changed', False):
         bill.save()
     if getattr(bis, '_changed', False):
-        bis.bill = bis.bill # bizarrely, the django orm makes you do this
+        bis.bill = bis.bill  # bizarrely, the django orm makes you do this
         bis.save()
 
     if getattr(bill, '_newbill', False) and not session.end:

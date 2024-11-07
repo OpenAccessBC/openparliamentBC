@@ -28,15 +28,15 @@ def load_pol_pic(pol):
     if not img:
         raise Exception("Didn't work for %s" % pol.parlpage)
     imgurl = img['src']
-    if '?' not in imgurl: # no query string
-        imgurl = urllib.parse.quote(imgurl.encode('utf8')) # but there might be accents!
+    if '?' not in imgurl:  # no query string
+        imgurl = urllib.parse.quote(imgurl.encode('utf8'))  # but there might be accents!
     if 'BlankMPPhoto' in imgurl:
         print("Blank photo")
         return
     imgurl = urllib.parse.urljoin(pol.parlpage, imgurl)
     test = urllib.request.urlopen(imgurl)
     content = urllib.request.urlretrieve(imgurl)
-    #filename = urlparse.urlparse(imgurl).path.split('/')[-1]
+    # filename = urlparse.urlparse(imgurl).path.split('/')[-1]
     pol.headshot.save(str(pol.id) + ".jpg", File(open(content[0])), save=True)
     pol.save()
 
@@ -164,9 +164,9 @@ def replace_links(old, new, allow_self_relation=False):
                 getattr(obj, relation.field.name).add(new)
 
 def _merge_pols(good, bad):
-    #ElectedMember.objects.filter(politician=bad).update(politician=good)
-    #Candidacy.objects.filter(candidate=bad).update(candidate=good)
-    #Statement.objects.filter(politician=bad).update(politician=good)
+    # ElectedMember.objects.filter(politician=bad).update(politician=good)
+    # Candidacy.objects.filter(candidate=bad).update(candidate=good)
+    # Statement.objects.filter(politician=bad).update(politician=good)
     replace_links(old=bad, new=good)
     seen = set()
     for xref in InternalXref.objects.filter(schema__startswith='pol_', target_id=bad.id):
@@ -185,7 +185,7 @@ def _merge_pols(good, bad):
             pi.delete()
         pi_seen.add(val)
 
-#REFORM = (Party.objects.get(pk=25), Party.objects.get(pk=1), Party.objects.get(pk=28), Party.objects.get(pk=26))
+# REFORM = (Party.objects.get(pk=25), Party.objects.get(pk=1), Party.objects.get(pk=28), Party.objects.get(pk=26))
 
 def merge_by_party(parties):
     raise Exception("Not yet implemented after ElectedMember refactor")
@@ -318,7 +318,7 @@ def twitter_from_csv(infile):
         pol = Politician.objects.get_by_name(' '.join([name, surname]), session=session)
         PoliticianInfo.objects.get_or_create(politician=pol, schema='twitter', value=line['twitter'].strip())
 
-#def twitter_to_list():
+# def twitter_to_list():
 #    from twitter import Twitter
 #    twit = Twitter(settings.TWITTER_USERNAME, settings.TWITTER_PASSWORD)
 #    for t in PoliticianInfo.objects.filter(schema='twitter'):
@@ -335,7 +335,7 @@ def slugs_for_pols(qs=None):
             pol.slug = slug
             pol.save()
 
-#def wikipedia_from_freebase():
+# def wikipedia_from_freebase():
 #    import freebase
 #    for info in PoliticianInfo.sr_objects.filter(schema='freebase_id'):
 #        query = {
@@ -351,7 +351,7 @@ def slugs_for_pols(qs=None):
 #            wiki_id = result['key'][0]['value']
 #            info.politician.set_info('wikipedia_id', wiki_id)
 #
-#def freebase_id_from_parl_id():
+# def freebase_id_from_parl_id():
 #    import freebase
 #    for info in PoliticianInfo.sr_objects.filter(schema='parl_id').order_by('value'):
 #        if PoliticianInfo.objects.filter(politician=info.politician, schema='freebase_id').exists():

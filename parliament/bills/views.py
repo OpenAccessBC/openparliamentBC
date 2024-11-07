@@ -21,7 +21,7 @@ from parliament.hansards.models import Statement
 def bill_pk_redirect(request, bill_id):
     bill = get_object_or_404(Bill, pk=bill_id)
     return HttpResponsePermanentRedirect(
-        reverse('bill', kwargs={ 'session_id': bill.get_session().id, 'bill_number': bill.number }))
+        reverse('bill', kwargs={'session_id': bill.get_session().id, 'bill_number': bill.number}))
 
 
 class BillDetailView(ModelDetailView):
@@ -128,7 +128,7 @@ class BillListView(ModelListView):
 
     def get_html(self, request):
         sessions = Session.objects.with_bills()
-        len(sessions) # evaluate it
+        len(sessions)  # evaluate it
         bills = Bill.objects.filter(sessions=sessions[0])
         votes = VoteQuestion.objects.select_related('bill').filter(session=sessions[0])[:6]
 
@@ -227,7 +227,7 @@ votes_for_session = VoteListView.as_view()
 def vote_pk_redirect(request, vote_id):
     vote = get_object_or_404(VoteQuestion, pk=vote_id)
     return HttpResponsePermanentRedirect(
-        reverse('vote', kwargs={ 'session_id': vote.session_id, 'number': vote.number }))
+        reverse('vote', kwargs={'session_id': vote.session_id, 'number': vote.number}))
 
 
 class VoteDetailView(ModelDetailView):

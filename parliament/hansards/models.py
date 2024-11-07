@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 
 import datetime
 import logging
@@ -49,7 +49,7 @@ class Document(models.Model):
         ('E', 'Committee Evidence'),
     ))
     date = models.DateField(blank=True, null=True)
-    number = models.CharField(max_length=6, blank=True) # there exist 'numbers' with letters
+    number = models.CharField(max_length=6, blank=True)  # there exist 'numbers' with letters
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
 
     source_id = models.IntegerField(unique=True, db_index=True)
@@ -75,7 +75,7 @@ class Document(models.Model):
     class Meta:
         ordering = ('-date',)
 
-    def __str__ (self):
+    def __str__(self):
         if self.document_type == self.DEBATE:
             return "Hansard #%s for %s (#%s/#%s)" % (self.number, self.date, self.id, self.source_id)
         else:
@@ -182,7 +182,7 @@ class Document(models.Model):
                 who = st[3]
             else:
                 who = parsetools.r_parens.sub('', st[0])
-                who = re.sub(r'^\s*\S+\s+', '', who).strip() # strip honorific
+                who = re.sub(r'^\s*\S+\s+', '', who).strip()  # strip honorific
             if who not in speakers:
                 info = {
                     'slug': st[2],
@@ -297,7 +297,8 @@ class Statement(models.Model):
     h3_fr = models.CharField(max_length=400, blank=True)
 
     member = models.ForeignKey(ElectedMember, blank=True, null=True, on_delete=models.CASCADE)
-    politician = models.ForeignKey(Politician, blank=True, null=True, on_delete=models.CASCADE) # a shortcut -- should == member.politician
+    # a shortcut -- should == member.politician
+    politician = models.ForeignKey(Politician, blank=True, null=True, on_delete=models.CASCADE)
     who_en = models.CharField(max_length=300, blank=True)
     who_fr = models.CharField(max_length=500, blank=True)
     who_hocid = models.PositiveIntegerField(blank=True, null=True, db_index=True)
@@ -363,7 +364,7 @@ class Statement(models.Model):
             self.generate_url()
         return self.urlcache
 
-    def __str__ (self):
+    def __str__(self):
         return "%s speaking about %s around %s" % (self.who, self.topic, self.time)
 
     def content_floor(self):
@@ -376,7 +377,7 @@ class Statement(models.Model):
         r = []
         for e, f in zip(el, fl):
             idx = e.find('data-originallang="')
-            if idx and e[idx+19:idx+21] == 'fr':
+            if idx and e[idx + 19:idx + 21] == 'fr':
                 r.append(f)
             else:
                 r.append(e)
@@ -448,9 +449,9 @@ class Statement(models.Model):
 
     def _generate_wordcounts(self):
         paragraphs = [
-            [], # english
-            [], # french
-            [] # procedural
+            [],  # english
+            [],  # french
+            []  # procedural
         ]
 
         for para in self.content_en.split('\n'):
@@ -458,7 +459,7 @@ class Statement(models.Model):
             if idx == -1:
                 paragraphs[2].append(para)
             else:
-                lang = para[idx+19:idx+21]
+                lang = para[idx + 19:idx + 21]
                 if lang == 'en':
                     paragraphs[0].append(para)
                 elif lang == 'fr':
@@ -474,7 +475,7 @@ class Statement(models.Model):
 
         self.wordcount = counts[0] + counts[1]
         self.wordcount_en = counts[0]
-        #self.wordcount_procedural = counts[2]
+        # self.wordcount_procedural = counts[2]
 
     # temp compatibility
     @property
@@ -501,7 +502,7 @@ class Statement(models.Model):
         for h in ('h1', 'h2', 'h3'):
             if getattr(self, h):
                 d[h] = {'en': getattr(self, h + '_en'), 'fr': getattr(self, h + '_fr')}
-        d['document_url'] = d['url'][:d['url'].rstrip('/').rfind('/')+1]
+        d['document_url'] = d['url'][:d['url'].rstrip('/').rfind('/') + 1]
         return d
 
     @property

@@ -22,7 +22,7 @@ def haiku(request, haiku_id=None):
             haikus = Haiku.objects.filter(worthy=True).order_by('?')[:1]
 
     if is_ajax(request):
-        #time.sleep(2)
+        # time.sleep(2)
         return HttpResponse(
             json.dumps([[haiku.line1, haiku.line2, haiku.line3, haiku.attribution_url, haiku.attribution, haiku.id] for haiku in haikus]),
             content_type="application/json")

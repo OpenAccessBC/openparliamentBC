@@ -31,7 +31,7 @@ class Haiku(models.Model):
     attribution = models.CharField(max_length=300)
     attribution_url = models.CharField(max_length=100)
     worthy = models.BooleanField(blank=True, default=False, db_index=True)
-    #statement = models.ForeignKey(Statement)
+    # statement = models.ForeignKey(Statement)
 
     def set_statement(self, statement):
         self.attribution_url = statement.get_absolute_url()

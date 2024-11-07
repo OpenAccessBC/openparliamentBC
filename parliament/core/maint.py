@@ -57,5 +57,5 @@ def memcached_status(request):
         dict(
             stats=stats,
             hit_rate=100 * stats.get_hits / stats.cmd_get,
-            time=datetime.datetime.now(), # server time
+            time=datetime.datetime.now(),  # server time
         ))

@@ -119,8 +119,8 @@ def import_committee_documents(session):
             import_committee_meetings(comm, session)
         except requests.exceptions.HTTPError as e:
             logger.exception("Error importing committee %s, #%s", (comm, comm.id))
-        #import_committee_reports(comm, session)
-        #time.sleep(1)
+        # import_committee_reports(comm, session)
+        # time.sleep(1)
 
 COMMITTEE_MEETINGS_URL = 'https://www.%(domain)s.ca/Committees/en/%(acronym)s/Meetings?parl=%(parliamentnum)d&session=%(sessnum)d'
 @transaction.atomic
@@ -187,7 +187,7 @@ def import_committee_meetings(committee, session):
             meeting.date = datetime.date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
         else:
             try:
-                meeting.date = _parse_date(date_string.partition(', ')[2]) # partition is to split off day of week
+                meeting.date = _parse_date(date_string.partition(', ')[2])  # partition is to split off day of week
             except ValueError:
                 raise Exception("Unrecognized date string %s for meeting %r" % (date_string, meeting))
 
@@ -289,7 +289,7 @@ def get_activity_by_url(activity_url, committee, session):
         pass
 
     activity = CommitteeActivity(committee=committee)
-    activity.study = True # not parsing this at the moment
+    activity.study = True  # not parsing this at the moment
     resp = requests.get(activity_url)
     resp.raise_for_status()
     root = lxml.html.fromstring(resp.text)

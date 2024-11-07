@@ -24,7 +24,7 @@ from parliament.search.index import register_search_model
 
 logger = logging.getLogger(__name__)
 
-#POL_AFFIL_ID_LOOKUP_URL = 'https://www.ourcommons.ca/Parliamentarians/en/members/profileredirect?affiliationId=%s'
+# POL_AFFIL_ID_LOOKUP_URL = 'https://www.ourcommons.ca/Parliamentarians/en/members/profileredirect?affiliationId=%s'
 POL_AFFIL_ID_LOOKUP_URL = 'https://apps.ourcommons.ca/ParlDataWidgets/en/aff/%s'
 POL_PERSON_ID_LOOKUP_URL = 'https://www.ourcommons.ca/Members/en/openparliamentdotca-lookup(%s)'
 
@@ -174,7 +174,7 @@ class PoliticianManager(models.Manager):
                     if session: members = members.filter(sessions=session)
                     if party: members = members.filter(party=party)
                     if len(members) >= 1:
-                        if result: # we found another match on a previous journey through the loop
+                        if result:  # we found another match on a previous journey through the loop
                             # can't disambiguate, raise exception
                             raise Politician.MultipleObjectsReturned(name)
                         # We match! Save the result.
@@ -192,7 +192,7 @@ class PoliticianManager(models.Manager):
         if session and not strictMatch:
             # We couldn't find the pol, but we have the session and riding, so let's give this one more shot
             # We'll try matching only on last name
-            match = re.search(r'\s([A-Z][\w-]+)$', name.strip()) # very naive lastname matching
+            match = re.search(r'\s([A-Z][\w-]+)$', name.strip())  # very naive lastname matching
             if match:
                 lastname = match.group(1)
                 pols = self.get_queryset().filter(name_family=lastname, electedmember__sessions=session).distinct()
@@ -205,7 +205,7 @@ class PoliticianManager(models.Manager):
                     # yes!
                     pol = pols[0]
                     if saveAlternate:
-                        pol.add_alternate_name(name) # save the name we were given as an alternate
+                        pol.add_alternate_name(name)  # save the name we were given as an alternate
                     return pol
         raise Politician.DoesNotExist("Could not find politician named %s" % name)
 
@@ -494,7 +494,7 @@ class Politician(Person):
         (w, h) = pil_img.size
         if not (w == 142 and h == 230):
             raise Exception(f'Headshot image for {self.name} is incorrect size, {pil_img.size}. Should be (142, 230)')
-        pil_img =  pil_img.crop((10, 10, w - 10, h - 68))
+        pil_img = pil_img.crop((10, 10, w - 10, h - 68))
         pil_img.thumbnail((100, 125), resample=Image.Resampling.LANCZOS)
         bio = BytesIO()
         pil_img.save(bio, format='JPEG', quality=90)
@@ -526,8 +526,8 @@ class Politician(Person):
 
         d['text'] = f"""
         {'was' if member.end_date else ''}
-        <span class="tag partytag_{ member.party.slug.lower() }">{member.party.short_name }</span>
-        MP for { member.riding } {('until ' + str(member.end_date.year)) if member.end_date else ''}
+        <span class="tag partytag_{member.party.slug.lower()}">{member.party.short_name}</span>
+        MP for {member.riding} {('until ' + str(member.end_date.year)) if member.end_date else ''}
         """
         return d
 
@@ -631,7 +631,7 @@ class RidingManager(models.Manager):
         'the-battleford-meadow-lake': 'the-battlefords-meadow-lake',
         'esquimalt-de-fuca': 'esquimalt-juan-de-fuca',
         'sint-hubert': 'saint-hubert',
-        #'edmonton-mill-woods-beaumont': 'edmonton-beaumont',
+        # 'edmonton-mill-woods-beaumont': 'edmonton-beaumont',
     }
 
     def get_by_name(self, name):
@@ -740,7 +740,7 @@ class ElectedMember(models.Model):
 
     objects = ElectedMemberManager()
 
-    def __str__ (self):
+    def __str__(self):
         if self.end_date:
             return "%s (%s) was the member from %s from %s to %s" % (self.politician, self.party, self.riding, self.start_date, self.end_date)
         else:
@@ -752,8 +752,8 @@ class ElectedMember(models.Model):
             start_date=str(self.start_date),
             end_date=str(self.end_date) if self.end_date else None,
             party={
-                'name': {'en':self.party.name_en},
-                'short_name': {'en':self.party.short_name_en}
+                'name': {'en': self.party.name_en},
+                'short_name': {'en': self.party.short_name_en}
             },
             label={'en': "%s MP for %s" % (self.party.short_name, self.riding.dashed_name)},
             riding={

@@ -325,7 +325,7 @@ class Bill(models.Model):
         return d
 
     def search_should_index(self):
-        return True # index all bills
+        return True  # index all bills
 
     @classmethod
     def search_get_qs(cls):
@@ -461,8 +461,8 @@ class BillText(models.Model):
 
 
 VOTE_RESULT_CHOICES = (
-    ('Y', 'Passed'), # Agreed to
-    ('N', 'Failed'), # Negatived
+    ('Y', 'Passed'),  # Agreed to
+    ('N', 'Failed'),  # Negatived
     ('T', 'Tie'),
 )
 class VoteQuestion(models.Model):
@@ -485,7 +485,7 @@ class VoteQuestion(models.Model):
         return "Vote #%s on %s" % (self.number, self.date)
 
     class Meta:
-        ordering=('-date', '-number')
+        ordering = ('-date', '-number')
 
     def to_api_dict(self, representation):
         r = {
@@ -535,7 +535,7 @@ class VoteQuestion(models.Model):
             # Find how many people voted with the majority
             yn = (parties[party]['Y'], parties[party]['N'])
             try:
-                disagreement = float(min(yn))/sum(yn)
+                disagreement = float(min(yn)) / sum(yn)
             except ZeroDivisionError:
                 disagreement = 0.0
 

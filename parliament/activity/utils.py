@@ -25,7 +25,7 @@ def save_activity(obj, politician, date, guid=None, variety=None):
         date=date,
         politician=politician,
         guid=guid,
-        payload = t.render(c)).save()
+        payload=t.render(c)).save()
     return True
 
 ACTIVITY_MAX = {
@@ -49,6 +49,6 @@ def prune(queryset):
     for activity in queryset:
         if activity_counts[activity.variety] >= 0:
             activity_counts[activity.variety] -= 1
-        elif (today - activity.date).days >= 4: # only start pruning if it's a few days old
+        elif (today - activity.date).days >= 4:  # only start pruning if it's a few days old
             activity.active = False
             activity.save()

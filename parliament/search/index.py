@@ -55,7 +55,7 @@ def get_search_dict(obj):
     d['django_ct'] = get_content_type(obj)
     d['django_id'] = obj.pk
     d['id'] = get_identifier(obj)
-    return {k:v for k,v in d.items() if v is not None}
+    return {k: v for k, v in d.items() if v is not None}
 
 def index_model(model_cls):
     return index_qs(model_cls.search_get_qs())

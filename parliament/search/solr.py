@@ -190,7 +190,7 @@ class SearchQuery(BaseSearchQuery):
         if self.facet and 'facet_ranges' in self.solr_results.facets:
             datefacets = self.solr_results.facets['facet_ranges']['date']['counts']
             counts = [
-                (int(datefacets[i][:4]), datefacets[i+1])
+                (int(datefacets[i][:4]), datefacets[i + 1])
                 for i in range(0, len(datefacets), 2)
             ]
 

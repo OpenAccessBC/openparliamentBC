@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 
 import itertools
 import re
@@ -19,7 +19,7 @@ STOPWORDS = frozenset(
      "again", "further", "then", "once", "here", "there", "when", "where", "why", "how",
      "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no",
      "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can",
-     "will", "just", "don", "should", "now", # this is the nltk stopwords list
+     "will", "just", "don", "should", "now",  # this is the nltk stopwords list
      "it's", "we're", "we'll", "they're", "can't", "won't", "isn't", "don't", "he's",
      "she's", "i'm", "aren't", "government", "house", "committee", "would", "speaker",
      "motion", "mr", "mrs", "ms", "member", "minister", "canada", "members", "time",
