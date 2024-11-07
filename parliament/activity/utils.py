@@ -20,7 +20,8 @@ def save_activity(obj, politician, date, guid=None, variety=None):
         return False
     t = loader.get_template("activity/%s.html" % variety.lower())
     c = {'obj': obj, 'politician': politician}
-    Activity(variety=variety,
+    Activity(
+        variety=variety,
         date=date,
         politician=politician,
         guid=guid,

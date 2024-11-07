@@ -19,12 +19,11 @@ def home(request):
     latest_hansard = Document.debates.filter(date__isnull=False, public=True)[0]
     c = {
         'latest_hansard': latest_hansard,
-        'sitenews': SiteNews.objects.filter(active=True,
+        'sitenews': SiteNews.objects.filter(
+            active=True,
             date__gte=datetime.datetime.now() - datetime.timedelta(days=90))[:6],
-        'votes': VoteQuestion.objects.filter(session=Session.objects.current())
-            .select_related('bill')[:6],
-        'wordcloud_js': TextAnalysis.objects.get_wordcloud_js(
-            key=latest_hansard.get_text_analysis_url())
+        'votes': VoteQuestion.objects.filter(session=Session.objects.current()).select_related('bill')[:6],
+        'wordcloud_js': TextAnalysis.objects.get_wordcloud_js(key=latest_hansard.get_text_analysis_url())
     }
     return HttpResponse(t.render(c, request))
 

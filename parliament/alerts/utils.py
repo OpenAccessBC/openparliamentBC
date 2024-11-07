@@ -13,8 +13,7 @@ def clear_former_mp_alerts(qs=None):
 
     if qs is None:
         qs = PoliticianAlert.objects.filter(active=True)
-    bad_alerts = [a for a in qs
-        if not a.politician.current_member]
+    bad_alerts = [a for a in qs if not a.politician.current_member]
     for alert in bad_alerts:
         riding = alert.politician.latest_member.riding
         new_politician = ElectedMember.objects.get(riding=riding, end_date__isnull=True).politician
@@ -27,7 +26,8 @@ def clear_former_mp_alerts(qs=None):
         msg = t.render(c)
         subj = 'Your alerts for %s from openparliament.ca' % alert.politician.name
         try:
-            send_mail(subject=subj,
+            send_mail(
+                subject=subj,
                 message=msg,
                 from_email='alerts@contact.openparliament.ca',
                 recipient_list=[alert.email])

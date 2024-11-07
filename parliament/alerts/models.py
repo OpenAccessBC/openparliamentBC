@@ -50,7 +50,9 @@ class Topic(models.Model):
         self.initialize_if_necessary()
 
     def get_search_query(self, limit=25):
-        query_obj = SearchQuery(self.query, limit=limit,
+        query_obj = SearchQuery(
+            self.query,
+            limit=limit,
             user_params={'sort': 'date desc'},
             full_text=self.politician_hansard_alert,
             solr_params={
@@ -77,8 +79,7 @@ class Topic(models.Model):
         result_ids = set((result['url'] for result in query_obj.documents))
         if result_ids:
             ids_seen = set(
-                SeenItem.objects.filter(topic=self, item_id__in=list(result_ids))
-                    .values_list('item_id', flat=True)
+                SeenItem.objects.filter(topic=self, item_id__in=list(result_ids)).values_list('item_id', flat=True)
             )
             result_ids -= ids_seen
 
@@ -97,8 +98,7 @@ class Topic(models.Model):
 
         if self.politician_hansard_alert:
             # Remove procedural stuff by the Speaker
-            items = [r for r in items
-                if 'Speaker' not in r['politician'] or len(r['full_text']) > 1200]
+            items = [r for r in items if 'Speaker' not in r['politician'] or len(r['full_text']) > 1200]
 
         return items
 

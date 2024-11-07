@@ -19,8 +19,10 @@ class Command(BaseCommand):
 
         start_time = time.time()
 
-        subscriptions = Subscription.objects.filter(active=True, user__email_bouncing=False
-            ).prefetch_related('user', 'topic')
+        subscriptions = Subscription.objects.filter(
+            active=True,
+            user__email_bouncing=False
+        ).prefetch_related('user', 'topic')
 
         by_topic = {}
         for sub in subscriptions:

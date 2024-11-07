@@ -136,7 +136,8 @@ class PoliticianManager(models.Manager):
 
     def current(self):
         """Returns a QuerySet of all current MPs."""
-        return self.get_queryset().filter(electedmember__end_date__isnull=True,
+        return self.get_queryset().filter(
+            electedmember__end_date__isnull=True,
             electedmember__start_date__isnull=False).distinct()
 
     def elected_but_not_current(self):
@@ -145,8 +146,8 @@ class PoliticianManager(models.Manager):
 
     def filter_by_name(self, name):
         """Returns a list of politicians matching a given name."""
-        return [i.politician for i in
-            PoliticianInfo.sr_objects.filter(schema='alternate_name', value=parsetools.normalizeName(name))]
+        return [i.politician for i in (
+            PoliticianInfo.sr_objects.filter(schema='alternate_name', value=parsetools.normalizeName(name)))]
 
     def get_by_name(self, name, session=None, riding=None, election=None, party=None, saveAlternate=True, strictMatch=False):
         """ Return a Politician by name. Uses a bunch of methods to try and deal with variations in names.
@@ -221,11 +222,10 @@ class PoliticianManager(models.Manager):
             info = PoliticianInfo.sr_objects.get(schema='parl_mp_id', value=str(parlid))
             return info.politician
         except PoliticianInfo.DoesNotExist:
-            pol, x_mp_id = self._get_pol_from_ourcommons_profile_url(POL_PERSON_ID_LOOKUP_URL % parlid,
-                session, riding_name)
+            pol, x_mp_id = self._get_pol_from_ourcommons_profile_url(
+                POL_PERSON_ID_LOOKUP_URL % parlid, session, riding_name)
             if str(parlid) != x_mp_id:
-                raise Exception("get_by_parl_mp_id: Get for ID %s found ID %s (%s)" %
-                    (parlid, x_mp_id, pol))
+                raise Exception("get_by_parl_mp_id: Get for ID %s found ID %s (%s)" % (parlid, x_mp_id, pol))
             pol.set_info('parl_mp_id', parlid, overwrite=False)
             return self.get_queryset().get(id=pol.id)
 
@@ -249,13 +249,12 @@ class PoliticianManager(models.Manager):
             if len(profile_link) > 1:
                 raise Exception("Weird scrape: multiple CSS results for ID %s in get_by_parl_affil_id" % parlid)
             profile_url = urljoin(resp.url, profile_link[0].attrib['href'])
-            pol, parl_mp_id = self._get_pol_from_ourcommons_profile_url(profile_url,
-                                                             session, riding_name)
+            pol, parl_mp_id = self._get_pol_from_ourcommons_profile_url(profile_url, session, riding_name)
             try:
                 mpid_info = PoliticianInfo.objects.get(schema='parl_mp_id', value=str(parl_mp_id))
                 if mpid_info.politician_id != pol.id:
-                    raise Exception("get_by_parl_affil_id: for ID %s found %s, but mp_id %s already used for %s"
-                        % (parlid, pol, parl_mp_id, mpid_info.politician))
+                    raise Exception("get_by_parl_affil_id: for ID %s found %s, but mp_id %s already used for %s" % (
+                        parlid, pol, parl_mp_id, mpid_info.politician))
             except PoliticianInfo.DoesNotExist:
                 pol.set_info('parl_mp_id', parl_mp_id, overwrite=False)
 
@@ -272,8 +271,10 @@ class PoliticianManager(models.Manager):
         xml_resp.raise_for_status()
         xml_doc = lxml.etree.fromstring(xml_resp.content)
 
-        polname = xml_doc.findtext('MemberOfParliamentRole/PersonOfficialFirstName'
-            ) + ' ' + xml_doc.findtext('MemberOfParliamentRole/PersonOfficialLastName')
+        polname = (
+            xml_doc.findtext('MemberOfParliamentRole/PersonOfficialFirstName')
+            + ' '
+            + xml_doc.findtext('MemberOfParliamentRole/PersonOfficialLastName'))
         polriding = xml_doc.findtext('MemberOfParliamentRole/ConstituencyName')
 
         try:
@@ -281,8 +282,8 @@ class PoliticianManager(models.Manager):
         except Riding.DoesNotExist:
             raise Politician.DoesNotExist("Couldn't find riding %s" % polriding)
         if riding_name and riding != Riding.objects.get_by_name(riding_name):
-            raise Exception("Pol get_by_id sanity check failed: XML riding %s doesn't match provided name %s"
-                % (polriding, riding_name))
+            raise Exception("Pol get_by_id sanity check failed: XML riding %s doesn't match provided name %s" % (
+                polriding, riding_name))
         if session:
             pol = self.get_by_name(name=polname, session=session, riding=riding)
         else:
@@ -443,15 +444,15 @@ class Politician(Person):
         try:
             info = self.politicianinfo_set.get(schema=key)
             if not overwrite:
-                raise ValueError("Cannot overwrite key %s on %s with %s"
-                    %(key, self, value))
+                raise ValueError("Cannot overwrite key %s on %s with %s" % (key, self, value))
         except PoliticianInfo.DoesNotExist:
             info = PoliticianInfo(politician=self, schema=key)
         except PoliticianInfo.MultipleObjectsReturned:
-            logger.error("Multiple objects found for schema %s on politician %r: %r" %
-                (key, self,
-                 self.politicianinfo_set.filter(schema=key).values_list('value', flat=True)
-                    ))
+            logger.error("Multiple objects found for schema %s on politician %r: %r" % (
+                key,
+                self,
+                self.politicianinfo_set.filter(schema=key).values_list('value', flat=True)
+            ))
             self.politicianinfo_set.filter(schema=key).delete()
             info = PoliticianInfo(politician=self, schema=key)
         info.value = str(value)
@@ -711,7 +712,8 @@ class ElectedMemberManager(models.Manager):
         return self.get_queryset().filter(end_date__isnull=False)
 
     def on_date(self, date):
-        return self.get_queryset().filter(models.Q(start_date__lte=date)
+        return self.get_queryset().filter(
+            models.Q(start_date__lte=date)
             & (models.Q(end_date__isnull=True) | models.Q(end_date__gte=date)))
 
     def get_by_pol(self, politician, date=None, session=None):

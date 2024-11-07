@@ -8,8 +8,7 @@ from parliament.elections.models import Candidacy
 
 
 @transaction.atomic
-def import_ec_results(election, url="http://enr.elections.ca/DownloadResults.aspx",
-        allow_preliminary=False):
+def import_ec_results(election, url="http://enr.elections.ca/DownloadResults.aspx", allow_preliminary=False):
     """Import an election from the text format used on enr.elections.ca
     (after the 2011 general election)"""
 

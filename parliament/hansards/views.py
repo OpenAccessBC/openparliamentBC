@@ -19,8 +19,7 @@ from parliament.text_analysis.views import TextAnalysisView
 
 def _get_hansard(year, month, day):
     try:
-        return get_object_or_404(Document.debates,
-            date=datetime.date(int(year), int(month), int(day)))
+        return get_object_or_404(Document.debates, date=datetime.date(int(year), int(month), int(day)))
     except ValueError:
         raise Http404
 class HansardView(ModelDetailView):
@@ -35,8 +34,7 @@ class HansardView(ModelDetailView):
 
     def get_related_resources(self, request, obj, result):
         return {
-            'speeches_url': reverse('speeches') + '?' +
-                urlencode({'document': result['url']}),
+            'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']}),
             'debates_url': reverse('debates')
         }
 hansard = HansardView.as_view()
@@ -56,8 +54,7 @@ class HansardStatementView(ModelDetailView):
 
     def get_related_resources(self, request, qs, result):
         return {
-            'document_speeches_url': reverse('speeches') + '?' +
-                urlencode({'document': result['document_url']}),
+            'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
         }
 
     def get_html(self, request, year, month, day, slug):
@@ -177,7 +174,8 @@ class SpeechesView(ModelListView):
         'document': document_filter,
         'politician': APIFilters.politician(),
         'politician_membership': APIFilters.fkey(lambda u: {'member': u[-1]}),
-        'time': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'time': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help="e.g. time__range=2012-10-19 10:00,2012-10-19 11:00"),
         'mentioned_politician': APIFilters.politician('mentioned_politicians'),
         'mentioned_bill': APIFilters.fkey(lambda u: {
@@ -211,8 +209,7 @@ class DebatePermalinkView(ModelDetailView):
 
     def get_html(self, request, **kwargs):
         doc, statement = self._get_objs(request, **kwargs)
-        return statement_permalink(request, doc, statement, "hansards/statement_permalink.html",
-            hansard=doc)
+        return statement_permalink(request, doc, statement, "hansards/statement_permalink.html", hansard=doc)
 debate_permalink = DebatePermalinkView.as_view()
 
 def statement_permalink(request, doc, statement, template, **kwargs):
@@ -263,7 +260,8 @@ class APIArchiveView(ModelListView):
 
     filters = {
         'session': APIFilters.dbfield(help='e.g. 41-1'),
-        'date': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'date': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help='e.g. date__range=2010-01-01,2010-09-01'),
         'number': APIFilters.dbfield(help='each Hansard in a session is given a sequential #'),
     }
@@ -311,7 +309,7 @@ class HansardAnalysisView(TextAnalysisView):
         request.hansard = h
         qs = h.statement_set.all()
         # if 'party' in request.GET:
-            # qs = qs.filter(member__party__slug=request.GET['party'])
+        #     qs = qs.filter(member__party__slug=request.GET['party'])
         return qs
 
     def get_analysis(self, request, **kwargs):

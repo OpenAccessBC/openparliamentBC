@@ -67,6 +67,5 @@ def index_qs(qs, batchsize=1000):
         print(i * batchsize)
 
 def index_objects(model_objs):
-    prepared_objs = [get_search_dict(o)
-                        for o in model_objs if o.search_should_index()]
+    prepared_objs = [get_search_dict(o) for o in model_objs if o.search_should_index()]
     get_pysolr_instance().add(prepared_objs)

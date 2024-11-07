@@ -74,8 +74,7 @@ def get_twitter_share_url(url, description, add_plug=True):
 
 #http://stackoverflow.com/questions/561486/how-to-convert-an-integer-to-the-shortest-url-safe-string-in-python
 
-ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
-           string.digits + '-_'
+ALPHABET = string.ascii_uppercase + string.ascii_lowercase + string.digits + '-_'
 ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
@@ -127,10 +126,8 @@ def settings_context(request):
 class AutoprefixerFilter(CompilerFilter):
     command = "{binary} {args} -o {outfile} {infile}"
     options = (
-        ("binary", getattr(settings, "COMPRESS_AUTOPREFIXER_BINARY",
-            './node_modules/.bin/postcss')),
-        ("args", getattr(settings, "COMPRESS_AUTOPREFIXER_ARGS",
-           '--use autoprefixer --autoprefixer.browsers "> 1%"')),
+        ("binary", getattr(settings, "COMPRESS_AUTOPREFIXER_BINARY", './node_modules/.bin/postcss')),
+        ("args", getattr(settings, "COMPRESS_AUTOPREFIXER_ARGS", '--use autoprefixer --autoprefixer.browsers "> 1%"')),
     )
 
 class ListingCompressorFinder(staticfiles.finders.BaseStorageFinder):

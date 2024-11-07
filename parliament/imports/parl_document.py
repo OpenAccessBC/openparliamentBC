@@ -232,7 +232,8 @@ def _align_sequences(new_statements, old_statements):
             for old, new in zip(olds, news):
                 score = calculate_similarity(old, new)
                 if score < 0.9:
-                    logger.warning("Low similarity for easy match %s: %r %r / %r %r"
+                    logger.warning(
+                        "Low similarity for easy match %s: %r %r / %r %r"
                         % (score, old, old.text_plain(), new, new.text_plain()))
                 mappings.append((old.sequence, new.slug))
         else:
@@ -248,14 +249,16 @@ def _align_sequences(new_statements, old_statements):
                 choice, score = max(scores, key=lambda s: s[1])
                 chosen.add(choice)
                 if score < 0.75:
-                    logger.warning("Low-score similarity match %s: %r %r / %r %r"
+                    logger.warning(
+                        "Low-score similarity match %s: %r %r / %r %r"
                         % (score, old, old.text_plain(), choice, choice.text_plain()))
                 mappings.append((old.sequence, choice.slug))
 
     return mappings
 
 def _process_related_links(content, statement):
-    return re.sub(r'<a class="related_link (\w+)" ([^>]+)>(.*?)</a>',
+    return re.sub(
+        r'<a class="related_link (\w+)" ([^>]+)>(.*?)</a>',
         lambda m: _process_related_link(m, statement),
         content)
 
@@ -282,14 +285,16 @@ def _process_related_link(match, statement):
             if not match:
                 logger.error("Invalid bill link %s" % text)
                 return text
-            bill = Bill.objects.create_temporary_bill(legisinfo_id=hocid,
+            bill = Bill.objects.create_temporary_bill(
+                legisinfo_id=hocid,
                 number=match.group(0), session=statement.document.session)
             url = bill.get_absolute_url()
         title = bill.name
         statement._related_bills.add(bill)
     elif link_type == 'vote':
         try:
-            vote = VoteQuestion.objects.get(session=statement.document.session,
+            vote = VoteQuestion.objects.get(
+                session=statement.document.session,
                 number=int(params['number']))
             url = vote.get_absolute_url()
             title = vote.description
@@ -297,8 +302,7 @@ def _process_related_link(match, statement):
         except VoteQuestion.DoesNotExist:
             # We'll just operate on faith that the vote will soon
             # be created
-            url = reverse('vote',
-                kwargs={'session_id': statement.document.session_id, 'number': params['number']})
+            url = reverse('vote', kwargs={'session_id': statement.document.session_id, 'number': params['number']})
             title = None
     else:
         raise Exception("Unknown link type %s" % link_type)
@@ -353,7 +357,8 @@ def fetch_latest_debates(session=None):
 
 
 def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_ids=True):
-    url = HANSARD_URL.format(parliamentnum=session.parliamentnum,
+    url = HANSARD_URL.format(
+        parliamentnum=session.parliamentnum,
         sessnum=session.sessnum, sitting=sitting_number, lang='E')
     resp = requests.get(url)
     if resp.status_code != 200:
@@ -363,7 +368,8 @@ def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_i
     print(url)
 
     xml_en = resp.content
-    url = HANSARD_URL.format(parliamentnum=session.parliamentnum,
+    url = HANSARD_URL.format(
+        parliamentnum=session.parliamentnum,
         sessnum=session.sessnum, sitting=sitting_number, lang='F')
     resp = requests.get(url)
     resp.raise_for_status()
@@ -374,8 +380,7 @@ def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_i
 
     source_id = int(doc_en.get('id'))
     if Document.objects.filter(source_id=source_id).exists():
-        raise Exception("Document at source_id %s already exists but not sitting %s" %
-            (source_id, sitting_number))
+        raise Exception("Document at source_id %s already exists but not sitting %s" % (source_id, sitting_number))
     assert int(doc_fr.get('id')) == source_id
 
     if ((not import_without_paragraph_ids) and
@@ -398,9 +403,11 @@ def refresh_xml(document):
     Download new XML from Parliament, reimport.
     """
     if document.document_type == Document.DEBATE:
-        url_en = HANSARD_URL.format(parliamentnum=document.session.parliamentnum,
+        url_en = HANSARD_URL.format(
+            parliamentnum=document.session.parliamentnum,
             sessnum=document.session.sessnum, sitting=int(document.number), lang='E')
-        url_fr = HANSARD_URL.format(parliamentnum=document.session.parliamentnum,
+        url_fr = HANSARD_URL.format(
+            parliamentnum=document.session.parliamentnum,
             sessnum=document.session.sessnum, sitting=int(document.number), lang='F')
     else:
         raise NotImplementedError

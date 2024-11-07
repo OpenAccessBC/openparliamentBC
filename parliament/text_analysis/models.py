@@ -14,8 +14,7 @@ from parliament.text_analysis.analyze import analyze_statements
 
 class TextAnalysisManager(models.Manager):
 
-    def get_or_create_from_statements(self, key, qs, corpus_name,
-            lang=settings.LANGUAGE_CODE, always_update=False, expiry_days=None):
+    def get_or_create_from_statements(self, key, qs, corpus_name, lang=settings.LANGUAGE_CODE, always_update=False, expiry_days=None):
         try:
             analysis = self.get(key=key, lang=lang)
             if analysis.expired:

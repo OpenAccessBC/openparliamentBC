@@ -51,8 +51,11 @@ def memcached_status(request):
 
     host.close_socket()
 
-    return render(request, 'memcached_status.html', dict(
+    return render(
+        request,
+        'memcached_status.html',
+        dict(
             stats=stats,
             hit_rate=100 * stats.get_hits / stats.cmd_get,
             time=datetime.datetime.now(), # server time
-    ))
+        ))

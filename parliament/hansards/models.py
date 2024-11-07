@@ -57,9 +57,11 @@ class Document(models.Model):
     most_frequent_word = models.CharField(max_length=20, blank=True)
     wordcloud = models.ImageField(upload_to='autoimg/wordcloud', blank=True, null=True)
 
-    downloaded = models.BooleanField(default=False,
+    downloaded = models.BooleanField(
+        default=False,
         help_text="Has the source data been downloaded?")
-    skip_parsing = models.BooleanField(default=False,
+    skip_parsing = models.BooleanField(
+        default=False,
         help_text="Don't try to parse this, presumably because of errors in the source.")
 
     public = models.BooleanField("Display on site?", default=False)
@@ -306,8 +308,7 @@ class Statement(models.Model):
     content_fr = models.TextField(blank=True)
     sequence = models.IntegerField(db_index=True)
     wordcount = models.IntegerField()
-    wordcount_en = models.PositiveSmallIntegerField(null=True,
-        help_text="# words originally spoken in English")
+    wordcount_en = models.PositiveSmallIntegerField(null=True, help_text="# words originally spoken in English")
 
     procedural = models.BooleanField(default=False, db_index=True)
     written_question = models.CharField(max_length=1, blank=True, choices=(
@@ -341,7 +342,7 @@ class Statement(models.Model):
                 (parsetools.r_notamember.search(self.who) and re.search(r'(Speaker|Chair|président)', self.who))
                 or (not self.who)
                 or not any(p for p in self.content_en.split('\n') if 'class="procedural"' not in p)
-            )):
+        )):
             # Some form of routine, procedural statement (e.g. somethng short by the speaker)
             self.procedural = True
         if not self.urlcache:
@@ -387,8 +388,7 @@ class Statement(models.Model):
         if not (self.content_en and self.content_fr):
             return ''
 
-        lang_matches = re.finditer(r'data-originallang="(\w\w)"',
-            getattr(self, 'content_' + settings.LANGUAGE_CODE))
+        lang_matches = re.finditer(r'data-originallang="(\w\w)"', getattr(self, 'content_' + settings.LANGUAGE_CODE))
         if any(m.group(1) != settings.LANGUAGE_CODE for m in lang_matches):
             return self.content_floor()
 
@@ -492,7 +492,8 @@ class Statement(models.Model):
             content={'en': self.content_en, 'fr': self.content_fr},
             url=self.get_absolute_url(),
             politician_url=self.politician.get_absolute_url() if self.politician else None,
-            politician_membership_url=reverse('politician_membership',
+            politician_membership_url=reverse(
+                'politician_membership',
                 kwargs={'member_id': self.member_id}) if self.member_id else None,
             procedural=self.procedural,
             source_id=self.source_id

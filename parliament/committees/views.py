@@ -59,8 +59,7 @@ class CommitteeView(ModelDetailView):
 
     def get_related_resources(self, request, qs, result):
         return {
-            'meetings_url': reverse('committee_meetings') + '?' +
-                urlencode({'committee': self.kwargs['slug']}),
+            'meetings_url': reverse('committee_meetings') + '?' + urlencode({'committee': self.kwargs['slug']}),
             'committees_url': reverse('committee_list')
         }
 
@@ -142,13 +141,16 @@ class CommitteeMeetingListView(ModelListView):
     resource_name = 'Committee meetings'
 
     filters = {
-        'number': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'number': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help="each meeting in a session is given a sequential #"),
         'session': APIFilters.dbfield(help="e.g. 41-1"),
-        'date': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'date': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help="e.g. date__gt=2010-01-01"),
         'in_camera': APIFilters.dbfield(help="closed to the public? True, False"),
-        'committee': APIFilters.fkey(lambda u: {'committee__slug': u[-1]},
+        'committee': APIFilters.fkey(
+            lambda u: {'committee__slug': u[-1]},
             help="e.g. /committees/aboriginal-affairs")
     }
 
@@ -166,8 +168,7 @@ class CommitteeMeetingView(ModelDetailView):
     def get_related_resources(self, request, obj, result):
         if obj.evidence_id:
             return {
-                'speeches_url': reverse('speeches') + '?' +
-                    urlencode({'document': result['url']})
+                'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']})
             }
 
     def get_html(self, request, committee_slug, session_id, number, slug=None):
@@ -233,8 +234,7 @@ class CommitteeMeetingStatementView(ModelDetailView):
 
     def get_related_resources(self, request, qs, result):
         return {
-            'document_speeches_url': reverse('speeches') + '?' +
-                urlencode({'document': result['document_url']}),
+            'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
         }
 
     def get_html(self, request, **kwargs):
@@ -253,5 +253,6 @@ def evidence_permalink(request, committee_slug, session_id, number, slug):
     doc = meeting.evidence
     statement = get_object_or_404(Statement, document=doc, slug=slug)
 
-    return statement_permalink(request, doc, statement, "committees/evidence_permalink.html",
+    return statement_permalink(
+        request, doc, statement, "committees/evidence_permalink.html",
         meeting=meeting, committee=meeting.committee)

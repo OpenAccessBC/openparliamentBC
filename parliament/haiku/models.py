@@ -24,12 +24,9 @@ def validate_line(line):
         raise ValidationError("Dash")
 
 class Haiku(models.Model):
-    line1 = models.CharField(max_length=50,
-        validators=[validate_first_line, validate_line])
-    line2 = models.CharField(max_length=70,
-        validators=[validate_line])
-    line3 = models.CharField(max_length=50,
-        validators=[validate_last_line, validate_line])
+    line1 = models.CharField(max_length=50, validators=[validate_first_line, validate_line])
+    line2 = models.CharField(max_length=70, validators=[validate_line])
+    line3 = models.CharField(max_length=50, validators=[validate_last_line, validate_line])
 
     attribution = models.CharField(max_length=300)
     attribution_url = models.CharField(max_length=100)

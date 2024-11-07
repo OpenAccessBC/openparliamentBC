@@ -52,7 +52,8 @@ class Election (models.Model):
 
 class CandidacyManager(models.Manager):
 
-    def create_from_name(self, first_name, last_name, riding, party, election,
+    def create_from_name(
+            self, first_name, last_name, riding, party, election,
             votetotal, elected, votepercent=None, occupation='', interactive=True):
         """Create a Candidacy based on a candidate's name; checks for prior
         Politicians representing the same person.
@@ -124,9 +125,7 @@ class Candidacy (models.Model):
         try:
             member = ElectedMember.objects\
                 .filter(models.Q(end_date__isnull=True) | models.Q(end_date=self.election.date))\
-                .get(politician=self.candidate,
-                riding=self.riding,
-                party=self.party)
+                .get(politician=self.candidate, riding=self.riding, party=self.party)
             member.end_date = None
             member.save()
         except ElectedMember.DoesNotExist:

@@ -28,7 +28,9 @@ class Committee(models.Model):
     name_fr = models.TextField(blank=True)
     short_name_fr = models.TextField(blank=True)
     slug = models.SlugField(unique=True)
-    parent = models.ForeignKey('self', related_name='subcommittees',
+    parent = models.ForeignKey(
+        'self',
+        related_name='subcommittees',
         blank=True, null=True, on_delete=models.CASCADE)
     sessions = models.ManyToManyField(Session, through='CommitteeInSession')
     joint = models.BooleanField('Joint committee?', default=False)
@@ -88,7 +90,8 @@ class Committee(models.Model):
             parent_url=self.parent.get_absolute_url() if self.parent else None,
         )
         if representation == 'detail':
-            d['sessions'] = [{
+            d['sessions'] = [
+                {
                     'session': cis.session_id,
                     'acronym': cis.acronym,
                     'source_url': cis.get_source_url(),
@@ -230,9 +233,9 @@ class CommitteeMeeting(models.Model):
 
     def get_absolute_url(self, pretty=True):
         slug = self.committee.slug if pretty else self.committee_id
-        return reverse('committee_meeting',
-            kwargs={'session_id': self.session_id, 'committee_slug': slug,
-             'number': self.number})
+        return reverse(
+            'committee_meeting',
+            kwargs={'session_id': self.session_id, 'committee_slug': slug, 'number': self.number})
 
     @property
     def minutes_url(self):

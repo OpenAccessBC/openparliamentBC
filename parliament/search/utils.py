@@ -46,16 +46,12 @@ class BaseSearchQuery(object):
             self.filters[match.group(1)] = match.group(2)
             return ''
 
-        self.bare_query = re.sub(r'(%s): "([^"]+)"' % '|'.join(self.ALLOWABLE_FILTERS),
-            extract_filter, self.raw_query)
+        self.bare_query = re.sub(r'(%s): "([^"]+)"' % '|'.join(self.ALLOWABLE_FILTERS), extract_filter, self.raw_query)
         self.bare_query = re.sub(r'\s\s+', ' ', self.bare_query).strip()
 
     @property
     def normalized_query(self):
-        q = (self.bare_query
-            + (' ' if self.bare_query and self.filters else '')
-            + ' '.join((
-                '%s: "%s"' % (key, self.filters[key])
-                for key in sorted(self.filters.keys())
-        )))
+        query_sep = ' ' if self.bare_query and self.filters else ''
+        query_filter = ' '.join(('%s: "%s"' % (key, self.filters[key]) for key in sorted(self.filters.keys())))
+        q = self.bare_query + query_sep + query_filter
         return q.strip()

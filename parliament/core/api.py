@@ -67,8 +67,8 @@ class APIView(View):
 
         method = request.method.lower()
 
-        request.api_request = (request.get_host().lower().startswith(settings.PARLIAMENT_API_HOST)
-                              or request.GET.get('format'))
+        request.api_request = (
+            request.get_host().lower().startswith(settings.PARLIAMENT_API_HOST) or request.GET.get('format'))
 
         if request.api_request:
             format = self.get_api_format(request)
@@ -103,7 +103,8 @@ class APIView(View):
         return resp
 
     def format_not_allowed(self, request):
-        return HttpResponse("This resource is not available in the requested format.",
+        return HttpResponse(
+            "This resource is not available in the requested format.",
             content_type='text/plain', status=406)
 
     def process_default(self, result, request, **kwargs):
@@ -113,7 +114,8 @@ class APIView(View):
         if isinstance(result, HttpResponse):
             return result
 
-        pretty_print = (kwargs.pop('pretty_print')
+        pretty_print = (
+            kwargs.pop('pretty_print')
             if kwargs.get('pretty_print') is not None
             else request.GET.get('indent'))
 
@@ -160,8 +162,7 @@ class APIView(View):
 
 class APIFilters(object):
 
-    string_filters = ['exact', 'iexact', 'contains', 'icontains',
-        'startswith', 'istartswith', 'endswith', 'iendswith']
+    string_filters = ['exact', 'iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith']
 
     numeric_filters = ['exact', 'gt', 'gte', 'lt', 'lte', 'isnull', 'range']
 
@@ -210,8 +211,8 @@ class APIFilters(object):
 
     @staticmethod
     def politician(field_name='politician'):
-        return APIFilters.fkey(lambda u: ({field_name: u[-1]} if u[-1].isdigit()
-            else {field_name + '__slug': u[-1]}),
+        return APIFilters.fkey(
+            lambda u: ({field_name: u[-1]} if u[-1].isdigit() else {field_name + '__slug': u[-1]}),
             help="e.g. /politicians/tony-clement/")
 
     @staticmethod
@@ -222,8 +223,7 @@ class APIFilters(object):
         choices = model._meta.get_field(field_name).choices
         def inner(qs, view, filter_name, filter_extra, val):
             try:
-                search_val = next(c[0] for c in choices
-                    if val in c)
+                search_val = next(c[0] for c in choices if val in c)
             except StopIteration:
                 raise BadRequest("Invalid value for %s" % filter_name)
             return qs.filter(**{field_name: search_val})
@@ -466,7 +466,6 @@ class APIPaginator(object):
         else:
             page_data['next_url'] = None
 
-        page_data['previous_url'] = (self._generate_uri(limit, offset - limit)
-            if offset > 0 else None)
+        page_data['previous_url'] = (self._generate_uri(limit, offset - limit) if offset > 0 else None)
 
         return (objects, page_data)

@@ -46,18 +46,18 @@ class BillManager(models.Manager):
                     "There's already a bill with LEGISinfo id %s" % legisinfo_id)
         try:
             bill = Bill.objects.get(number=number, sessions=session)
-            logger.error("Potential duplicate LEGISinfo ID: %s in %s exists, but trying to create with ID %s" %
+            logger.error(
+                "Potential duplicate LEGISinfo ID: %s in %s exists, but trying to create with ID %s" %
                 (number, session, legisinfo_id))
             return bill
         except Bill.DoesNotExist:
             bill = self.create(number=number)
-            BillInSession.objects.create(bill=bill, session=session,
-                    legisinfo_id=legisinfo_id)
+            BillInSession.objects.create(bill=bill, session=session, legisinfo_id=legisinfo_id)
             return bill
 
     def recently_active(self, number=12):
-        return Bill.objects.filter(status_date__isnull=False).exclude(models.Q(privatemember=True)
-            & models.Q(status_code='Introduced')).order_by('-status_date')[:number]
+        return Bill.objects.filter(status_date__isnull=False).exclude(
+            models.Q(privatemember=True) & models.Q(status_code='Introduced')).order_by('-status_date')[:number]
 
 
 @register_search_model
@@ -136,7 +136,8 @@ class Bill(models.Model):
 
     added = models.DateField(default=datetime.date.today, db_index=True)
     introduced = models.DateField(blank=True, null=True)
-    text_docid = models.IntegerField(blank=True, null=True,
+    text_docid = models.IntegerField(
+        blank=True, null=True,
         help_text="The parl.gc.ca document ID of the latest version of the bill's text")
 
     objects = BillManager()
@@ -245,12 +246,10 @@ class Bill(models.Model):
         for stage in data:
             if stage.get('CommitteeMeetings'):
                 acronym = stage['CommitteeMeetings'][0]['CommitteeAcronym']
-                numbers = [int(s['Number']) for s in stage['CommitteeMeetings']
-                    if s['CommitteeAcronym'] == acronym]
+                numbers = [int(s['Number']) for s in stage['CommitteeMeetings'] if s['CommitteeAcronym'] == acronym]
                 session = "%s-%s" % (stage['ParliamentNumber'], stage['SessionNumber'])
                 cmte = Committee.objects.get_by_acronym(acronym, session)
-                return CommitteeMeeting.objects.filter(committee=cmte,
-                    session=session, number__in=numbers)
+                return CommitteeMeeting.objects.filter(committee=cmte, session=session, number__in=numbers)
         return CommitteeMeeting.objects.none()
 
     def _get_related_debates_info(self):
@@ -270,17 +269,18 @@ class Bill(models.Model):
     def get_second_reading_debate(self):
         """Returns a QuerySet of Statements representing the second-reading debate
         of this bill."""
-        second_reading_sittings = [d for d in self._get_related_debates_info()
+        second_reading_sittings = [
+            d for d in self._get_related_debates_info()
             if d['name'] == "Debate at second reading"]
         if not second_reading_sittings:
             return Statement.objects.none()
-        debate_ids = Document.debates.filter(date__in=[s['date'] for s in second_reading_sittings]
-            ).values_list('id', flat=True)
+        debate_ids = Document.debates.filter(date__in=[s['date'] for s in second_reading_sittings]).values_list('id', flat=True)
         qs = Statement.objects.filter(document__in=debate_ids)
         if self.short_title_en:
             qs = qs.filter(h2_en=self.short_title_en)
         else:
-            speech_headings = self.statement_set.filter(document__in=debate_ids,
+            speech_headings = self.statement_set.filter(
+                document__in=debate_ids,
                 h1_en='Government Orders').values_list('h2_en', flat=True)
             if not speech_headings:
                 return Statement.objects.none()
@@ -394,10 +394,12 @@ class BillInSession(models.Model):
                 home_chamber=self.bill.get_institution_display(),
                 law=self.bill.law,
                 sponsor_politician_url=self.sponsor_politician.get_absolute_url() if self.sponsor_politician else None,
-                sponsor_politician_membership_url=reverse('politician_membership',
+                sponsor_politician_membership_url=reverse(
+                    'politician_membership',
                     kwargs={'member_id': self.sponsor_member_id}) if self.sponsor_member_id else None,
                 text_url=self.bill.get_billtext_url(),
-                other_session_urls=[self.bill.url_for_session(s)
+                other_session_urls=[
+                    self.bill.url_for_session(s)
                     for s in self.bill.sessions.all()
                     if s.id != self.session_id],
                 vote_urls=[vq.get_absolute_url() for vq in VoteQuestion.objects.filter(bill=self.bill_id)],
@@ -475,8 +477,7 @@ class VoteQuestion(models.Model):
     yea_total = models.SmallIntegerField()
     nay_total = models.SmallIntegerField()
     paired_total = models.SmallIntegerField()
-    context_statement = models.ForeignKey('hansards.Statement',
-        blank=True, null=True, on_delete=models.SET_NULL)
+    context_statement = models.ForeignKey('hansards.Statement', blank=True, null=True, on_delete=models.SET_NULL)
 
     description = language_property('description')
 
@@ -547,10 +548,10 @@ class VoteQuestion(models.Model):
             PartyVote.objects.create(party=party, votequestion=self, vote=partyvotes[party], disagreement=disagreement)
 
         for mv in membervotes:
-            if mv.member.party.name != 'Independent' \
-              and mv.vote != partyvotes[mv.member.party] \
-              and mv.vote in ('Y', 'N') \
-              and partyvotes[mv.member.party] in ('Y', 'N'):
+            if (mv.member.party.name != 'Independent' and
+                    mv.vote != partyvotes[mv.member.party] and
+                    mv.vote in ('Y', 'N') and
+                    partyvotes[mv.member.party] in ('Y', 'N')):
                 mv.dissent = True
                 mv.save()
 
@@ -582,7 +583,8 @@ class MemberVote(models.Model):
         return {
             'vote_url': self.votequestion.get_absolute_url(),
             'politician_url': self.politician.get_absolute_url(),
-            'politician_membership_url': reverse('politician_membership',
+            'politician_membership_url': reverse(
+                'politician_membership',
                 kwargs={'member_id': self.member_id}) if self.member_id else None,
             'ballot': self.get_vote_display(),
         }

@@ -28,9 +28,12 @@ def prune_activities():
     return True
 
 def committee_evidence():
-    for document in Document.evidence\
-      .annotate(scount=models.Count('statement'))\
-      .exclude(scount__gt=0).exclude(skip_parsing=True).order_by('date').iterator():
+    evidences = (Document.evidence
+                 .annotate(scount=models.Count('statement'))
+                 .exclude(scount__gt=0)
+                 .exclude(skip_parsing=True)
+                 .order_by('date'))
+    for document in evidences.iterator():
         try:
             print(document)
             parl_document.import_document(document, interactive=False)
@@ -60,9 +63,13 @@ def hansards_load():
     parl_document.fetch_latest_debates()
 
 def hansards_parse():
-    for hansard in Document.objects.filter(document_type=Document.DEBATE)\
-      .annotate(scount=models.Count('statement'))\
-      .exclude(scount__gt=0).exclude(skip_parsing=True).order_by('date').iterator():
+    debates = (Document.objects
+               .filter(document_type=Document.DEBATE)
+               .annotate(scount=models.Count('statement'))
+               .exclude(scount__gt=0)
+               .exclude(skip_parsing=True)
+               .order_by('date'))
+    for hansard in debates.iterator():
         with transaction.atomic():
             try:
                 with transaction.atomic():

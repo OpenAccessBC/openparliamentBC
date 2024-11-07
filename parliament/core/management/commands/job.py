@@ -18,8 +18,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('jobname', type=str)
-        parser.add_argument('--pdb', action='store_true', dest='pdb',
-            help='Launch into Python debugger on exception')
+        parser.add_argument('--pdb', action='store_true', dest='pdb', help='Launch into Python debugger on exception')
 
     def handle(self, jobname, **options):
         try:

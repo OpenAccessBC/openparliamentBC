@@ -38,8 +38,7 @@ class TokenError(Exception):
         self.email = email
 
 class LoginToken(models.Model):
-    token = models.CharField(max_length=40, primary_key=True,
-        default=_random_token)
+    token = models.CharField(max_length=40, primary_key=True, default=_random_token)
     email = models.EmailField()
     created = models.DateTimeField(default=datetime.datetime.now)
     requesting_ip = models.GenericIPAddressField()
@@ -58,7 +57,8 @@ class LoginToken(models.Model):
         login_url = reverse('token_login', kwargs={'token': lt.token})
         ctx = {'login_url': login_url, 'email': email}
         t = loader.get_template("accounts/token_login.txt")
-        send_mail(subject='Log in to openparliament.ca',
+        send_mail(
+            subject='Log in to openparliament.ca',
             message=t.render(ctx),
             from_email='alerts@contact.openparliament.ca',
             recipient_list=[email])
@@ -69,15 +69,19 @@ class LoginToken(models.Model):
         try:
             lt = cls.objects.get(token=token)
         except cls.DoesNotExist:
-            raise TokenError("That login code couldn't be found. Try cutting and pasting it directly "
+            raise TokenError(
+                "That login code couldn't be found. Try cutting and pasting it directly "
                 "from your email to your browser's address bar.")
 
         if lt.used:
-            raise TokenError("That login code has already been used. You can request another login email on this page.",
+            raise TokenError(
+                "That login code has already been used. You can request another login email on this page.",
                 email=lt.email)
 
         if (datetime.datetime.now() - lt.created) > cls.MAX_TOKEN_AGE:
-            raise TokenError("That login code has expired. Please enter your email again, then click the link within a few hours.", email=lt.email)
+            raise TokenError(
+                "That login code has expired. Please enter your email again, then click the link within a few hours.",
+                email=lt.email)
 
         lt.login_ip = login_ip
         lt.used = True

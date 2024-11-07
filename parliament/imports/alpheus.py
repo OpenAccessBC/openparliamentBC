@@ -219,13 +219,13 @@ class ParseHandler(object):
     # We include the text contents of the tag. Tags in this list won't generate
     # "unknown tag" errors
     IGNORE_TAGS = ['Quote', 'QuotePara', 'ForceColumnBreak',
-                    'SubjectOfBusinessContent', 'Content', 'HansardBody',
-                    'Intro', 'Poetry', 'Query', 'Motion',
-                    'MotionBody', 'CommitteeQuote', 'LegislationQuote',
-                    'Pause', 'StartPause', 'EndPause', 'Date', 'Insertion',
-                    'colspec', 'tgroup', 'tbody', 'thead', 'title',
-                    'EditorsNotes',
-                    etree.ProcessingInstruction] + list(PASSTHROUGH_TAGS.keys())
+                   'SubjectOfBusinessContent', 'Content', 'HansardBody',
+                   'Intro', 'Poetry', 'Query', 'Motion',
+                   'MotionBody', 'CommitteeQuote', 'LegislationQuote',
+                   'Pause', 'StartPause', 'EndPause', 'Date', 'Insertion',
+                   'colspec', 'tgroup', 'tbody', 'thead', 'title',
+                   'EditorsNotes',
+                   etree.ProcessingInstruction] + list(PASSTHROUGH_TAGS.keys())
 
 
     def __init__(self, document):
@@ -295,9 +295,9 @@ class ParseHandler(object):
         if self.current_statement:
             # If this "new person" is the same as the last person,
             # don't start a new statement
-            if ((hoc_id and hoc_id == self.current_statement.meta.get('person_id'))
-              or ((not hoc_id) and
-              _letters_only(stripped_description) == _letters_only(_strip_person_name(self.current_statement.meta.get('person_attribution'))))):
+            if ((hoc_id and hoc_id == self.current_statement.meta.get('person_id')) or (
+                (not hoc_id) and _letters_only(stripped_description) == _letters_only(
+                    _strip_person_name(self.current_statement.meta.get('person_attribution'))))):
                 if not _r_indeterminate.search(description):
                     # (Though if it's "An hon. member", two in a row *can* be different people.)
                     return False
@@ -379,14 +379,15 @@ class ParseHandler(object):
                     hoc_id = sub[0].get('DbId')
                 else:
                     hoc_id = None
+
                 person_attribution = _tame_whitespace(sub[0].text.replace(':', ''))
-                if (hoc_id != self.main_statement_speaker[0]
-                  and (not _letters_only(self.main_statement_speaker[1]).startswith(
-                  _letters_only(person_attribution)))
-                  and not _r_honorific.search(person_attribution)):
-                  # If we're not switching back to the main speaker,
-                  # and this is an interjection from a generic role -- e.g. Des voix --
-                  # save a flag to switch back on the next line.
+                if (
+                    hoc_id != self.main_statement_speaker[0]
+                        and (not _letters_only(self.main_statement_speaker[1]).startswith(_letters_only(person_attribution)))
+                        and not _r_honorific.search(person_attribution)):
+                    # If we're not switching back to the main speaker,
+                    # and this is an interjection from a generic role -- e.g. Des voix --
+                    # save a flag to switch back on the next line.
                     self.one_liner = (True, el.getparent())
                 else:
                     self.one_liner = None
@@ -463,7 +464,8 @@ class ParseHandler(object):
 
     @_only_open
     def handle_ThroneSpeech(self, el, openclose):
-        self._new_person(None,
+        self._new_person(
+            None,
             "The Governor General" if self.document_language[0] == 'e'
             else "Le gouverneur général")
 
@@ -544,8 +546,7 @@ class ParseHandler(object):
         return NO_DESCEND
 
     def handle_SubjectOfBusiness(self, el, openclose):
-        if openclose == TAG_CLOSE\
-          and 'h3' in self.current_attributes:
+        if openclose == TAG_CLOSE and 'h3' in self.current_attributes:
             del self.current_attributes['h3']
 
     def handle_OrderOfBusiness(self, el, openclose):
@@ -615,8 +616,7 @@ class ParseHandler(object):
             self.document_language[0].upper(), self.parliament, self.session, num)
         self._add_code('%s%sVote #%s</a></p>' % (
             _build_tag('p', {'class': 'division procedural'}),
-            _build_tag('a', {'class': 'related_link vote', 'href': url,
-                    'data-number': num, 'data-HoCid': el.get('id')}),
+            _build_tag('a', {'class': 'related_link vote', 'href': url, 'data-number': num, 'data-HoCid': el.get('id')}),
             num))
         return NO_DESCEND
 
@@ -715,19 +715,25 @@ def fetch_and_parse(doc_id, lang):
     return doc
 
 def main():
-    optparser = optparse.OptionParser(description="Transforms Hansard XML from the Canadian House of Commons into "
+    optparser = optparse.OptionParser(
+        description="Transforms Hansard XML from the Canadian House of Commons into "
         "an easy-to-process HTML format. If no options are specified, reads XML from stdin.")
-    optparser.add_option("-f", "--file", dest="filename",
+    optparser.add_option(
+        "-f", "--file", dest="filename",
         help="Process the XML file at FILE")
-    optparser.add_option("-i", "--docid", dest="docid",
+    optparser.add_option(
+        "-i", "--docid", dest="docid",
         help="Document ID (e.g. 5069607) on parl.gc.ca; it'll be fetched and processed", metavar="ID")
-    optparser.add_option("-l", "--language", dest="language", metavar="[E,F]", default="E",
+    optparser.add_option(
+        "-l", "--language", dest="language", metavar="[E,F]", default="E",
         help="Language of the document to download. Only necessary if alpheus is downloading from parl.gc.ca.")
 
     group = optparse.OptionGroup(optparser, "Debugging Options")
-    group.add_option("--print-names", dest="print_names", action="store_true",
+    group.add_option(
+        "--print-names", dest="print_names", action="store_true",
         help="Instead of outputting HTML, print a list of names of people speaking.")
-    group.add_option("--pdb", dest="pdb", action="store_true",
+    group.add_option(
+        "--pdb", dest="pdb", action="store_true",
         help="Drop into the Python debugger on exception")
     optparser.add_option_group(group)
 

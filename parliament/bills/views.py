@@ -21,8 +21,7 @@ from parliament.hansards.models import Statement
 def bill_pk_redirect(request, bill_id):
     bill = get_object_or_404(Bill, pk=bill_id)
     return HttpResponsePermanentRedirect(
-        reverse('bill', kwargs={
-        'session_id': bill.get_session().id, 'bill_number': bill.number}))
+        reverse('bill', kwargs={ 'session_id': bill.get_session().id, 'bill_number': bill.number }))
 
 
 class BillDetailView(ModelDetailView):
@@ -106,14 +105,18 @@ class BillListView(ModelListView):
 
     filters = {
         'session': APIFilters.dbfield(help="e.g. 41-1"),
-        'introduced': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'introduced': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help="date bill was introduced, e.g. introduced__gt=2010-01-01"),
         'legisinfo_id': APIFilters.dbfield(help="integer ID assigned by Parliament's LEGISinfo"),
-        'number': APIFilters.dbfield('bill__number',
+        'number': APIFilters.dbfield(
+            'bill__number',
             help="a string, not an integer: e.g. C-10"),
-        'law': APIFilters.dbfield('bill__law',
+        'law': APIFilters.dbfield(
+            'bill__law',
             help="did it become law? True, False"),
-        'private_member_bill': APIFilters.dbfield('bill__privatemember',
+        'private_member_bill': APIFilters.dbfield(
+            'bill__privatemember',
             help="is it a private member's bill? True, False"),
         'status_code': APIFilters.dbfield('bill__status_code'),
         'sponsor_politician': APIFilters.politician('sponsor_politician'),
@@ -175,15 +178,20 @@ class VoteListView(ModelListView):
 
     filters = {
         'session': APIFilters.dbfield(help="e.g. 41-1"),
-        'yea_total': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'yea_total': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help="# votes for"),
-        'nay_total': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'nay_total': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help="# votes against, e.g. nay_total__gt=10"),
-        'paired_total': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'paired_total': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help="paired votes are an odd convention that seem to have stopped in 2011"),
-        'date': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'date': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help="date__gte=2011-01-01"),
-        'number': APIFilters.dbfield(filter_types=APIFilters.numeric_filters,
+        'number': APIFilters.dbfield(
+            filter_types=APIFilters.numeric_filters,
             help="every vote in a session has a sequential number"),
         'bill': APIFilters.fkey(lambda u: {
             'bill__sessions': u[-2],
@@ -219,8 +227,7 @@ votes_for_session = VoteListView.as_view()
 def vote_pk_redirect(request, vote_id):
     vote = get_object_or_404(VoteQuestion, pk=vote_id)
     return HttpResponsePermanentRedirect(
-        reverse('vote', kwargs={
-        'session_id': vote.session_id, 'number': vote.number}))
+        reverse('vote', kwargs={ 'session_id': vote.session_id, 'number': vote.number }))
 
 
 class VoteDetailView(ModelDetailView):
@@ -234,8 +241,7 @@ class VoteDetailView(ModelDetailView):
 
     def get_related_resources(self, request, obj, result):
         return {
-            'ballots_url': reverse('vote_ballots') + '?' +
-                urlencode({'vote': result['url']}),
+            'ballots_url': reverse('vote_ballots') + '?' + urlencode({'vote': result['url']}),
             'votes_url': reverse('votes')
         }
 
@@ -266,10 +272,12 @@ class BallotListView(ModelListView):
                                            'votequestion__number': u[-1]},
                                 help="e.g. /votes/41-1/472/"),
         'politician': APIFilters.politician(),
-        'politician_membership': APIFilters.fkey(lambda u: {'member': u[-1]},
+        'politician_membership': APIFilters.fkey(
+            lambda u: {'member': u[-1]},
             help="e.g. /politicians/roles/326/"),
         'ballot': APIFilters.choices('vote', MemberVote),
-        'dissent': APIFilters.dbfield('dissent',
+        'dissent': APIFilters.dbfield(
+            'dissent',
             help="does this look like a vote against party line? not reliable for research. True, False")
     }
 
@@ -290,8 +298,7 @@ class BillListFeed(Feed):
         return Bill.objects.filter(introduced__isnull=False).order_by('-introduced', 'number_only')[:25]
 
     def item_title(self, item):
-        return "Bill %s (%s)" % (item.number,
-            "Private member's" if item.privatemember else "Government")
+        return "Bill %s (%s)" % (item.number, "Private member's" if item.privatemember else "Government")
 
     def item_description(self, item):
         return item.name

@@ -92,8 +92,7 @@ def _import_mps(objs, download_headshots=False, update_all_headshots=False):
                 if update_all_headshots or download_headshots:
                     pol.download_headshot(mp_info['photo_url'])
                 else:
-                    warnings.append("Photo available: %s for %s" %
-                                (mp_info.get('photo_url'), pol))
+                    warnings.append("Photo available: %s for %s" % (mp_info.get('photo_url'), pol))
 
         if mp_info.get('extra') and mp_info['extra'].get('twitter'):
             screen_name = mp_info['extra']['twitter'].split('/')[-1]

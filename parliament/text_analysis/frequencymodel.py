@@ -6,28 +6,30 @@ from collections import defaultdict
 from heapq import nlargest
 from operator import itemgetter
 
-STOPWORDS = frozenset(["i", "me", "my", "myself", "we", "our", "ours", "ourselves",
-    "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself",
-    "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their",
-    "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these",
-    "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has",
-    "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if",
-    "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about",
-    "against", "between", "into", "through", "during", "before", "after", "above",
-    "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under",
-    "again", "further", "then", "once", "here", "there", "when", "where", "why", "how",
-    "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no",
-    "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can",
-    "will", "just", "don", "should", "now", # this is the nltk stopwords list
-    "it's", "we're", "we'll", "they're", "can't", "won't", "isn't", "don't", "he's",
-    "she's", "i'm", "aren't", "government", "house", 'committee', 'would', 'speaker',
-    'motion', 'mr', 'mrs', 'ms', 'member', 'minister', 'canada', 'members', 'time',
-    'prime', 'one', 'parliament', 'us', 'bill', 'act', 'like', 'canadians', 'people',
-    'said', 'want', 'could', 'issue', 'today', 'hon', 'order', 'party', 'canadian',
-    'think', 'also', 'new', 'get', 'many', 'say', 'look', 'country', 'legislation',
-    'law', 'department', 'two', 'day', 'days', 'madam', 'must', "that's", "okay",
-    "thank", "really", "much", "there's", 'yes', 'no'
-])
+STOPWORDS = frozenset(
+    ["i", "me", "my", "myself", "we", "our", "ours", "ourselves",
+     "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself",
+     "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their",
+     "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these",
+     "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has",
+     "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if",
+     "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about",
+     "against", "between", "into", "through", "during", "before", "after", "above",
+     "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under",
+     "again", "further", "then", "once", "here", "there", "when", "where", "why", "how",
+     "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no",
+     "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can",
+     "will", "just", "don", "should", "now", # this is the nltk stopwords list
+     "it's", "we're", "we'll", "they're", "can't", "won't", "isn't", "don't", "he's",
+     "she's", "i'm", "aren't", "government", "house", "committee", "would", "speaker",
+     "motion", "mr", "mrs", "ms", "member", "minister", "canada", "members", "time",
+     "prime", "one", "parliament", "us", "bill", "act", "like", "canadians", "people",
+     "said", "want", "could", "issue", "today", "hon", "order", "party", "canadian",
+     "think", "also", "new", "get", "many", "say", "look", "country", "legislation",
+     "law", "department", "two", "day", "days", "madam", "must", "that's", "okay",
+     "thank", "really", "much", "there's", "yes", "no"
+     ]
+)
 
 
 r_punctuation = re.compile(r"[^\s\w0-9'’—-]", re.UNICODE)

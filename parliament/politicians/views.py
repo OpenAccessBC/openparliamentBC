@@ -126,8 +126,7 @@ class PoliticianView(ModelDetailView):
         return {
             'speeches_url': reverse('speeches') + pol_query,
             'ballots_url': reverse('vote_ballots') + pol_query,
-            'sponsored_bills_url': reverse('bills') + '?' +
-                urlencode({'sponsor_politician': obj.identifier}),
+            'sponsored_bills_url': reverse('bills') + '?' + urlencode({'sponsor_politician': obj.identifier}),
             'activity_rss_url': reverse('politician_activity_feed', kwargs={'pol_id': obj.id})
         }
 
@@ -136,8 +135,7 @@ class PoliticianView(ModelDetailView):
         if pol.slug and not pol_slug:
             return HttpResponsePermanentRedirect(pol.get_absolute_url())
 
-        show_statements = bool('page' in request.GET or
-            (pol.latest_member and not pol.latest_member.current))
+        show_statements = bool('page' in request.GET or (pol.latest_member and not pol.latest_member.current))
 
         if show_statements:
             STATEMENTS_PER_PAGE = 10

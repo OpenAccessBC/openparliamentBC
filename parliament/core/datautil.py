@@ -119,13 +119,12 @@ def populate_members(election, session, start_date):
     for winner in Candidacy.objects.filter(election=election, elected=True):
         candidate = winner.candidate
         try:
-            member = ElectedMember.objects.get(politician=candidate,
-                party=winner.party, riding=winner.riding, end_date__isnull=True)
+            member = ElectedMember.objects.get(
+                politician=candidate, party=winner.party, riding=winner.riding, end_date__isnull=True)
             member.sessions.add(session)
         except ElectedMember.DoesNotExist:
             em = ElectedMember.objects.create(
-                politician=candidate, start_date=start_date,
-                party=winner.party, riding=winner.riding)
+                politician=candidate, start_date=start_date, party=winner.party, riding=winner.riding)
             em.sessions.add(session)
 
 def copy_members(from_session, to_session):

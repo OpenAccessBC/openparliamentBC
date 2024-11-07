@@ -25,7 +25,8 @@ from parliament.utils.views import JSONView
 
 class PoliticianAlertForm(forms.Form):
 
-    email = forms.EmailField(label='Your email',
+    email = forms.EmailField(
+        label='Your email',
         widget=forms.widgets.EmailInput(attrs={'class': 'input-group-field'}))
     politician = forms.IntegerField(widget=forms.HiddenInput)
     captcha = ReCaptchaField(widget=ReCaptchaV2Invisible)
@@ -33,8 +34,8 @@ class PoliticianAlertForm(forms.Form):
 @disable_on_readonly_db
 def politician_hansard_signup(request):
     try:
-        politician_id = int(re.sub(r'\D', '',
-            (request.POST if request.method == 'POST' else request.GET).get('politician', '')))
+        politician_id = int(
+            re.sub(r'\D', '', (request.POST if request.method == 'POST' else request.GET).get('politician', '')))
     except ValueError:
         raise Http404
 
@@ -59,14 +60,14 @@ def politician_hansard_signup(request):
 
             key = "%s,%s" % (politician_id, form.cleaned_data['email'])
             signed_key = TimestampSigner(salt='alerts_pol_subscribe').sign(key)
-            activate_url = reverse('alerts_pol_subscribe',
-                kwargs={'signed_key': signed_key})
+            activate_url = reverse('alerts_pol_subscribe', kwargs={'signed_key': signed_key})
             activation_context = {
                 'pol': pol,
                 'activate_url': activate_url,
             }
             t = loader.get_template("alerts/activate.txt")
-            send_mail(subject='Confirmation required: Email alerts about %s' % pol.name,
+            send_mail(
+                subject='Confirmation required: Email alerts about %s' % pol.name,
                 message=t.render(activation_context, request),
                 from_email='alerts@contact.openparliament.ca',
                 recipient_list=[form.cleaned_data['email']])
@@ -94,8 +95,7 @@ def politician_hansard_signup(request):
 @disable_on_readonly_db
 def alerts_list(request):
     if not request.authenticated_email:
-        return render(request, 'alerts/list_unauthenticated.html',
-            {'title': 'Email alerts'})
+        return render(request, 'alerts/list_unauthenticated.html', {'title': 'Email alerts'})
 
     user = User.objects.get(email=request.authenticated_email)
 
@@ -246,14 +246,16 @@ def bounce_webhook(request):
                     except User.DoesNotExist:
                         pass
                 else:
-                    User.objects.filter(email=recipient).update(email_bouncing=True,
+                    User.objects.filter(email=recipient).update(
+                        email_bouncing=True,
                         email_bounce_reason=request.body)
         except KeyError:
             mail_admins("Unhandled SES notification", request.body)
     elif 'mandrill_events' in request.POST:
         for event in json.loads(request.POST['mandrill_events']):
             if 'bounce' in event['event']:
-                User.objects.filter(email=event['msg']['email']).update(email_bouncing=True,
+                User.objects.filter(email=event['msg']['email']).update(
+                    email_bouncing=True,
                     email_bounce_reason=json.dumps(event))
     else:
         raise Http404

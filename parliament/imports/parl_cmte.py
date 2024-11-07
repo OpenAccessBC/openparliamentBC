@@ -31,7 +31,8 @@ def import_committee_list(session=None):
                 cmte.save()
             return cmte
         except Committee.DoesNotExist:
-            committee, created = Committee.objects.get_or_create(name_en=name_en,
+            committee, created = Committee.objects.get_or_create(
+                name_en=name_en,
                 name_fr=name_fr, parent=parent)
             if created:
                 logger.warning("Creating committee: %s, %s" % (committee.name_en, committee.slug))
@@ -126,7 +127,8 @@ COMMITTEE_MEETINGS_URL = 'https://www.%(domain)s.ca/Committees/en/%(acronym)s/Me
 def import_committee_meetings(committee, session):
 
     acronym = committee.get_acronym(session)
-    url = COMMITTEE_MEETINGS_URL % {'acronym': acronym,
+    url = COMMITTEE_MEETINGS_URL % {
+        'acronym': acronym,
         'parliamentnum': session.parliamentnum,
         'sessnum': session.sessnum,
         'domain': 'parl' if committee.joint else 'ourcommons'}
@@ -144,7 +146,8 @@ def import_committee_meetings(committee, session):
         cancelled = bool(mtg_row.cssselect('.meeting-title .icon-cancel'))
         if cancelled:
             try:
-                mtg = CommitteeMeeting.objects.get(committee=committee, session=session,
+                mtg = CommitteeMeeting.objects.get(
+                    committee=committee, session=session,
                     number=number, source_id=source_id)
                 assert not mtg.evidence_id
                 mtg.delete()
@@ -157,8 +160,7 @@ def import_committee_meetings(committee, session):
             meeting = CommitteeMeeting.objects.select_related('evidence').get(
                 committee=committee, session=session, number=number)
         except CommitteeMeeting.DoesNotExist:
-            meeting = CommitteeMeeting(committee=committee,
-                session=session, number=number)
+            meeting = CommitteeMeeting(committee=committee, session=session, number=number)
 
         if meeting.source_id:
             if meeting.source_id != source_id:
@@ -170,7 +172,8 @@ def import_committee_meetings(committee, session):
                     # As long as there was no evidence loaded, just replace the old meeting
                     # with the new one
                     meeting.delete()
-                    meeting = CommitteeMeeting(committee=committee, source_id=source_id,
+                    meeting = CommitteeMeeting(
+                        committee=committee, source_id=source_id,
                         session=session, number=number)
         else:
             meeting.source_id = source_id
@@ -189,7 +192,8 @@ def import_committee_meetings(committee, session):
                 raise Exception("Unrecognized date string %s for meeting %r" % (date_string, meeting))
 
         timestring = mtg_row.cssselect('.the-time')[0].text_content()
-        match = re.search(r'(\d\d?):(\d\d) ([ap]\.?m\.?)(?: - (\d\d?):(\d\d) ([ap]\.?m\.?))?\s\(',
+        match = re.search(
+            r'(\d\d?):(\d\d) ([ap]\.?m\.?)(?: - (\d\d?):(\d\d) ([ap]\.?m\.?))?\s\(',
             timestring, re.UNICODE)
         meeting.start_time = datetime.time(_12hr(match.group(1), match.group(3)), int(match.group(2)))
         if match.group(4):
@@ -224,11 +228,13 @@ def import_committee_meetings(committee, session):
         for study_link in mtg_row.cssselect('.meeting-card-study a'):
             name = study_link.text.strip()
             try:
-                study = get_activity_by_url(urljoin(url, study_link.get('href')),
+                study = get_activity_by_url(
+                    urljoin(url, study_link.get('href')),
                     committee=committee, session=session)
                 meeting.activities.add(study)
             except:
-                logger.exception("Error fetching committee activity for %r %s %s",
+                logger.exception(
+                    "Error fetching committee activity for %r %s %s",
                     committee, name, study_link.get('href'))
 
     return True
@@ -305,7 +311,8 @@ def get_activity_by_url(activity_url, committee, session):
 
     if CommitteeActivityInSession.objects.exclude(source_id=activity_id).filter(
             session=session, activity=activity).exists():
-        logger.info("Apparent duplicate activity ID for %s %s %s: %s" %
+        logger.info(
+            "Apparent duplicate activity ID for %s %s %s: %s" %
             (activity, activity.committee, session, activity_id))
         return activity
 

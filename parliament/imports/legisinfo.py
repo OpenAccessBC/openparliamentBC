@@ -108,7 +108,8 @@ def import_bill_by_id(legisinfo_id):
     assert len(rj) == 1
     bd = BillData(rj[0])
 
-    session = Session.objects.get(parliamentnum=bd['ParliamentNumber'],
+    session = Session.objects.get(
+        parliamentnum=bd['ParliamentNumber'],
         sessnum=bd['SessionNumber'])
     # print "Importing bill ID %s" % legisinfo_id
     return _import_bill(bd, session)
@@ -185,8 +186,7 @@ def _import_bill(bd, session, previous_session=None): # type: (BillData, Session
                 bill.number, pol_id, bd.get('SponsorPersonName')))
         bis._changed = True
         try:
-            bis.sponsor_member = ElectedMember.objects.get_by_pol(politician=bis.sponsor_politician,
-                                                                   session=session)
+            bis.sponsor_member = ElectedMember.objects.get_by_pol(politician=bis.sponsor_politician, session=session)
         except Exception:
             logger.error("Couldn't find ElectedMember for bill %s, pol %r" %
                          (bill.number, bis.sponsor_politician))

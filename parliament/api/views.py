@@ -52,10 +52,11 @@ class LegacyAPIHansardView(JSONView):
             'original_url': doc.url,
             'parliament': doc.session.parliamentnum,
             'session': doc.session.sessnum,
-            'statements': [_serialize_statement(s)
+            'statements': [
+                _serialize_statement(s)
                 for s in doc.statement_set.all()
-                    .order_by('sequence')
-                    .select_related('member__politician', 'member__party', 'member__riding')]
+                .order_by('sequence')
+                .select_related('member__politician', 'member__party', 'member__riding')]
         }
 
 hansard = LegacyAPIHansardView.as_view()

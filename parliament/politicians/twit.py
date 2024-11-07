@@ -62,8 +62,7 @@ def save_tweets():
             # Twitter apparently escapes < > but not & "
             # so I'm clunkily unescaping lt and gt then reescaping in the template
             text = tweet['text'].replace('&lt;', '<').replace('&gt;', '>')
-            activity.save_activity({'text': text}, politician=pol,
-                date=date, guid=guid, variety='twitter')
+            activity.save_activity({'text': text}, politician=pol, date=date, guid=guid, variety='twitter')
 
 def get_id_from_screen_name(screen_name):
     return twitter_api_request('users/show', params={'screen_name': screen_name})['id']

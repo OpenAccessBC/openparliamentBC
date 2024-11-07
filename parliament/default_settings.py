@@ -74,7 +74,7 @@ COMPRESS_FILTERS = {
         'compressor.filters.cssmin.rCSSMinFilter'
     ],
     'js': [
-         'compressor.filters.jsmin.CalmjsFilter' # the rjsmin filter conflicts with some vendor js
+        'compressor.filters.jsmin.CalmjsFilter' # the rjsmin filter conflicts with some vendor js
     ]
 }
 COMPRESS_ROOT = os.path.realpath(os.path.join(PROJ_ROOT, '..', '..', 'frontend_bundles'))

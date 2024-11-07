@@ -62,8 +62,7 @@ class SearchQuery(BaseSearchQuery):
     DATE_FILTER_RE = re.compile(
         r'^(?P<fy>\d{4})-(?P<fm>\d\d?)(?:-(?P<fd>\d\d?))?(?: to (?P<ty>\d{4})-(?P<tm>\d\d?)(?:-(?P<td>\d\d?))?)?')
 
-    def __init__(self, query, start=0, limit=15, user_params={},
-            facet=False, full_text=False, solr_params={}):
+    def __init__(self, query, start=0, limit=15, user_params={}, facet=False, full_text=False, solr_params={}):
         super(SearchQuery, self).__init__(query)
         self.start = start  # What offset to start from
         self.limit = limit  # How many results to return
@@ -100,8 +99,7 @@ class SearchQuery(BaseSearchQuery):
                         end_date = datetime.date(int(g['ty']), int(g['tm']), int(g['td']))
                     else:
                         # Otherwise, just YR-MO, find the last day of the month
-                        end_date = datetime.date(int(g['ty']), int(g['tm']),
-                            monthrange(int(g['ty']), int(g['tm']))[1])
+                        end_date = datetime.date(int(g['ty']), int(g['tm']), monthrange(int(g['ty']), int(g['tm']))[1])
                 else:
                     # We don't have a TO date
                     if g['fd']:
@@ -109,8 +107,7 @@ class SearchQuery(BaseSearchQuery):
                         end_date = start_date
                     else:
                         # Only YR-MO, find the last day of the month
-                        end_date = datetime.date(int(g['fy']), int(g['fm']),
-                            monthrange(int(g['fy']), int(g['fm']))[1])
+                        end_date = datetime.date(int(g['fy']), int(g['fm']), monthrange(int(g['fy']), int(g['fm']))[1])
                 end_date += datetime.timedelta(days=1)
                 filter_value = '[%sT00:00:00.000Z TO %sT00:01:01.000Z]' % (start_date, end_date)
 

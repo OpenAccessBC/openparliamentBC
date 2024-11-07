@@ -74,14 +74,16 @@ def import_votes():
         # Okay, save the question, start processing members.
         votequestion.save()
 
-        detailurl = VOTEDETAIL_URL.format(parliamentnum=session.parliamentnum,
+        detailurl = VOTEDETAIL_URL.format(
+            parliamentnum=session.parliamentnum,
             sessnum=session.sessnum, votenumber=votenumber)
         resp = requests.get(detailurl)
         resp.raise_for_status()
         detailroot = etree.fromstring(resp.content)
 
         for voter in detailroot.findall('VoteParticipant'):
-            pol = Politician.objects.get_by_parl_mp_id(voter.find('PersonId').text,
+            pol = Politician.objects.get_by_parl_mp_id(
+                voter.find('PersonId').text,
                 session=session, riding_name=voter.find('ConstituencyName').text)
             # name = (voter.find('PersonOfficialFirstName').text
             #     + ' ' + voter.find('PersonOfficialLastName').text)
