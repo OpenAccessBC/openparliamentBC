@@ -47,6 +47,7 @@ class TextAnalysisManager(models.Manager):
             js = ''
         return mark_safe(js)
 
+
 class TextAnalysis(models.Model):
 
     key = models.CharField(max_length=150, db_index=True, help_text="A URL to a view that calculates this object")

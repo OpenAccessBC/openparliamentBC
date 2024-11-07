@@ -22,6 +22,8 @@ def _get_hansard(year, month, day):
         return get_object_or_404(Document.debates, date=datetime.date(int(year), int(month), int(day)))
     except ValueError:
         raise Http404
+
+
 class HansardView(ModelDetailView):
 
     resource_name = 'House debate'
@@ -37,6 +39,8 @@ class HansardView(ModelDetailView):
             'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']}),
             'debates_url': reverse('debates')
         }
+
+
 hansard = HansardView.as_view()
 
 
@@ -59,7 +63,10 @@ class HansardStatementView(ModelDetailView):
 
     def get_html(self, request, year, month, day, slug):
         return document_view(request, _get_hansard(year, month, day), slug=slug)
+
+
 hansard_statement = HansardStatementView.as_view()
+
 
 def document_redirect(request, document_id, slug=None):
     try:
@@ -72,6 +79,7 @@ def document_redirect(request, document_id, slug=None):
     if slug:
         url += "%s/" % slug
     return HttpResponsePermanentRedirect(url)
+
 
 @vary_on_headers('X-Requested-With')
 def document_view(request, document, meeting=None, slug=None):
@@ -191,7 +199,10 @@ class SpeechesView(ModelListView):
         if 'document' not in request.GET:
             qs = qs.order_by('-time')
         return qs
+
+
 speeches = SpeechesView.as_view()
+
 
 class DebatePermalinkView(ModelDetailView):
 
@@ -210,7 +221,10 @@ class DebatePermalinkView(ModelDetailView):
     def get_html(self, request, **kwargs):
         doc, statement = self._get_objs(request, **kwargs)
         return statement_permalink(request, doc, statement, "hansards/statement_permalink.html", hansard=doc)
+
+
 debate_permalink = DebatePermalinkView.as_view()
+
 
 def statement_permalink(request, doc, statement, template, **kwargs):
     """A page displaying only a single statement. Used as a non-JS permalink."""
@@ -240,6 +254,7 @@ def statement_permalink(request, doc, statement, template, **kwargs):
     ctx.update(kwargs)
     return HttpResponse(t.render(ctx, request))
 
+
 def document_cache(request, document_id, language):
     document = get_object_or_404(Document, pk=document_id)
     xmlfile = document.get_cached_xml(language)
@@ -247,12 +262,14 @@ def document_cache(request, document_id, language):
     xmlfile.close()
     return resp
 
+
 class TitleAdder(object):
 
     def get_context_data(self, **kwargs):
         context = super(TitleAdder, self).get_context_data(**kwargs)
         context.update(title=self.page_title)
         return context
+
 
 class APIArchiveView(ModelListView):
 
@@ -272,12 +289,16 @@ class APIArchiveView(ModelListView):
     def get_qs(self, request, **kwargs):
         return self.get_dated_items()[1]
 
+
 class DebateIndexView(TitleAdder, ArchiveIndexView, APIArchiveView):
     queryset = Document.debates.all()
     date_field = 'date'
     template_name = "hansards/hansard_archive.html"
     page_title = 'The Debates of the House of Commons'
+
+
 index = DebateIndexView.as_view()
+
 
 class DebateYearArchive(TitleAdder, YearArchiveView, APIArchiveView):
     queryset = Document.debates.all().order_by('date')
@@ -285,7 +306,10 @@ class DebateYearArchive(TitleAdder, YearArchiveView, APIArchiveView):
     make_object_list = True
     template_name = "hansards/hansard_archive_year.html"
     page_title = lambda self: 'Debates from %s' % self.get_year()
+
+
 by_year = DebateYearArchive.as_view()
+
 
 class DebateMonthArchive(TitleAdder, MonthArchiveView, APIArchiveView):
     queryset = Document.debates.all().order_by('date')
@@ -294,7 +318,10 @@ class DebateMonthArchive(TitleAdder, MonthArchiveView, APIArchiveView):
     month_format = "%m"
     template_name = "hansards/hansard_archive_year.html"
     page_title = lambda self: 'Debates from %s' % self.get_year()
+
+
 by_month = DebateMonthArchive.as_view()
+
 
 class HansardAnalysisView(TextAnalysisView):
 
@@ -318,5 +345,6 @@ class HansardAnalysisView(TextAnalysisView):
         if word and word != request.hansard.most_frequent_word:
             Document.objects.filter(id=request.hansard.id).update(most_frequent_word=word)
         return analysis
+
 
 hansard_analysis = HansardAnalysisView.as_view()

@@ -97,7 +97,10 @@ class BillDetailView(ModelDetailView):
         else:
             t = loader.get_template("bills/bill_detail.html")
         return HttpResponse(t.render(c, request))
+
+
 bill = vary_on_headers('X-Requested-With')(BillDetailView.as_view())
+
 
 class BillListView(ModelListView):
 
@@ -143,6 +146,8 @@ class BillListView(ModelListView):
         }
 
         return HttpResponse(t.render(c, request))
+
+
 index = BillListView.as_view()
 
 
@@ -165,6 +170,8 @@ class BillSessionListView(ModelListView):
             'title': 'Bills for the %s' % session
         }
         return HttpResponse(t.render(c, request))
+
+
 bills_for_session = BillSessionListView.as_view()
 
 
@@ -222,7 +229,10 @@ class VoteListView(ModelListView):
             'title': 'Votes for the %s' % session
         }
         return HttpResponse(t.render(c, request))
+
+
 votes_for_session = VoteListView.as_view()
+
 
 def vote_pk_redirect(request, vote_id):
     vote = get_object_or_404(VoteQuestion, pk=vote_id)
@@ -260,6 +270,8 @@ class VoteDetailView(ModelDetailView):
         }
         t = loader.get_template("bills/votequestion_detail.html")
         return HttpResponse(t.render(c, request))
+
+
 vote = VoteDetailView.as_view()
 
 
@@ -287,7 +299,10 @@ class BallotListView(ModelListView):
 
     def object_to_dict(self, obj):
         return obj.to_api_dict(representation='list')
+
+
 ballots = BallotListView.as_view()
+
 
 class BillListFeed(Feed):
     title = 'Bills in the House of Commons'

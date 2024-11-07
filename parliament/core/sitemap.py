@@ -10,6 +10,7 @@ class PoliticianSitemap(Sitemap):
     def items(self):
         return Politician.objects.elected()
 
+
 class HansardSitemap(Sitemap):
 
     def items(self):
@@ -18,10 +19,12 @@ class HansardSitemap(Sitemap):
     def lastmod(self, obj):
         return obj.date
 
+
 class BillSitemap(Sitemap):
 
     def items(self):
         return Bill.objects.all()
+
 
 class VoteQuestionSitemap(Sitemap):
     def items(self):
@@ -29,6 +32,7 @@ class VoteQuestionSitemap(Sitemap):
 
     def lastmod(self, obj):
         return obj.date
+
 
 sitemaps = {
     'politician': PoliticianSitemap,

@@ -73,6 +73,7 @@ def import_ec_results(election, url="http://enr.elections.ca/DownloadResults.asp
 
     election.label_winners()
 
+
 PROVINCES_NORMALIZED = {
     'ab': 'AB',
     'alberta': 'AB',

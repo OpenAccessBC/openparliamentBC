@@ -29,6 +29,7 @@ def memoize_property(target):
         return getattr(self, cacheattr)
     return wrapped
 
+
 def language_property(fieldname):
     if settings.LANGUAGE_CODE.startswith('fr'):
         fieldname = fieldname + '_fr'
@@ -36,6 +37,7 @@ def language_property(fieldname):
         fieldname = fieldname + '_en'
 
     return property(lambda self: getattr(self, fieldname))
+
 
 def redir_view(view):
     """Function factory to redirect requests to the given view."""
@@ -45,6 +47,7 @@ def redir_view(view):
             reverse(view, args=args, kwargs=kwargs)
         )
     return wrapped
+
 
 def get_twitter_share_url(url, description, add_plug=True):
     """Returns a URL for a Twitter post page, prepopulated with a sharing message.
@@ -74,10 +77,13 @@ def get_twitter_share_url(url, description, add_plug=True):
 
 # http://stackoverflow.com/questions/561486/how-to-convert-an-integer-to-the-shortest-url-safe-string-in-python
 
+
 ALPHABET = string.ascii_uppercase + string.ascii_lowercase + string.digits + '-_'
 ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
+
+
 def int64_encode(n):
     """Given integer n, returns a base64-ish string representation."""
     if n < 0:
@@ -99,10 +105,12 @@ def int64_decode(s):
         n = n * BASE + ALPHABET_REVERSE[c]
     return n
 
+
 class ActiveManager(models.Manager):
 
     def get_queryset(self):
         return super(ActiveManager, self).get_queryset().filter(active=True)
+
 
 def feed_wrapper(feed_class):
     """Decorator that ensures django.contrib.syndication.Feed objects are created for
@@ -114,6 +122,7 @@ def feed_wrapper(feed_class):
         return feed_instance(request, *args, **kwargs)
     return call_feed
 
+
 def settings_context(request):
     """Context processor makes certain settings available to templates."""
     return {
@@ -123,12 +132,14 @@ def settings_context(request):
         'SENTRY_JS_ID': getattr(settings, 'SENTRY_JS_ID', None),
     }
 
+
 class AutoprefixerFilter(CompilerFilter):
     command = "{binary} {args} -o {outfile} {infile}"
     options = (
         ("binary", getattr(settings, "COMPRESS_AUTOPREFIXER_BINARY", './node_modules/.bin/postcss')),
         ("args", getattr(settings, "COMPRESS_AUTOPREFIXER_ARGS", '--use autoprefixer --autoprefixer.browsers "> 1%"')),
     )
+
 
 class ListingCompressorFinder(staticfiles.finders.BaseStorageFinder):
     """Much like django-compressor's base finder, but doesn't

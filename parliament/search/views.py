@@ -84,6 +84,8 @@ def search(request):
 
 
 r_postcode = re.compile(r'^\s*([A-Z][0-9][A-Z])\s*([0-9][A-Z][0-9])\s*$')
+
+
 def try_postcode_first(request):
     match = r_postcode.search(request.GET['q'].upper())
     if not match:
@@ -129,6 +131,7 @@ def try_postcode_first(request):
     except ElectedMember.MultipleObjectsReturned:
         raise Exception("Too many MPs for postcode %s" % postcode)
 
+
 def postcode_to_edid_represent(postcode):
     url = 'https://represent.opennorth.ca/postcodes/%s/' % postcode.replace(' ', '')
     resp = requests.get(url)
@@ -142,6 +145,7 @@ def postcode_to_edid_represent(postcode):
     ]
     return int(edid[0]) if edid else None
 
+
 class AmbiguousPostcodeException(Exception):
 
     def __init__(self, postcode, ec_url=None):
@@ -151,6 +155,8 @@ class AmbiguousPostcodeException(Exception):
 
 EC_POSTCODE_URL = 'https://www.elections.ca/Scripts/vis/FindED?L=e&QID=-1&PAGEID=20&PC=%s'
 r_ec_edid = re.compile(r'&ED=(\d{5})&')
+
+
 def postcode_to_edid_ec(postcode):
     resp = requests.get(EC_POSTCODE_URL % postcode.replace(' ', ''), allow_redirects=False)
     if resp.status_code != 302:

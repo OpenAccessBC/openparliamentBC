@@ -78,6 +78,8 @@ class CurrentMPView(ModelListView):
             'title': 'Current Members of Parliament'
         }
         return HttpResponse(t.render(c, request))
+
+
 current_mps = CurrentMPView.as_view()
 
 
@@ -105,6 +107,8 @@ class FormerMPView(ModelListView):
         }
         t = loader.get_template("politicians/former_electedmember_list.html")
         return HttpResponse(t.render(c, request))
+
+
 former_mps = FormerMPView.as_view()
 
 
@@ -171,6 +175,8 @@ class PoliticianView(ModelDetailView):
         else:
             t = loader.get_template("politicians/politician.html")
         return HttpResponse(t.render(c, request))
+
+
 politician = vary_on_headers('X-Requested-With')(PoliticianView.as_view())
 
 
@@ -218,6 +224,8 @@ class PoliticianAutocompleteView(JSONView):
             if p['name'].lower().startswith(q) or p['name_family'].lower().startswith(q)
         )
         return list(itertools.islice(results, 15))
+
+
 politician_autocomplete = PoliticianAutocompleteView.as_view()
 
 
@@ -268,6 +276,7 @@ class PoliticianStatementFeed(Feed):
     def item_pubdate(self, statement):
         return statement.time
 
+
 politician_statement_feed = feed_wrapper(PoliticianStatementFeed)
 
 r_title = re.compile(r'<span class="tag.+?>(.+?)</span>')
@@ -315,6 +324,7 @@ class PoliticianActivityFeed(Feed):
     def item_pubdate(self, activity):
         return datetime.datetime(activity.date.year, activity.date.month, activity.date.day)
 
+
 class PoliticianTextAnalysisView(TextAnalysisView):
 
     expiry_days = 14
@@ -333,5 +343,6 @@ class PoliticianTextAnalysisView(TextAnalysisView):
         if word and word != request.pol.info().get('favourite_word'):
             request.pol.set_info('favourite_word', word)
         return analysis
+
 
 analysis = PoliticianTextAnalysisView.as_view()

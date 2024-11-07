@@ -221,6 +221,7 @@ class APIFilters(object):
         the filter will work whether provided the internal DB value or the display
         value."""
         choices = model._meta.get_field(field_name).choices
+
         def inner(qs, view, filter_name, filter_extra, val):
             try:
                 search_val = next(c[0] for c in choices if val in c)
@@ -315,6 +316,7 @@ def no_robots(request):
     if request.get_host().lower().startswith(settings.PARLIAMENT_API_HOST) or getattr(settings, 'PARLIAMENT_NO_ROBOTS', False):
         return HttpResponse('User-agent: googlecivicsapi\nDisallow:\n\nUser-agent: *\nDisallow: /\n', content_type='text/plain')
     return HttpResponse('', content_type='text/plain')
+
 
 def docs(request):
     return render(request, 'api/doc.html', {'title': 'API'})

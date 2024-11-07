@@ -8,12 +8,14 @@ LEADING_PAGE_RANGE = TRAILING_PAGE_RANGE = 6
 NUM_PAGES_OUTSIDE_RANGE = 2
 ADJACENT_PAGES = 2
 
+
 @register.simple_tag(takes_context=True)
 def foundation_paginator(context):
     ctx = _get_pagination_context(context)
     if not ctx:
         return ''
     return template.loader.get_template("foundation_paginator.html").render(ctx)
+
 
 def _get_pagination_context(context):
     page_obj = context['page']

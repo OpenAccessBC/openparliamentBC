@@ -13,6 +13,7 @@ def google_info_from_token(token):
         raise crypt.AppIdentityError("Wrong issuer.")
     return idinfo
 
+
 def get_user_from_google_token(token):
     idinfo = google_info_from_token(token)
     assert idinfo['email']
@@ -22,6 +23,7 @@ def get_user_from_google_token(token):
         user.name = idinfo['name']
         user.save()
     return user
+
 
 class GoogleLoginEndpointView(JSONView):
 

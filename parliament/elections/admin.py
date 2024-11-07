@@ -9,5 +9,6 @@ class CandidacyOptions (admin.ModelAdmin):
     search_fields = ('candidate__name', 'riding__name_en', 'party__name_en')
     list_filter = ('party', 'election', 'elected')
 
+
 admin.site.register(Election)
 admin.site.register(Candidacy, CandidacyOptions)

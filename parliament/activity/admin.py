@@ -8,4 +8,5 @@ class ActivityOptions(admin.ModelAdmin):
     list_filter = ('variety', 'date', 'active')
     search_fields = ('politician__name', 'variety')
 
+
 admin.site.register(Activity, ActivityOptions)

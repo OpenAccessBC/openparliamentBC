@@ -7,9 +7,11 @@ from parliament.core.models import PROVINCE_LOOKUP
 
 register = template.Library()
 
+
 @register.filter(name='expand_province')
 def expand_province(value):
     return PROVINCE_LOOKUP.get(value, None)
+
 
 @register.filter(name='heshe')
 def heshe(pol):
@@ -20,6 +22,7 @@ def heshe(pol):
     else:
         return 'He/she'
 
+
 @register.filter(name='hisher')
 def hisher(pol):
     if pol.gender == 'F':
@@ -28,6 +31,7 @@ def hisher(pol):
         return 'His'
     else:
         return 'Their'
+
 
 @register.filter(name='himher')
 def himher(pol):
@@ -38,6 +42,7 @@ def himher(pol):
     else:
         return 'Them'
 
+
 @register.filter(name='mrms')
 def mrms(pol):
     if pol.gender == 'M':
@@ -47,14 +52,17 @@ def mrms(pol):
     else:
         return 'Mr./Ms.'
 
+
 @register.filter(name='month_num')
 def month_num(month):
     return datetime.date(2010, month, 1).strftime("%B")
+
 
 @register.filter(name='strip_act')
 def strip_act(value):
     value = re.sub(r'An Act (to )?([a-z])', lambda m: m.group(2).upper(), value)
     return re.sub(r' Act$', '', value)
+
 
 @register.filter(name='time_since')
 def time_since(value):
@@ -85,6 +93,7 @@ def time_since(value):
     else:
         return 'More than three months ago'
 
+
 @register.filter(name='english_list')
 def english_list(value, arg=', '):
     if not type(value) == list:
@@ -98,9 +107,11 @@ def english_list(value, arg=', '):
     else:
         return "%s%s and %s" % (arg.join(value[0:-1]), arg, value[-1])
 
+
 @register.filter(name='list_prefix')
 def list_prefix(value, arg):
     return ["%s%s" % (arg, i) for i in value]
+
 
 @register.filter(name='list_filter')
 def list_filter(value, arg):

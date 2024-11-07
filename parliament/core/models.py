@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 POL_AFFIL_ID_LOOKUP_URL = 'https://apps.ourcommons.ca/ParlDataWidgets/en/aff/%s'
 POL_PERSON_ID_LOOKUP_URL = 'https://www.ourcommons.ca/Members/en/openparliamentdotca-lookup(%s)'
 
+
 class InternalXref(models.Model):
     """A general-purpose table for quickly storing internal links."""
     text_value = models.CharField(max_length=250, blank=True, db_index=True)
@@ -44,6 +45,7 @@ class InternalXref(models.Model):
     def __str__(self):
         return "%s: %s %s for %s" % (self.schema, self.text_value, self.int_value, self.target_id)
 
+
 class PartyManager(models.Manager):
 
     def get_by_name(self, name):
@@ -54,6 +56,7 @@ class PartyManager(models.Manager):
             raise Exception("More than one party matched %s" % name.strip().lower())
         else:
             return self.get_queryset().get(pk=x[0].target_id)
+
 
 class Party(models.Model):
     """A federal political party."""
@@ -107,6 +110,7 @@ class Party(models.Model):
     def __str__(self):
         return self.name
 
+
 class Person(models.Model):
     """Abstract base class for models representing a person."""
 
@@ -120,6 +124,7 @@ class Person(models.Model):
     class Meta:
         abstract = True
         ordering = ('name',)
+
 
 class PoliticianManager(models.Manager):
 
@@ -289,6 +294,7 @@ class PoliticianManager(models.Manager):
         else:
             pol = self.get_by_name(name=polname, riding=riding)
         return (pol, parl_mp_id)
+
 
 @register_search_model
 class Politician(Person):
@@ -531,12 +537,14 @@ class Politician(Person):
         """
         return d
 
+
 class PoliticianInfoManager(models.Manager):
     """Custom manager ensures we always pull in the politician FK."""
 
     def get_queryset(self):
         return super(PoliticianInfoManager, self).get_queryset()\
             .select_related('politician')
+
 
 # Not necessarily a full list
 POLITICIAN_INFO_SCHEMAS = (
@@ -547,6 +555,7 @@ POLITICIAN_INFO_SCHEMAS = (
     'freebase_id',
     'wikipedia_id'
 )
+
 
 class PoliticianInfo(models.Model):
     """Key-value store for attributes of a Politician."""
@@ -565,6 +574,7 @@ class PoliticianInfo(models.Model):
     @property
     def int_value(self):
         return int(self.value)
+
 
 class SessionManager(models.Manager):
 
@@ -586,6 +596,7 @@ class SessionManager(models.Manager):
         pk = match.group(1) + '-' + match.group(2)
         return self.get_queryset().get(pk=pk)
 
+
 class Session(models.Model):
     "A session of Parliament."
 
@@ -606,6 +617,7 @@ class Session(models.Model):
 
     def has_votes(self):
         return bool(self.votequestion_set.all().count())
+
 
 class RidingManager(models.Manager):
 
@@ -639,6 +651,7 @@ class RidingManager(models.Manager):
         if slug in RidingManager.FIX_RIDING:
             slug = RidingManager.FIX_RIDING[slug]
         return self.get_queryset().get(slug=slug)
+
 
 if settings.LANGUAGE_CODE.startswith('fr'):
     PROVINCE_CHOICES = (
@@ -674,6 +687,7 @@ else:
     )
 PROVINCE_LOOKUP = dict(PROVINCE_CHOICES)
 
+
 class Riding(models.Model):
     "A federal riding."
 
@@ -703,6 +717,7 @@ class Riding(models.Model):
     def __str__(self):
         return "%s (%s)" % (self.dashed_name, self.get_province_display())
 
+
 class ElectedMemberManager(models.Manager):
 
     def current(self):
@@ -728,6 +743,7 @@ class ElectedMemberManager(models.Manager):
             if not len(qs):
                 raise ElectedMember.DoesNotExist("No elected member for %s, session %s" % (politician, session))
             return qs[0]
+
 
 class ElectedMember(models.Model):
     """Represents one person, elected to a given riding for a given party."""
@@ -772,6 +788,7 @@ class ElectedMember(models.Model):
     @property
     def current(self):
         return not bool(self.end_date)
+
 
 class SiteNews(models.Model):
     """Entries for the semi-blog on the openparliament homepage."""

@@ -10,23 +10,29 @@ class BillOptions(admin.ModelAdmin):
     list_filter = ('institution', 'privatemember', 'added', 'sessions', 'introduced', 'status_date')
     ordering = ['-introduced']
 
+
 class BillInSessionOptions(admin.ModelAdmin):
     list_display = ['bill', 'session']
+
 
 class BillTextOptions(admin.ModelAdmin):
     list_display = ['bill', 'docid', 'created']
     search_fields = ['bill__number', 'bill__name_en', 'docid']
 
+
 class VoteQuestionOptions(admin.ModelAdmin):
     list_display = ('number', 'date', 'bill', 'description', 'result')
     raw_id_fields = ('bill', 'context_statement')
+
 
 class MemberVoteOptions(admin.ModelAdmin):
     list_display = ('politician', 'votequestion', 'vote')
     raw_id_fields = ('politician', 'member')
 
+
 class PartyVoteAdmin(admin.ModelAdmin):
     list_display = ('party', 'votequestion', 'vote', 'disagreement')
+
 
 class BillEventAdmin(admin.ModelAdmin):
     list_display = ('bill_number', 'status', 'date', 'institution')

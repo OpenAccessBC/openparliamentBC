@@ -24,6 +24,7 @@ from .alpheus import parse_string as alpheus_parse_string
 
 logger = logging.getLogger(__name__)
 
+
 @transaction.atomic
 def import_document(document, interactive=True, reimport_preserving_sequence=False):
     old_statements = None
@@ -194,6 +195,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
 
     return document
 
+
 def _align_sequences(new_statements, old_statements):
     """Given two list of statements, returns a list of mappings in the form of
     (old_statement_sequence, new_statement_slug)"""
@@ -256,11 +258,13 @@ def _align_sequences(new_statements, old_statements):
 
     return mappings
 
+
 def _process_related_links(content, statement):
     return re.sub(
         r'<a class="related_link (\w+)" ([^>]+)>(.*?)</a>',
         lambda m: _process_related_link(m, statement),
         content)
+
 
 def _process_related_link(match, statement):
     (link_type, tagattrs, text) = match.groups()
@@ -315,11 +319,13 @@ def _process_related_link(match, statement):
         attrs['title'] = title
     return _build_tag('a', attrs) + text + '</a>'
 
+
 def _build_tag(name, attrs):
     return '<%s%s>' % (
         name,
         ''.join([" %s=%s" % (k, quoteattr(str(v))) for k, v in sorted(attrs.items())])
     )
+
 
 def _test_has_paragraph_ids(elem):
     """Do all, or almost all, of the paragraphs in this document have ID attributes?
@@ -328,10 +334,13 @@ def _test_has_paragraph_ids(elem):
     paratext_with_id = [pt for pt in paratext if pt.get('id')]
     return (len(paratext_with_id) / float(len(paratext))) > 0.95
 
+
 HANSARD_URL = 'https://www.ourcommons.ca/Content/House/{parliamentnum}{sessnum}/Debates/{sitting:03d}/HAN{sitting:03d}-{lang}.XML'
+
 
 class NoDocumentFound(Exception):
     pass
+
 
 def fetch_latest_debates(session=None):
     if not session:
@@ -397,6 +406,7 @@ def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_i
         )
         doc.save_xml(xml_en, xml_fr)
         logger.info("Saved sitting %s", doc.number)
+
 
 def refresh_xml(document):
     """

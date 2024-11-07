@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 LEGISINFO_BILL_URL = 'https://www.parl.ca/legisinfo/%(lang)s/bill/%(parliament)s-%(session)s/%(bill)s'
 LEGISINFO_BILL_ID_URL = 'https://www.parl.ca/legisinfo/%(lang)s/bill/%(id)s'
 PARLIAMENT_DOCVIEWER_URL = 'https://www.parl.ca/DocumentViewer/%(lang)s/%(docid)s'
+
+
 class BillManager(models.Manager):
 
     def get_by_legisinfo_id(self, legisinfo_id):
@@ -333,6 +335,7 @@ class Bill(models.Model):
             'sponsor_politician', 'sponsor_member', 'sponsor_member__party'
         )
 
+
 class BillInSessionManager(models.Manager):
 
     def get_by_legisinfo_id(self, legisinfo_id):
@@ -465,6 +468,8 @@ VOTE_RESULT_CHOICES = (
     ('N', 'Failed'),  # Negatived
     ('T', 'Tie'),
 )
+
+
 class VoteQuestion(models.Model):
 
     bill = models.ForeignKey(Bill, blank=True, null=True, on_delete=models.CASCADE)
@@ -559,12 +564,15 @@ class VoteQuestion(models.Model):
         return reverse('vote', kwargs={
             'session_id': self.session_id, 'number': self.number})
 
+
 VOTE_CHOICES = [
     ('Y', 'Yes'),
     ('N', 'No'),
     ('P', 'Paired'),
     ('A', "Didn't vote"),
 ]
+
+
 class MemberVote(models.Model):
 
     votequestion = models.ForeignKey(VoteQuestion, on_delete=models.CASCADE)
@@ -589,7 +597,10 @@ class MemberVote(models.Model):
             'ballot': self.get_vote_display(),
         }
 
+
 VOTE_CHOICES_PARTY = VOTE_CHOICES + [('F', "Free vote")]
+
+
 class PartyVote(models.Model):
 
     votequestion = models.ForeignKey(VoteQuestion, on_delete=models.CASCADE)

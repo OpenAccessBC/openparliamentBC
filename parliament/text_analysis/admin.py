@@ -7,4 +7,5 @@ class TextAnalysisOptions(admin.ModelAdmin):
     search_fields = ('key',)
     list_display = ['key', 'lang', 'updated']
 
+
 admin.site.register(TextAnalysis, TextAnalysisOptions)

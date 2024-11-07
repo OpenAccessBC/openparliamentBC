@@ -9,6 +9,7 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ['email']
     list_filter = ['last_login', 'created', 'email_bouncing']
 
+
 class LoginTokenAdmin(admin.ModelAdmin):
     list_display = ['token', 'email', 'used', 'created', 'requesting_ip', 'login_ip']
     search_fields = ['token', 'email']

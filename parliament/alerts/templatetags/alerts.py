@@ -4,6 +4,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter(name='text_highlight')
 def text_highlight(s):
     s = re.sub(r'</?em>', '**', s.replace('&gt;', '>').replace('&lt;', '<').replace('&quot;', '"').replace('&amp;', '&'))

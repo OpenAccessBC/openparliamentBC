@@ -21,6 +21,7 @@ IMAGE_PLACEHOLDER_SHA1 = ['e4060a9eeaf3b4f54e6c16f5fb8bf2c26962e15d']
 Importers for MP data, from ourcommons.ca or represent.opennorth.ca
 """
 
+
 def update_mps_from_represent(download_headshots=False, update_all_headshots=False):
 
     resp = requests.get(
@@ -30,9 +31,11 @@ def update_mps_from_represent(download_headshots=False, update_all_headshots=Fal
 
     return _import_mps(data['objects'], download_headshots, update_all_headshots)
 
+
 def update_mps_from_ourcommons(download_headshots=False, update_all_headshots=False):
     data = scrape_mps_from_ourcommons()
     return _import_mps(data, download_headshots, update_all_headshots)
+
 
 def _import_mps(objs, download_headshots=False, update_all_headshots=False):
     """
@@ -150,10 +153,12 @@ def update_ridings_from_represent(boundary_set='federal-electoral-districts'):
 # contact information or photo URLs.
 """
 
+
 def _scrape_url(url):
     resp = requests.get(url)
     resp.raise_for_status()
     return lxml.html.fromstring(resp.content)
+
 
 def scrape_mps_from_ourcommons():
     root = _scrape_url(OURCOMMONS_MPS_URL)
@@ -164,11 +169,13 @@ def scrape_mps_from_ourcommons():
     mp_data = (_scrape_ourcommons_row(row) for row in rows)
     return mp_data
 
+
 def is_photo_real(photo_url: str) -> bool:
     """Sometimes the scraped photo is just a generic silhouette;
     this will return False if that appears to be the case."""
     photo_response = requests.get(photo_url)
     return (photo_response.status_code == 200 and hashlib.sha1(photo_response.content).hexdigest() not in IMAGE_PLACEHOLDER_SHA1)
+
 
 def _scrape_ourcommons_row(row):
     d = {}

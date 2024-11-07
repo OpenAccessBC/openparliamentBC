@@ -28,14 +28,17 @@ class User(models.Model):
         request.authenticated_email = self.email
         self.__class__.objects.filter(id=self.id).update(last_login=datetime.datetime.now())
 
+
 def _random_token():
     return urlsafe_b64encode(os.urandom(15)).decode('ascii').rstrip('=')
+
 
 class TokenError(Exception):
 
     def __init__(self, message, email=None):
         super(TokenError, self).__init__(message)
         self.email = email
+
 
 class LoginToken(models.Model):
     token = models.CharField(max_length=40, primary_key=True, default=_random_token)

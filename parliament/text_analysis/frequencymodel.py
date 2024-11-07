@@ -35,10 +35,12 @@ STOPWORDS = frozenset(
 r_punctuation = re.compile(r"[^\s\w0-9'’—-]", re.UNICODE)
 r_whitespace = re.compile(r'[\s—]+')
 
+
 def text_token_iterator(text):
     text = r_punctuation.sub('', text.lower())
     for word in r_whitespace.split(text):
         yield word
+
 
 def statements_token_iterator(statements, statement_separator=None):
     for statement in statements:
@@ -46,6 +48,7 @@ def statements_token_iterator(statements, statement_separator=None):
             yield x
         if statement_separator is not None:
             yield statement_separator
+
 
 def ngram_iterator(tokens, n=2):
     sub_iterators = itertools.tee(tokens, n)
@@ -107,6 +110,7 @@ class FrequencyModel(dict):
             it = ngram_iterator(it, ngram)
         return cls(it, min_count=min_count)
 
+
 class FrequencyDiffResult(dict):
 
     def __missing__(self, key):
@@ -114,6 +118,7 @@ class FrequencyDiffResult(dict):
 
     def most_common(self, n=10):
         return nlargest(n, iter(self.items()), key=itemgetter(1))
+
 
 class WordCounter(dict):
 
@@ -133,6 +138,7 @@ class WordCounter(dict):
             return sorted(iter(self.items()), key=itemgetter(1), reverse=True)
         return nlargest(n, iter(self.items()), key=itemgetter(1))
 
+
 class WordAndAttributeCounter(object):
 
     def __init__(self, stopwords=STOPWORDS):
@@ -147,6 +153,7 @@ class WordAndAttributeCounter(object):
         if n is None:
             return sorted(iter(self.counter.items()), key=lambda x: x[1].count, reverse=True)
         return nlargest(n, iter(self.counter.items()), key=lambda x: x[1].count)
+
 
 class WordAttributeCount(object):
 

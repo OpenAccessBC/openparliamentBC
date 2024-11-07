@@ -7,30 +7,37 @@ from parliament.core.models import (ElectedMember, InternalXref, Party, Politici
 class PoliticianInfoInline(admin.TabularInline):
     model = PoliticianInfo
 
+
 class PoliticianOptions (admin.ModelAdmin):
     inlines = [PoliticianInfoInline]
     search_fields = ('name',)
+
 
 class RidingOptions (admin.ModelAdmin):
     list_display = ('name_en', 'current', 'province', 'edid', 'name_fr')
     search_fields = ('name_en', 'edid')
     list_filter = ('province', 'current')
 
+
 class SessionOptions (admin.ModelAdmin):
     list_display = ('name', 'start', 'end')
+
 
 class ElectedMemberOptions(admin.ModelAdmin):
     list_display = ('politician', 'riding', 'party', 'start_date', 'end_date')
     list_filter = ('party',)
     search_fields = ('politician__name',)
 
+
 class InternalXrefOptions(admin.ModelAdmin):
     list_display = ('schema', 'text_value', 'int_value', 'target_id')
     search_fields = ('schema', 'text_value', 'int_value', 'target_id')
     list_editable = ('text_value', 'int_value', 'target_id')
 
+
 class PartyOptions(admin.ModelAdmin):
     list_display = ('name_en', 'short_name', 'name_fr', 'short_name_fr')
+
 
 class PoliticianInfoOptions(admin.ModelAdmin):
     list_display = ('politician', 'schema', 'value')
@@ -42,8 +49,10 @@ class PoliticianInfoOptions(admin.ModelAdmin):
             return db_field.formfield(**kwargs)
         return super(MyModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs, on_delete=models.CASCADE)
 
+
 class SiteNewsOptions(admin.ModelAdmin):
     list_display = ('title', 'date', 'active')
+
 
 admin.site.register(ElectedMember, ElectedMemberOptions)
 admin.site.register(Riding, RidingOptions)

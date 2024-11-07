@@ -16,8 +16,10 @@ logger = logging.getLogger(__name__)
 LEGISINFO_DETAIL_URL = 'https://www.parl.ca/LegisInfo/en/bill/%(parlnum)s-%(sessnum)s/%(billnumber)s/json'
 LEGISINFO_JSON_LIST_URL = 'https://www.parl.ca/legisinfo/en/bills/json?parlsession=%(sessid)s'
 
+
 def _parse_date(d):
     return datetime.date(*[int(x) for x in d[:10].split('-')])
+
 
 def _get_previous_session(session):
     try:
@@ -25,6 +27,7 @@ def _get_previous_session(session):
             .order_by('-start')[0]
     except IndexError:
         return None
+
 
 class BillData(object):
     """
@@ -74,6 +77,7 @@ class BillData(object):
         self._d = rj[0]
         return self
 
+
 def get_bill_list(session):
     url = LEGISINFO_JSON_LIST_URL % dict(sessid=session.id)
     resp = requests.get(url)
@@ -81,12 +85,14 @@ def get_bill_list(session):
     jd = resp.json()
     return [BillData(item) for item in jd]
 
+
 @transaction.atomic
 def import_bills(session):
     bill_list = get_bill_list(session)
     prev_session = _get_previous_session(session)
     for bd in bill_list:
         _import_bill(bd, session, prev_session)
+
 
 def import_bill_by_id(legisinfo_id):
     """Imports a single bill based on its LEGISinfo id."""
@@ -114,6 +120,7 @@ def import_bill_by_id(legisinfo_id):
     # print "Importing bill ID %s" % legisinfo_id
     return _import_bill(bd, session)
 
+
 def _update(obj, field, value):
     if value is None:
         return
@@ -122,6 +129,7 @@ def _update(obj, field, value):
     if getattr(obj, field) != value:
         setattr(obj, field, value)
         obj._changed = True
+
 
 def _import_bill(bd, session, previous_session=None):  # type: (BillData, Session, Session) -> None
 

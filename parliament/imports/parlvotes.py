@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 VOTELIST_URL = 'https://www.ourcommons.ca/members/{lang}/votes/xml'
 VOTEDETAIL_URL = 'https://www.ourcommons.ca/members/en/votes/{parliamentnum}/{sessnum}/{votenumber}/xml'
 
+
 @transaction.atomic
 def import_votes():
     votelisturl_en = VOTELIST_URL.format(lang='en')

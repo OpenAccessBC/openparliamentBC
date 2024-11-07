@@ -8,6 +8,7 @@ class PoliticianAlertAdmin(admin.ModelAdmin):
     list_display = ('email', 'politician', 'active', 'created')
     search_fields = ('email', 'politician__name')
 
+
 admin.site.register(PoliticianAlert, PoliticianAlertAdmin)
 
 
@@ -24,6 +25,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     search_fields = ['user__email']
     list_filter = ['active', 'created', 'last_sent']
     ordering = ['-created']
+
 
 admin.site.register(Topic, TopicAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)

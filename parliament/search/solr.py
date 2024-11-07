@@ -13,6 +13,8 @@ from parliament.core.utils import memoize_property
 from parliament.search.utils import BaseSearchQuery
 
 r_hl = re.compile(r'~(/?)hl~')
+
+
 def autohighlight(results):
     """Puts in <em> for highlighted snippets."""
     if not hasattr(results, 'highlighting'):
@@ -34,6 +36,7 @@ def autohighlight(results):
                     doc['full_' + field] = doc[field]
                 doc[field] = mark_safe(r_hl.sub(r'<\1em>', val))
     return results
+
 
 def get_pysolr_instance() -> pysolr.Solr:
     return pysolr.Solr(settings.PARLIAMENT_SOLR_URL)

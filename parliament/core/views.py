@@ -27,6 +27,7 @@ def home(request):
     }
     return HttpResponse(t.render(c, request))
 
+
 @never_cache
 def closed(request, message=None):
     if not message:
@@ -34,6 +35,7 @@ def closed(request, message=None):
     resp = flatpage_response(request, 'closedparliament.ca', message)
     resp.status_code = 503
     return resp
+
 
 @never_cache
 def db_readonly(request, *args, **kwargs):
@@ -44,10 +46,12 @@ def db_readonly(request, *args, **kwargs):
     resp.status_code = 503
     return resp
 
+
 def disable_on_readonly_db(view):
     if settings.PARLIAMENT_DB_READONLY:
         return db_readonly
     return view
+
 
 def flatpage_response(request, title, message):
     t = loader.get_template("flatpages/default.html")
@@ -58,6 +62,7 @@ def flatpage_response(request, title, message):
         },
     }
     return HttpResponse(t.render(c, request))
+
 
 class SiteNewsFeed(Feed):
 

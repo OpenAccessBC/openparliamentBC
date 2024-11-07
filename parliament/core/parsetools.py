@@ -9,10 +9,12 @@ r_notamember = re.compile(r'^(The|A|Some|Acting|Santa|One|Assistant|An\.?|Le|La|
 r_mister = re.compile(r'^(Mr|Mrs|Ms|Miss|Hon|Right Hon|M|Mme)\.?\s+')
 r_parens = re.compile(r'\s*\(.+\)\s*$')
 
+
 def time(hour, minute):
     if hour >= 24:
         hour = hour % 24  # no, really. the house of commons is so badass they meet at 25 o'clock
     return datetime.time(hour=hour, minute=minute)
+
 
 def time_to_datetime(hour, minute, date):
     """Given hour, minute, and a datetime.date, returns a datetime.datetime.
@@ -27,30 +29,41 @@ def time_to_datetime(hour, minute, date):
             datetime.time(hour=hour % 24, minute=minute)
         )
 
+
 def removeAccents(s: str) -> str:
     nkfd_form = unicodedata.normalize('NFKD', str(s))
     return "".join([c for c in nkfd_form if not unicodedata.combining(c)])
+
 
 def stripHonorific(s):
     for hon in ('The Honourable ', 'The Right Honourable ', 'The Rt. ', 'The '):
         s = s.replace(hon, '')
     return re.sub(r'^[A-Z][a-z]+\. ', '', s)
 
+
 def titleIfNecessary(s):
     if not re.search(r'[a-z]', s):
         s = s.title()
     return s
 
+
 r_hasText = re.compile(r'\S', re.UNICODE)
+
+
 def getText(tag):
     return ''.join(tag.findAll(text=r_hasText))
 
+
 r_extraWhitespace = re.compile(r'\s\s*', re.UNICODE)
+
+
 def tameWhitespace(s):
     return re.sub(r_extraWhitespace, ' ', s.replace("\n", ' '))
 
+
 def sane_quotes(s):
     return s.replace('``', '"').replace("''", '"')
+
 
 def slugify(s, allow_numbers=False):
     if allow_numbers:
@@ -60,8 +73,10 @@ def slugify(s, allow_numbers=False):
     s = re.sub(pattern, '-', removeAccents(s.strip().lower()))
     return re.sub(r'--+', '-', s)
 
+
 def normalizeName(s):
     return tameWhitespace(removeAccents(stripHonorific(s).lower())).strip().replace("\u2019", "'")
+
 
 def munge_date(date):
     if date.count('0000') > 0:
@@ -73,11 +88,13 @@ def munge_date(date):
     else:
         return date
 
+
 def munge_decimal(num):
     try:
         return decimal.Decimal(num.replace(',', ''))
     except (ValueError, decimal.InvalidOperation):
         return decimal.Decimal(0)
+
 
 def munge_int(num):
     num = re.sub(r'\D', '', num)
@@ -86,12 +103,14 @@ def munge_int(num):
     else:
         return int(num)
 
+
 def munge_time(time):
     match = re.search(r'(\d\d:\d\d:\d\d)', time)
     if match:
         return match.group(1)
     else:
         return None
+
 
 def munge_postcode(code):
     if code:
@@ -102,8 +121,10 @@ def munge_postcode(code):
             return code
     return None
 
+
 def none_to_empty(s):
     return s if s is not None else ''
+
 
 def etree_extract_text(elem):
     text = ''

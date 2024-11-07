@@ -15,7 +15,9 @@ class CurrentAccountView(JSONView):
     def get(self, request):
         return {'email': request.authenticated_email}
 
+
 current_account = never_cache(CurrentAccountView.as_view())
+
 
 class LogoutView(JSONView):
 
@@ -23,13 +25,16 @@ class LogoutView(JSONView):
         request.authenticated_email = None
         return True
 
+
 logout = never_cache(LogoutView.as_view())
+
 
 def _get_ip(request):
     ip = request.META['REMOTE_ADDR']
     if ip == '127.0.0.1' and 'HTTP_X_REAL_IP' in request.META:
         ip = request.META['HTTP_X_REAL_IP']
     return ip
+
 
 class LoginTokenCreateView(JSONView):
 
@@ -45,7 +50,9 @@ class LoginTokenCreateView(JSONView):
         )
         return 'sent'
 
+
 create_token = disable_on_readonly_db(LoginTokenCreateView.as_view())
+
 
 @never_cache
 @disable_on_readonly_db

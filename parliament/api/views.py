@@ -17,7 +17,9 @@ class LegacyAPIHansardListView(JSONView):
             'api_url': '/api/hansards/%s/' % h.id
         } for h in Document.debates.all()]
 
+
 hansard_list = LegacyAPIHansardListView.as_view()
+
 
 def _serialize_statement(s):
     v = {
@@ -39,6 +41,7 @@ def _serialize_statement(s):
         }
     return v
 
+
 class LegacyAPIHansardView(JSONView):
 
     wrap = False
@@ -58,5 +61,6 @@ class LegacyAPIHansardView(JSONView):
                 .order_by('sequence')
                 .select_related('member__politician', 'member__party', 'member__riding')]
         }
+
 
 hansard = LegacyAPIHansardView.as_view()

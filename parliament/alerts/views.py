@@ -31,6 +31,7 @@ class PoliticianAlertForm(forms.Form):
     politician = forms.IntegerField(widget=forms.HiddenInput)
     captcha = ReCaptchaField(widget=ReCaptchaV2Invisible)
 
+
 @disable_on_readonly_db
 def politician_hansard_signup(request):
     try:
@@ -137,6 +138,8 @@ class CreateAlertView(JSONView):
             return True
         except ValueError:
             raise NotImplementedError
+
+
 create_alert = CreateAlertView.as_view()
 
 
@@ -158,10 +161,14 @@ class ModifyAlertView(JSONView):
             subscription.delete()
 
         return True
+
+
 modify_alert = ModifyAlertView.as_view()
+
 
 def _generate_query_for_politician(pol):
     return 'MP: "%s" Type: "debate"' % pol.identifier
+
 
 @disable_on_readonly_db
 def politician_hansard_subscribe(request, signed_key):

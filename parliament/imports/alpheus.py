@@ -16,8 +16,10 @@ logger.addHandler(logging.StreamHandler())
 
 __all__ = ['parse_string', 'fetch_and_parse']
 
+
 def _n2s(o):
     return o if o is not None else ''
+
 
 def _build_tag(name, attrs):
     return '<%s%s>' % (
@@ -28,9 +30,13 @@ def _build_tag(name, attrs):
         ))
     )
 
+
 _r_whitespace = re.compile(r'\s+', re.UNICODE)
+
+
 def _tame_whitespace(s):
     return _r_whitespace.sub(' ', _n2s(s)).strip()
+
 
 def _text_content(el, tail=False):
     return _tame_whitespace(
@@ -38,13 +44,16 @@ def _text_content(el, tail=False):
         ''.join([_text_content(subel, True) for subel in el]) +
         (_n2s(el.tail) if tail else ''))
 
+
 def _letters_only(s):
     return re.sub('[^a-zA-Z]', '', _n2s(s).lower())
+
 
 def _smart_title(s):
     if s.isupper() or s.islower():
         return s.title()
     return s
+
 
 def _following_char(el):
     """Returns the next non-whitespace character after this element,
@@ -59,6 +68,7 @@ def _following_char(el):
             return txt[0]
     return ''
 
+
 def _only_open(target):
     """Only execute the function if argument openclose == TAG_OPEN"""
     @wraps(target)
@@ -67,16 +77,20 @@ def _only_open(target):
             return target(self, el, openclose, *args, **kwargs)
     return inner
 
+
 def escape(s):
     """Escape HTML entities in a string. A wrapper around the Python function, since we don't want
     to escape quotation marks."""
     return stdlib_escape(s, quote=False)
+
 
 _r_housemet = re.compile(r'^\s*(?P<text>The\s+House\s+met\s+at|La\s+séance\s+est\s+ouverte\s+à)\s+(?P<number>\d[\d:\.]*)\s*(?P<ampm>[ap]\.m\.|)', re.I | re.UNICODE)
 _r_person_label = re.compile(r'^(Mr\.?\s|Mrs\.?\s|Ms\.?\s|Miss\.?s\|Hon\.?\s|Right\sHon\.\s|The\sSpeaker|Le\sprésident|The\sChair|The\sDeputy|The\sActing|An\s[hH]on\.?\s|Une\svoix|Des\svoix|Some\s[hH]on\.\s|M\.\s|Acting\s|L.hon\.?\s|Le\strès\s|Assistant\s|Mme\.?\s|Mlle\.?\s|Dr\.?\s)', re.UNICODE)
 _r_honorific = re.compile(r'^(Mr\.?\s|Mrs\.?\s|Ms\.?\s|Miss\.?\s|Hon\.?\s|Right\sHon\.\s|M\.\s|L.hon\.?\s|Mme\.?\s|Mlle\.?\s|Dr\.?\s)', re.UNICODE)
 _r_parens = re.compile(r'\s*\(.+\)\s*')
 _r_indeterminate = re.compile(r'^(An?|Une)\s')
+
+
 def _get_housemet_time(number, ampm):
     ampm = _n2s(ampm).replace('.', '')
     number = number.replace('.', ':')
@@ -92,6 +106,7 @@ def _get_housemet_time(number, ampm):
     else:
         return datetime.time(hour=int(hour), minute=int(minute))
 
+
 def _time_to_datetime(hour, minute, date):
     """Given hour, minute, and a datetime.date, returns a datetime.datetime.
 
@@ -105,11 +120,14 @@ def _time_to_datetime(hour, minute, date):
             datetime.time(hour=hour % 24, minute=minute)
         )
 
+
 def _strip_person_name(n):
     return _r_honorific.sub('', _r_parens.sub('', _tame_whitespace(n))).strip()
 
+
 class AlpheusError(Exception):
     pass
+
 
 class Document(object):
 
@@ -190,6 +208,7 @@ class Statement(object):
         setval('written_question', 'data-written-question')
         return _build_tag('div', attrs) + self.content + '</div>'
 
+
 class ParseHandler(object):
     """This class contains the bulk of the parsing logic.
 
@@ -226,7 +245,6 @@ class ParseHandler(object):
                    'colspec', 'tgroup', 'tbody', 'thead', 'title',
                    'EditorsNotes',
                    etree.ProcessingInstruction] + list(PASSTHROUGH_TAGS.keys())
-
 
     def __init__(self, document):
         self.statements = []
@@ -638,9 +656,11 @@ class ParseHandler(object):
             return self._default_handler
         raise AttributeError("ParseHandler has no attribute %r" % name)
 
+
 NO_DESCEND = -1
 TAG_OPEN = 1
 TAG_CLOSE = 2
+
 
 def parse_tree(tree):
     document = Document()
@@ -689,10 +709,12 @@ def parse_tree(tree):
     document.statements = handler.get_final_statements()
     return document
 
+
 def parse_string(s: str):
     s = s.replace('<B />', '').replace('<ParaText />', '')  # Some empty tags can gum up the works
     s = s.replace('&ccedil;', '&#231;').replace('&eacute;', '&#233;')  # Fix invalid entities
     return parse_tree(etree.fromstring(s))
+
 
 def fetch_and_parse(doc_id, lang):
     import urllib.error
@@ -713,6 +735,7 @@ def fetch_and_parse(doc_id, lang):
     doc.meta['xml_url'] = url
     doc.meta['html_url'] = url.replace('&xml=true', '')
     return doc
+
 
 def main():
     optparser = optparse.OptionParser(
@@ -757,6 +780,7 @@ def main():
     else:
         html = document.as_html()
         print(html.encode('utf8'))
+
 
 if __name__ == '__main__':
     main()

@@ -8,6 +8,7 @@ from parliament.core.models import ElectedMember, Party, Politician, Riding
 
 logger = logging.getLogger(__name__)
 
+
 class Election (models.Model):
     date = models.DateField(db_index=True)
     byelection = models.BooleanField()
@@ -49,6 +50,7 @@ class Election (models.Model):
     def create_members(self, session):
         for candidacy in self.candidacy_set.filter(elected=True):
             candidacy.create_member(session)
+
 
 class CandidacyManager(models.Manager):
 

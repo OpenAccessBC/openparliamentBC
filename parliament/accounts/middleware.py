@@ -29,6 +29,7 @@ class AuthenticatedEmailUserDescriptor(object):
         request.authenticated_email_user = user
         return user
 
+
 HttpRequest.authenticated_email = AuthenticatedEmailDescriptor()
 HttpRequest.authenticated_email_user = AuthenticatedEmailUserDescriptor()
 

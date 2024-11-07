@@ -21,15 +21,18 @@ from parliament.search.index import register_search_model
 
 logger = logging.getLogger(__name__)
 
+
 class DebateManager(models.Manager):
 
     def get_queryset(self):
         return super(DebateManager, self).get_queryset().filter(document_type=Document.DEBATE)
 
+
 class EvidenceManager(models.Manager):
 
     def get_queryset(self):
         return super(EvidenceManager, self).get_queryset().filter(document_type=Document.EVIDENCE)
+
 
 class NoStatementManager(models.Manager):
     """Manager restricts to Documents that haven't had statements parsed."""
@@ -38,6 +41,7 @@ class NoStatementManager(models.Manager):
         return super(NoStatementManager, self).get_queryset()\
             .annotate(scount=models.Count('statement'))\
             .exclude(scount__gt=0)
+
 
 class Document(models.Model):
 
@@ -279,6 +283,7 @@ class Document(models.Model):
         self._save_file(self.get_filepath('fr'), xml_fr)
         self.downloaded = True
         self.save()
+
 
 @register_search_model
 class Statement(models.Model):
@@ -559,6 +564,7 @@ class Statement(models.Model):
         if self.document.document_type != Document.EVIDENCE:
             return ''
         return self.document.committeemeeting.committee.slug
+
 
 class OldSequenceMapping(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)

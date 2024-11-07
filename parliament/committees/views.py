@@ -44,11 +44,15 @@ class CommitteeListView(ModelListView):
             'title': 'House Committees',
             'recent_studies': recent_studies
         })
+
+
 committee_list = CommitteeListView.as_view()
+
 
 def committee_id_redirect(request, committee_id):
     committee = get_object_or_404(Committee, pk=committee_id)
     return HttpResponsePermanentRedirect(request.path.replace(committee_id, committee.slug, 1))
+
 
 class CommitteeView(ModelDetailView):
 
@@ -97,7 +101,10 @@ class CommitteeView(ModelDetailView):
                 reverse('committee_analysis', kwargs={'committee_slug': slug})),
         }
         return HttpResponse(t.render(c, request))
+
+
 committee = CommitteeView.as_view()
+
 
 def committee_year_archive(request, slug, year):
     cmte = get_object_or_404(Committee, slug=slug)
@@ -119,6 +126,7 @@ def committee_year_archive(request, slug, year):
         'year': year
     })
 
+
 def committee_activity(request, activity_id):
     activity = get_object_or_404(CommitteeActivity, id=activity_id)
 
@@ -129,12 +137,14 @@ def committee_activity(request, activity_id):
         'committee': activity.committee
     })
 
+
 def _get_meeting(committee_slug, session_id, number):
     try:
         return CommitteeMeeting.objects.select_related('evidence', 'committee').get(
             committee__slug=committee_slug, session=session_id, number=number)
     except CommitteeMeeting.DoesNotExist:
         raise Http404
+
 
 class CommitteeMeetingListView(ModelListView):
 
@@ -182,7 +192,10 @@ class CommitteeMeetingView(ModelDetailView):
                 'meeting': meeting,
                 'committee': meeting.committee
             })
+
+
 committee_meeting = CommitteeMeetingView.as_view()
+
 
 class EvidenceAnalysisView(TextAnalysisView):
 
@@ -206,7 +219,9 @@ class EvidenceAnalysisView(TextAnalysisView):
             Document.objects.filter(id=request.evidence.id).update(most_frequent_word=word)
         return analysis
 
+
 evidence_analysis = EvidenceAnalysisView.as_view()
+
 
 class CommitteeAnalysisView(TextAnalysisView):
 
@@ -224,6 +239,7 @@ class CommitteeAnalysisView(TextAnalysisView):
         )
         return qs
 
+
 class CommitteeMeetingStatementView(ModelDetailView):
 
     resource_name = 'Speech (committee meeting)'
@@ -239,6 +255,8 @@ class CommitteeMeetingStatementView(ModelDetailView):
 
     def get_html(self, request, **kwargs):
         return committee_meeting(request, **kwargs)
+
+
 committee_meeting_statement = CommitteeMeetingStatementView.as_view()
 
 

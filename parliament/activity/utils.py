@@ -28,6 +28,7 @@ def save_activity(obj, politician, date, guid=None, variety=None):
         payload=t.render(c)).save()
     return True
 
+
 ACTIVITY_MAX = {
     'twitter': 6,
     'gnews': 6,
@@ -36,12 +37,15 @@ ACTIVITY_MAX = {
     'billsponsor': 7,
     'committee': 8,
 }
+
+
 def iter_recent(queryset):
     activity_counts = ACTIVITY_MAX.copy()
     for activity in queryset:
         if activity_counts[activity.variety]:
             activity_counts[activity.variety] -= 1
             yield activity
+
 
 def prune(queryset):
     today = datetime.date.today()

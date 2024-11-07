@@ -21,6 +21,7 @@ class CommitteeManager(models.Manager):
         except CommitteeInSession.DoesNotExist:
             raise Committee.DoesNotExist()
 
+
 class Committee(models.Model):
 
     name_en = models.TextField()
@@ -151,6 +152,7 @@ class CommitteeActivity(models.Model):
     class Meta:
         verbose_name_plural = 'Committee activities'
 
+
 class CommitteeActivityInSession(models.Model):
 
     activity = models.ForeignKey(CommitteeActivity, on_delete=models.CASCADE)
@@ -168,6 +170,7 @@ class CommitteeActivityInSession(models.Model):
         unique_together = [
             ('activity', 'session')
         ]
+
 
 class CommitteeMeeting(models.Model):
 
@@ -269,6 +272,7 @@ class CommitteeMeeting(models.Model):
     @property
     def future(self):
         return self.datetime > datetime.datetime.now()
+
 
 class CommitteeReport(models.Model):
 

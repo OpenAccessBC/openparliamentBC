@@ -7,6 +7,7 @@ from parliament.search.solr import get_pysolr_instance
 
 logger = logging.getLogger(__name__)
 
+
 class Command(BaseCommand):
     help = "Runs any queued-up search indexing tasks."
 

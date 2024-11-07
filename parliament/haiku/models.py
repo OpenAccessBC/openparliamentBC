@@ -9,11 +9,13 @@ def validate_first_line(line):
     if not re.search(r'^[A-Z]', line):
         raise ValidationError("Doesn't start with cap")
 
+
 def validate_last_line(line):
     if re.search(r'(Mr|St|Mrs|No|Hon)\.$', line, re.I):
         raise ValidationError("Ends with non-period")
     if line.endswith(':') or line.endswith('-'):
         raise ValidationError("Colon")
+
 
 def validate_line(line):
     if re.search(r'\d', line):
@@ -22,6 +24,7 @@ def validate_line(line):
         raise ValidationError("Brackets")
     if u'—' in line or '--' in line:
         raise ValidationError("Dash")
+
 
 class Haiku(models.Model):
     line1 = models.CharField(max_length=50, validators=[validate_first_line, validate_line])

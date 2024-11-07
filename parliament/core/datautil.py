@@ -40,6 +40,7 @@ def load_pol_pic(pol):
     pol.headshot.save(str(pol.id) + ".jpg", File(open(content[0])), save=True)
     pol.save()
 
+
 def delete_invalid_pol_pics():
     from PIL import Image
     for p in Politician.objects.exclude(headshot__isnull=True).exclude(headshot=''):
@@ -50,6 +51,7 @@ def delete_invalid_pol_pics():
             os.unlink(p.headshot.path)
             p.headshot = None
             p.save()
+
 
 def delete_invalid_pol_urls():
     for pol in Politician.objects.filter(politicianinfo__schema='web_site').distinct():
@@ -62,6 +64,7 @@ def delete_invalid_pol_urls():
             print(e)
             pol.politicianinfo_set.filter(schema='web_site').delete()
 
+
 def export_words(outfile, queryset=None):
     if queryset is None:
         queryset = Statement.objects.all()
@@ -69,10 +72,12 @@ def export_words(outfile, queryset=None):
         outfile.write(s.text_plain().encode('utf8'))
         outfile.write("\n")
 
+
 def export_tokenized_words(outfile, queryset):
     for word in text_utils.qs_token_iterator(queryset, statement_separator="/"):
         outfile.write(word.encode('utf8'))
         outfile.write(' ')
+
 
 def corpus_for_pol(pol):
 
@@ -83,10 +88,11 @@ def corpus_for_pol(pol):
         words.extend(re.split(r_splitter, s.text))
     return [w for w in words if len(w) > 0]
 
+
 r_splitter = re.compile(r'[^\w\'\-]+', re.UNICODE)
+
+
 def spark_index(bucketsize, bigrams=False):
-
-
     index = defaultdict(int)
     bucketidx = 0
     bucketcount = 0
@@ -104,6 +110,7 @@ def spark_index(bucketsize, bigrams=False):
             bucketcount = 0
             bucketidx += 1
 
+
 def populate_members_by():
     for by in Election.objects.filter(byelection=True):
         print(str(by))
@@ -113,6 +120,7 @@ def populate_members_by():
             print(str(session))
             x = sys.stdin.readline()
             populate_members(by, session)
+
 
 def populate_members(election, session, start_date):
     """ Label all winners in an election Members for the subsequent session. """
@@ -127,10 +135,12 @@ def populate_members(election, session, start_date):
                 politician=candidate, start_date=start_date, party=winner.party, riding=winner.riding)
             em.sessions.add(session)
 
+
 def copy_members(from_session, to_session):
     raise Exception("Not yet implemented after ElectedMember refactor")
     for member in ElectedMember.objects.filter(session=from_session):
         ElectedMember(session=to_session, politician=member.politician, party=member.party, riding=member.riding).save()
+
 
 def populate_parlid():
     for pol in Politician.objects.filter(parlpage__isnull=False):
@@ -140,6 +150,7 @@ def populate_parlid():
                 raise Exception("didn't match on %s" % pol.parlpage)
             pol.parlwebid = int(match.group(1))
             pol.save()
+
 
 def replace_links(old, new, allow_self_relation=False):
     if old.__class__ != new.__class__:
@@ -162,6 +173,7 @@ def replace_links(old, new, allow_self_relation=False):
             for obj in relation.related_model._default_manager.filter(**{relation.field.name: old}):
                 getattr(obj, relation.field.name).remove(old)
                 getattr(obj, relation.field.name).add(new)
+
 
 def _merge_pols(good, bad):
     # ElectedMember.objects.filter(politician=bad).update(politician=good)
@@ -186,6 +198,7 @@ def _merge_pols(good, bad):
         pi_seen.add(val)
 
 # REFORM = (Party.objects.get(pk=25), Party.objects.get(pk=1), Party.objects.get(pk=28), Party.objects.get(pk=26))
+
 
 def merge_by_party(parties):
     raise Exception("Not yet implemented after ElectedMember refactor")
@@ -234,6 +247,7 @@ def merge_by_party(parties):
                 _merge_pols(good, bad)
             print("Merged %s" % good)
 
+
 def merge_polnames():
 
     def _printout(pol):
@@ -262,6 +276,7 @@ def merge_polnames():
                     break
             print("Done!")
 
+
 @transaction.atomic
 def merge_pols():
     print("Enter ID of primary pol object: ")
@@ -284,17 +299,21 @@ def merge_pols():
         _merge_pols(good, bad)
         print("Done!")
 
+
 def fix_mac():
     """ Alexa Mcdonough -> Alexa McDonough """
     for p in Politician.objects.filter(models.Q(name_family__startswith='Mc') | models.Q(name_family__startswith='Mac')):
         nforig = p.name_family
+
         def mac_replace(match):
             return match.group(1) + match.group(2).upper()
+
         p.name_family = re.sub(r'(Ma?c)([a-z])', mac_replace, p.name_family)
         print(p.name + " -> ", end=' ')
         p.name = p.name.replace(nforig, p.name_family)
         print(p.name)
         p.save()
+
 
 def check_for_feeds(urls):
     for url in urls:
@@ -308,6 +327,7 @@ def check_for_feeds(urls):
         for feed in soup.findAll('link', type='application/rss+xml'):
             print("FEED ON %s" % url)
             print(feed)
+
 
 def twitter_from_csv(infile):
     reader = csv.DictReader(infile)
@@ -323,6 +343,7 @@ def twitter_from_csv(infile):
 #    twit = Twitter(settings.TWITTER_USERNAME, settings.TWITTER_PASSWORD)
 #    for t in PoliticianInfo.objects.filter(schema='twitter'):
 #        twit.openparlca.mps.members(id=t.value)
+
 
 def slugs_for_pols(qs=None):
     if not qs:
@@ -376,6 +397,7 @@ def slugs_for_pols(qs=None):
 #            PoliticianInfo(politician=info.politician, schema='freebase_id', value=freebase_id).save()
 #            print("Saved: %s" % freebase_id)
 
+
 def pol_urls_to_ids():
     for pol in Politician.objects.exclude(parlpage=''):
         if 'Item' in pol.parlpage and 'parlinfo_id' not in pol.info():
@@ -387,11 +409,13 @@ def pol_urls_to_ids():
             match = re.search(r'Key=(\d+)', pol.parlpage)
             pol.set_info('parl_id', match.group(1))
 
+
 def export_statements(outfile, qs):
     for s in qs.iterator():
         if not s.speaker:
             outfile.write(s.text_plain().encode('utf8'))
             outfile.write("\n")
+
 
 def add_missing_genders():
     for pol in Politician.objects.current().filter(gender=''):
@@ -400,6 +424,7 @@ def add_missing_genders():
         assert gender in ('M', 'F')
         pol.gender = gender
         pol.save()
+
 
 def print_changed_mps(previous_date):
     prev_members = ElectedMember.objects.on_date(previous_date)

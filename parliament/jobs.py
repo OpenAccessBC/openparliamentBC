@@ -15,17 +15,21 @@ logger = logging.getLogger(__name__)
 
 mps = update_mps_from_ourcommons
 
+
 def votes():
     parlvotes.import_votes()
 
+
 def bills():
     legisinfo.import_bills(Session.objects.current())
+
 
 @transaction.atomic
 def prune_activities():
     for pol in Politician.objects.current():
         activityutils.prune(Activity.public.filter(politician=pol))
     return True
+
 
 def committee_evidence():
     evidences = (Document.evidence
@@ -43,6 +47,7 @@ def committee_evidence():
             logger.exception("Evidence parse failure on #%s: %r" % (document.id, e))
             continue
 
+
 def committees(sess=None):
     if sess is None:
         sess = Session.objects.current()
@@ -54,13 +59,16 @@ def committees(sess=None):
         logger.exception("Committee list import failure")
     parl_cmte.import_committee_documents(sess)
 
+
 def committees_full():
     committees()
     committee_evidence()
 
+
 @transaction.atomic
 def hansards_load():
     parl_document.fetch_latest_debates()
+
 
 def hansards_parse():
     debates = (Document.objects
@@ -81,12 +89,15 @@ def hansards_parse():
             hansard = Document.objects.get(pk=hansard.id)
             hansard.save_activity()
 
+
 def hansards():
     hansards_load()
     hansards_parse()
 
+
 def corpus_for_debates():
     corpora.generate_for_debates()
+
 
 def corpus_for_committees():
     corpora.generate_for_committees()

@@ -17,6 +17,8 @@ from parliament.hansards.models import Document
 logger = logging.getLogger(__name__)
 
 COMMITTEE_LIST_URL = 'https://www.ourcommons.ca/Committees/{lang}/List?parl={parl}&session={sess}'
+
+
 @transaction.atomic
 def import_committee_list(session=None):
     if session is None:
@@ -94,8 +96,10 @@ def import_committee_list(session=None):
 
     return True
 
+
 def _docid_from_url(u):
     return int(re.search(r'(Doc|publication)Id=(\d+)&', u).group(2))
+
 
 def _12hr(hour, ampm):
     hour = int(hour)
@@ -104,6 +108,7 @@ def _12hr(hour, ampm):
         # noon, midnight
         hour -= 12
     return hour
+
 
 def _parse_date(d):
     """datetime objects from e.g. March 11, 2011"""
@@ -122,7 +127,10 @@ def import_committee_documents(session):
         # import_committee_reports(comm, session)
         # time.sleep(1)
 
+
 COMMITTEE_MEETINGS_URL = 'https://www.%(domain)s.ca/Committees/en/%(acronym)s/Meetings?parl=%(parliamentnum)d&session=%(sessnum)d'
+
+
 @transaction.atomic
 def import_committee_meetings(committee, session):
 
@@ -239,8 +247,10 @@ def import_committee_meetings(committee, session):
 
     return True
 
+
 class NoXMLError(Exception):
     pass
+
 
 def _get_xml_url_from_documentviewer_url(url):
     resp = requests.get(url)
@@ -251,6 +261,7 @@ def _get_xml_url_from_documentviewer_url(url):
     except IndexError:
         raise NoXMLError
     return urljoin(url, xml_button.get('href'))
+
 
 def _download_evidence(meeting, evidence_viewer_url):
     xml_url_en = _get_xml_url_from_documentviewer_url(evidence_viewer_url)
@@ -279,6 +290,7 @@ def _download_evidence(meeting, evidence_viewer_url):
         session=meeting.session,
         document_type=Document.EVIDENCE)
     meeting.evidence.save_xml(xml_en, xml_fr)
+
 
 def get_activity_by_url(activity_url, committee, session):
     activity_id = int(re.search(r'(studyActivityId|Stac)=(\d+)', activity_url).group(2))
