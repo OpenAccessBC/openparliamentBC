@@ -93,3 +93,4 @@ def twitter_api_request(endpoint, params=None):
         return []
 
     resp.raise_for_status()
+    return None

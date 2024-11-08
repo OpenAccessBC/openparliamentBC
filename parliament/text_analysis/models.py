@@ -81,6 +81,6 @@ class TextAnalysis(models.Model):
     def top_word(self):
         d = self.probability_data
         if d is None:
-            return
+            return None
         onegrams = (w for w in d if w['text'].count(' ') == 0)
         return max(onegrams, key=itemgetter('score'))['text']

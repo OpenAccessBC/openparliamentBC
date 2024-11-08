@@ -180,6 +180,7 @@ class CommitteeMeetingView(ModelDetailView):
             return {
                 'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']})
             }
+        return None
 
     def get_html(self, request, committee_slug, session_id, number, slug=None):
         meeting = self.get_object(request, committee_slug, session_id, number)

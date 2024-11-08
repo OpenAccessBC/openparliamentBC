@@ -115,6 +115,7 @@ class Topic(models.Model):
         match = re.search(r'MP: "([^\s"]+)"', self.query)
         if match:
             return Politician.objects.get_by_slug_or_id(match.group(1)).name
+        return None
 
 
 class SeenItem(models.Model):

@@ -94,6 +94,7 @@ class Document(models.Model):
             })
         elif self.document_type == self.EVIDENCE:
             return self.committeemeeting.get_absolute_url()
+        return None
 
     def get_text_analysis_url(self):
         # Let's violate DRY!
@@ -129,6 +130,7 @@ class Document(models.Model):
             }
         elif self.document_type == self.EVIDENCE:
             return self.committeemeeting.evidence_url
+        return None
 
     def _topics(self, lst):
         topics = []

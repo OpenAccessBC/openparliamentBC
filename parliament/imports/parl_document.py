@@ -32,15 +32,15 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
         if reimport_preserving_sequence:
             if OldSequenceMapping.objects.filter(document=document).exists():
                 logger.error("Sequence mapping already exits for %s" % document)
-                return
+                return None
             old_statements = list(document.statement_set.all())
             document.statement_set.all().delete()
         else:
             if not interactive:
-                return
+                return None
             sys.stderr.write("Statements already exist for %r.\nDelete them? (y/n) " % document)
             if input().strip() != 'y':
-                return
+                return None
             document.statement_set.all().delete()
 
     if not document.downloaded:

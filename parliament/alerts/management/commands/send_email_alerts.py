@@ -13,7 +13,8 @@ class Command(BaseCommand):
     def handle(self, **options):
 
         if getattr(settings, 'PARLIAMENT_SEARCH_CLOSED', False):
-            return logger.error("Not sending alerts because of PARLIAMENT_SEARCH_CLOSED")
+            logger.error("Not sending alerts because of PARLIAMENT_SEARCH_CLOSED")
+            return
 
         from parliament.alerts.models import Subscription
 

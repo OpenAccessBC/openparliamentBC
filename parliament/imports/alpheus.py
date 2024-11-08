@@ -75,6 +75,7 @@ def _only_open(target):
     def inner(self, el, openclose, *args, **kwargs):
         if openclose == TAG_OPEN:
             return target(self, el, openclose, *args, **kwargs)
+        return None
     return inner
 
 
@@ -353,6 +354,7 @@ class ParseHandler():
                 self.people_types_seen[key] = self.one_time_attributes['person_type']
             if self.one_time_attributes.get('person_context'):
                 self.people_contexts[key] = self.one_time_attributes['person_context']
+        return None
 
     def _is_person(self):
         """Do we know who's speaking the current text?"""
@@ -465,6 +467,7 @@ class ParseHandler():
             if el.xpath('.//QuotePara'):
                 self._add_code('</blockquote>')
             assert not _n2s(el.tail).strip()
+        return None
 
     def handle_ProceduralText(self, el, openclose):
         assert not _n2s(el.tail).strip()
@@ -477,6 +480,7 @@ class ParseHandler():
                 # self._add_code(' -->')
         else:
             return self.handle_ParaText(el, openclose, procedural=True)
+        return None
 
     handle_ThroneSpeechPara = handle_ParaText
 
@@ -653,6 +657,7 @@ class ParseHandler():
             self._add_tag_text(el, openclose)
         if openclose == TAG_OPEN and el.tag not in self.IGNORE_TAGS:
             raise AlpheusError("I don't know how to handle tag %s" % el.tag)
+        return None
 
     def __getattr__(self, name):
         # Route requests where we don't have a handler to the default

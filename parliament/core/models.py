@@ -375,6 +375,7 @@ class Politician(Person):
             return False
         self.slug = slug
         self.save()
+        return None
 
     @property
     @memoize_property

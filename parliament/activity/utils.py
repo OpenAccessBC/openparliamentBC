@@ -9,7 +9,7 @@ from parliament.activity.models import Activity
 
 def save_activity(obj, politician, date, guid=None, variety=None):
     if not getattr(settings, 'PARLIAMENT_SAVE_ACTIVITIES', True):
-        return
+        return None
     if not variety:
         variety = obj.__class__.__name__.lower()
     if not guid:
