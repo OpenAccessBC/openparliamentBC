@@ -12,3 +12,5 @@ lxml-stubs
 types-Markdown
 types-requests
 types-webob
+types-beautifulsoup4
+types-requests-oauthlib
