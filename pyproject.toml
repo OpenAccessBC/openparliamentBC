@@ -1,6 +1,6 @@
 [tool.mypy]
 python_version = "3.12"
-disable_error_code = "name-defined,arg-type,attr-defined,import-untyped,name-match,assignment,import-not-found"
+disable_error_code = "name-defined,attr-defined,import-untyped,name-match,assignment,import-not-found"
 exclude = ["imports/hans_old/"]
 
 

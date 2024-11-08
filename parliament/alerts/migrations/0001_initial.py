@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             name='PoliticianAlert',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('email', models.EmailField(max_length=254, verbose_name=b'Your e-mail')),
+                ('email', models.EmailField(max_length=254, verbose_name='Your e-mail')),
                 ('active', models.BooleanField(default=False)),
                 ('created', models.DateTimeField(default=datetime.datetime.now)),
                 ('politician', models.ForeignKey(on_delete=models.CASCADE, to='core.Politician')),

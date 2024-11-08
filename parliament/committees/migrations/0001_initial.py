@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('name_fr', models.TextField(blank=True)),
                 ('short_name_fr', models.TextField(blank=True)),
                 ('slug', models.SlugField(unique=True)),
-                ('display', models.BooleanField(default=True, db_index=True, verbose_name=b'Display on site?')),
+                ('display', models.BooleanField(default=True, db_index=True, verbose_name='Display on site?')),
                 ('parent', models.ForeignKey(
                     on_delete=models.CASCADE,
                     related_name='subcommittees',

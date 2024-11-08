@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='committee',
             name='joint',
-            field=models.BooleanField(default=False, verbose_name=b'Joint committee?'),
+            field=models.BooleanField(default=False, verbose_name='Joint committee?'),
         ),
     ]

@@ -120,7 +120,7 @@ def populate_members_by():
         for session in sessions:
             print(str(session))
             sys.stdin.readline()
-            populate_members(by, session)
+            populate_members(by, session, None)
 
 
 def populate_members(election, session, start_date):

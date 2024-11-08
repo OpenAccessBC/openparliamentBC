@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('added', models.DateField(default=datetime.date.today, db_index=True)),
                 ('introduced', models.DateField(null=True, blank=True)),
                 ('text_docid', models.IntegerField(
-                    help_text=b"The parl.gc.ca document ID of the latest version of the bill's text",
+                    help_text="The parl.gc.ca document ID of the latest version of the bill's text",
                     null=True,
                     blank=True)),
             ],

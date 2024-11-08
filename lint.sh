@@ -2,5 +2,5 @@
 
 flake8 parliament/
 pylint --rcfile pylintrc parliament/
-mypy parliament/
+mypy -p parliament
 pyright parliament/

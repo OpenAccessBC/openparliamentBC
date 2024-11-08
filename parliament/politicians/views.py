@@ -33,7 +33,8 @@ class CurrentMPView(ModelListView):
     # The API stuff here is a bit of a hack: because of the database schema, it makes sense
     # to internally use ElectedMembers in order to add more fields to the default response,
     # but for former politicians we use Politician objects, so... hacking.
-    def _politician_prepend_filter(field_name, help):
+    @staticmethod
+    def _politician_prepend_filter(field_name: str, help: str):
         def inner(qs, *args, **kwargs):
             if qs.model == Politician:
                 return APIFilters.dbfield(field_name)(qs, *args, **kwargs)

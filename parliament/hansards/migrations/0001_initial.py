@@ -23,11 +23,11 @@ class Migration(migrations.Migration):
                 ('source_id', models.IntegerField(unique=True, db_index=True)),
                 ('most_frequent_word', models.CharField(max_length=20, blank=True)),
                 ('wordcloud', models.ImageField(null=True, upload_to=b'autoimg/wordcloud', blank=True)),
-                ('downloaded', models.BooleanField(default=False, help_text=b'Has the source data been downloaded?')),
+                ('downloaded', models.BooleanField(default=False, help_text='Has the source data been downloaded?')),
                 ('skip_parsing', models.BooleanField(
-                    default=False, help_text=b"Don't try to parse this, presumably because of errors in the source.")),
-                ('public', models.BooleanField(default=False, verbose_name=b'Display on site?')),
-                ('multilingual', models.BooleanField(default=False, verbose_name=b'Content parsed in both languages?')),
+                    default=False, help_text="Don't try to parse this, presumably because of errors in the source.")),
+                ('public', models.BooleanField(default=False, verbose_name='Display on site?')),
+                ('multilingual', models.BooleanField(default=False, verbose_name='Content parsed in both languages?')),
                 ('session', models.ForeignKey(on_delete=models.CASCADE, to='core.Session')),
             ],
             options={
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
                 ('sequence', models.IntegerField(db_index=True)),
                 ('wordcount', models.IntegerField()),
                 ('wordcount_en', models.PositiveSmallIntegerField(
-                    help_text=b'# words originally spoken in English', null=True)),
+                    help_text='# words originally spoken in English', null=True)),
                 ('procedural', models.BooleanField(default=False, db_index=True)),
                 ('written_question', models.CharField(
                     blank=True, max_length=1, choices=[(b'Q', b'Question'), (b'R', b'Response')])),
