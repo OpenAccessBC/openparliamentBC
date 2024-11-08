@@ -770,7 +770,8 @@ def main():
             document = parse_file(sys.stdin)
     except Exception:
         if options.pdb:
-            import pdb; pdb.post_mortem()
+            import pdb
+            pdb.post_mortem()
         else:
             raise
     # sys.stderr.write("Parsed %d statements\n" % len(document.statements))

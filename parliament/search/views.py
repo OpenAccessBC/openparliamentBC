@@ -35,10 +35,12 @@ def search(request):
     if 'q' in request.GET and request.GET['q']:
         if not 'page' in request.GET:
             resp = try_postcode_first(request)
-            if resp: return resp
+            if resp:
+                return resp
             if not is_ajax(request):
                 resp = try_politician_first(request)
-                if resp: return resp
+                if resp:
+                    return resp
 
         query = request.GET['q'].strip()
         if request.GET.get('prepend'):

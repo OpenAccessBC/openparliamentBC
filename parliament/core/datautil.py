@@ -261,7 +261,9 @@ def merge_polnames():
         good = Politician.objects.get(pk=int(ids[0]))
         bads = [Politician.objects.get(pk=int(x)) for x in ids[1:]]
         _printout(good)
-        for bad in bads: _printout(bad)
+        for bad in bads:
+            _printout(bad)
+
         print("Go? (y/n) ", end=' ')
         yn = sys.stdin.readline().strip().lower()
         if yn == 'y':

@@ -92,7 +92,8 @@ def int64_encode(n):
     while True:
         n, r = divmod(n, BASE)
         s.append(ALPHABET[r])
-        if n == 0: break
+        if n == 0:
+            break
     return ''.join(reversed(s))
 
 

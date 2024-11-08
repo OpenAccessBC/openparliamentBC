@@ -175,9 +175,15 @@ class PoliticianManager(models.Manager):
                 for p in poss:
                     # For each possibility, assemble a list of matching Members
                     members = ElectedMember.objects.filter(politician=p.politician)
-                    if riding: members = members.filter(riding=riding)
-                    if session: members = members.filter(sessions=session)
-                    if party: members = members.filter(party=party)
+                    if riding:
+                        members = members.filter(riding=riding)
+
+                    if session:
+                        members = members.filter(sessions=session)
+
+                    if party:
+                        members = members.filter(party=party)
+
                     if len(members) >= 1:
                         if result:  # we found another match on a previous journey through the loop
                             # can't disambiguate, raise exception
