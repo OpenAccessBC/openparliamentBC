@@ -55,7 +55,7 @@ def import_votes():
         elif decision == 'Tie':
             votequestion.result = 'T'
         else:
-            raise Exception("Couldn't process vote result %s in %s" % (decision, votelisturl))
+            raise Exception("Couldn't process vote result %s in %s" % (decision, votelisturl_en))
         if vote.findtext('BillNumberCode'):
             billnumber = vote.findtext('BillNumberCode')
             try:
@@ -86,6 +86,7 @@ def import_votes():
             pol = Politician.objects.get_by_parl_mp_id(
                 voter.find('PersonId').text,
                 session=session, riding_name=voter.find('ConstituencyName').text)
+            name = ""
             # name = (voter.find('PersonOfficialFirstName').text
             #     + ' ' + voter.find('PersonOfficialLastName').text)
             # riding = Riding.objects.get_by_name(voter.find('ConstituencyName').text)

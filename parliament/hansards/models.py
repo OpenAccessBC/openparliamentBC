@@ -130,10 +130,10 @@ class Document(models.Model):
         elif self.document_type == self.EVIDENCE:
             return self.committeemeeting.evidence_url
 
-    def _topics(self, l):
+    def _topics(self, lst):
         topics = []
         last_topic = ''
-        for statement in l:
+        for statement in lst:
             if statement[0] and statement[0] != last_topic:
                 last_topic = statement[0]
                 topics.append((statement[0], statement[1]))
@@ -277,7 +277,7 @@ class Document(models.Model):
 
     def save_xml(self, xml_en, xml_fr, overwrite=False):
         if not overwrite and any(
-                os.path.exists(p) for p in [self.get_filepath(l) for l in ['en', 'fr']]):
+                os.path.exists(p) for p in [self.get_filepath(lang) for lang in ['en', 'fr']]):
             raise Exception("XML files already exist")
         self._save_file(self.get_filepath('en'), xml_en)
         self._save_file(self.get_filepath('fr'), xml_fr)
@@ -534,7 +534,7 @@ class Statement(models.Model):
                 if self.member.politician.name in self.who:
                     info['display_name'] = re.sub(r'\(.+\)', '', self.who)
                 info['named'] = False
-            elif not '(' in self.who or not parsetools.r_politicalpost.search(self.who):
+            elif '(' not in self.who or not parsetools.r_politicalpost.search(self.who):
                 info['display_name'] = self.member.politician.name
             else:
                 post_match = re.search(r'\((.+)\)', self.who)

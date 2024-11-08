@@ -11,11 +11,13 @@ import urllib.parse
 import urllib.request
 from collections import defaultdict
 
+import text_utils
 from django.core.files import File
 from django.db import models, transaction
 from django.db.models import Count
 
-from parliament.core.models import ElectedMember, Politician, PoliticianInfo, Session
+from parliament.core.models import ElectedMember, InternalXref, Politician, PoliticianInfo, Session
+from parliament.core.parsetools import slugify
 from parliament.elections.models import Candidacy, Election
 from parliament.hansards.models import Statement
 
@@ -118,7 +120,7 @@ def populate_members_by():
         sessions = [Session.objects.get(pk=int(x)) for x in sys.stdin.readline().strip().split()]
         for session in sessions:
             print(str(session))
-            x = sys.stdin.readline()
+            sys.stdin.readline()
             populate_members(by, session)
 
 

@@ -33,7 +33,7 @@ def search(request):
         return closed(request, message=settings.PARLIAMENT_SEARCH_CLOSED)
 
     if 'q' in request.GET and request.GET['q']:
-        if not 'page' in request.GET:
+        if 'page' not in request.GET:
             resp = try_postcode_first(request)
             if resp:
                 return resp

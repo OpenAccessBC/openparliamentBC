@@ -96,7 +96,7 @@ def time_since(value):
 
 @register.filter(name='english_list')
 def english_list(value, arg=', '):
-    if not type(value) == list:
+    if value is not list:
         raise Exception("Tag english_list takes a list as argument")
     if len(value) == 1:
         return "%s" % value[0]
