@@ -9,7 +9,7 @@ class TextAnalysisView(View):
     """Returns JSON text analysis data. Subclasses must define get_qs."""
 
     corpus_name = 'default'
-    expiry_days = None
+    expiry_days: Optional[int] = None
 
     def get(self, request, **kwargs):
         if not settings.PARLIAMENT_GENERATE_TEXT_ANALYSIS:

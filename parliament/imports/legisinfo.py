@@ -131,7 +131,7 @@ def _update(obj, field, value):
         obj._changed = True
 
 
-def _import_bill(bd, session, previous_session=None):  # type: (BillData, Session, Session) -> None
+def _import_bill(bd: BillData, session: Session, previous_session: Optional[Session] = None) -> None:
 
     if previous_session is None:
         previous_session = _get_previous_session(session)

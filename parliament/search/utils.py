@@ -3,7 +3,7 @@ import re
 from collections import namedtuple
 from typing import Dict
 
-_FakePaginator = namedtuple('FakePaginator', 'num_pages count')
+_FakePaginator = namedtuple('_FakePaginator', 'num_pages count')
 
 
 class SearchPaginator():
