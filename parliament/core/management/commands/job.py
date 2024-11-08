@@ -30,7 +30,8 @@ class Command(BaseCommand):
                     post_mortem()
                 else:
                     tb = "\n".join(traceback.format_exception(*(sys.exc_info())))
-                    mail_admins("Exception in job %s" % jobname, "\n".join(traceback.format_exception(*(sys.exc_info()))))
+                    mail_admins("Exception in job %s" % jobname,
+                                "\n".join(traceback.format_exception(*(sys.exc_info()))))
             except Exception:
                 print(tb)
             finally:

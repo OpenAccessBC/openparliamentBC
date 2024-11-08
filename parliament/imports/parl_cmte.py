@@ -306,7 +306,8 @@ def get_activity_by_url(activity_url, committee, session):
     resp.raise_for_status()
     root = lxml.html.fromstring(resp.text)
 
-    activity.name_en = root.cssselect('.core-content .study-title-label, .core-content .study-bill-label')[0].text.strip()[:500]
+    activity.name_en = root.cssselect(
+        '.core-content .study-title-label, .core-content .study-bill-label')[0].text.strip()[:500]
 
     # See if this already exists for another session
     try:

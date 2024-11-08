@@ -276,7 +276,8 @@ class Bill(models.Model):
             if d['name'] == "Debate at second reading"]
         if not second_reading_sittings:
             return Statement.objects.none()
-        debate_ids = Document.debates.filter(date__in=[s['date'] for s in second_reading_sittings]).values_list('id', flat=True)
+        debate_ids = Document.debates.filter(
+            date__in=[s['date'] for s in second_reading_sittings]).values_list('id', flat=True)
         qs = Statement.objects.filter(document__in=debate_ids)
         if self.short_title_en:
             qs = qs.filter(h2_en=self.short_title_en)

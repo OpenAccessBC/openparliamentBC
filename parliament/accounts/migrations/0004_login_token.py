@@ -18,7 +18,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LoginToken',
             fields=[
-                ('token', models.CharField(default=parliament.accounts.models._random_token, max_length=40, serialize=False, primary_key=True)),
+                ('token', models.CharField(
+                    default=parliament.accounts.models._random_token,
+                    max_length=40,
+                    serialize=False,
+                    primary_key=True)),
                 ('email', models.EmailField(max_length=254)),
                 ('created', models.DateTimeField(default=datetime.datetime.now)),
                 ('requesting_ip', models.GenericIPAddressField()),

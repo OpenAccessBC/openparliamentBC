@@ -634,7 +634,11 @@ class ParseHandler(object):
             self.document_language[0].upper(), self.parliament, self.session, num)
         self._add_code('%s%sVote #%s</a></p>' % (
             _build_tag('p', {'class': 'division procedural'}),
-            _build_tag('a', {'class': 'related_link vote', 'href': url, 'data-number': num, 'data-HoCid': el.get('id')}),
+            _build_tag('a', {
+                'class': 'related_link vote',
+                'href': url,
+                'data-number': num,
+                'data-HoCid': el.get('id')}),
             num))
         return NO_DESCEND
 

@@ -16,14 +16,16 @@ class Migration(migrations.Migration):
             name='Document',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('document_type', models.CharField(db_index=True, max_length=1, choices=[(b'D', b'Debate'), (b'E', b'Committee Evidence')])),
+                ('document_type', models.CharField(
+                    db_index=True, max_length=1, choices=[(b'D', b'Debate'), (b'E', b'Committee Evidence')])),
                 ('date', models.DateField(null=True, blank=True)),
                 ('number', models.CharField(max_length=6, blank=True)),
                 ('source_id', models.IntegerField(unique=True, db_index=True)),
                 ('most_frequent_word', models.CharField(max_length=20, blank=True)),
                 ('wordcloud', models.ImageField(null=True, upload_to=b'autoimg/wordcloud', blank=True)),
                 ('downloaded', models.BooleanField(default=False, help_text=b'Has the source data been downloaded?')),
-                ('skip_parsing', models.BooleanField(default=False, help_text=b"Don't try to parse this, presumably because of errors in the source.")),
+                ('skip_parsing', models.BooleanField(
+                    default=False, help_text=b"Don't try to parse this, presumably because of errors in the source.")),
                 ('public', models.BooleanField(default=False, verbose_name=b'Display on site?')),
                 ('multilingual', models.BooleanField(default=False, verbose_name=b'Content parsed in both languages?')),
                 ('session', models.ForeignKey(on_delete=models.CASCADE, to='core.Session')),
@@ -64,15 +66,19 @@ class Migration(migrations.Migration):
                 ('content_fr', models.TextField(blank=True)),
                 ('sequence', models.IntegerField(db_index=True)),
                 ('wordcount', models.IntegerField()),
-                ('wordcount_en', models.PositiveSmallIntegerField(help_text=b'# words originally spoken in English', null=True)),
+                ('wordcount_en', models.PositiveSmallIntegerField(
+                    help_text=b'# words originally spoken in English', null=True)),
                 ('procedural', models.BooleanField(default=False, db_index=True)),
-                ('written_question', models.CharField(blank=True, max_length=1, choices=[(b'Q', b'Question'), (b'R', b'Response')])),
+                ('written_question', models.CharField(
+                    blank=True, max_length=1, choices=[(b'Q', b'Question'), (b'R', b'Response')])),
                 ('statement_type', models.CharField(max_length=35, blank=True)),
                 ('bills', models.ManyToManyField(to='bills.Bill', blank=True)),
                 ('document', models.ForeignKey(on_delete=models.CASCADE, to='hansards.Document')),
                 ('member', models.ForeignKey(on_delete=models.CASCADE, blank=True, to='core.ElectedMember', null=True)),
-                ('mentioned_politicians', models.ManyToManyField(related_name='statements_with_mentions', to='core.Politician', blank=True)),
-                ('politician', models.ForeignKey(on_delete=models.CASCADE, blank=True, to='core.Politician', null=True)),
+                ('mentioned_politicians', models.ManyToManyField(
+                    related_name='statements_with_mentions', to='core.Politician', blank=True)),
+                ('politician', models.ForeignKey(
+                    on_delete=models.CASCADE, blank=True, to='core.Politician', null=True)),
             ],
             options={
                 'ordering': ('sequence',),

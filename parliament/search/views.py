@@ -172,7 +172,8 @@ def postcode_to_edid_ec(postcode):
 
 def try_politician_first(request):
     try:
-        pol = Politician.objects.get_by_name(request.GET['q'].strip(), session=Session.objects.current(), saveAlternate=False, strictMatch=True)
+        pol = Politician.objects.get_by_name(
+            request.GET['q'].strip(), session=Session.objects.current(), saveAlternate=False, strictMatch=True)
         if pol:
             return HttpResponseRedirect(pol.get_absolute_url())
     except Exception:
@@ -190,7 +191,8 @@ class SearchFeed(Feed):
         return '"%s" | openparliament.ca' % query
 
     def link(self, query):
-        return "https://openparliament.ca/search/?" + urllib.parse.urlencode({'q': query.encode('utf8'), 'sort': 'date desc'})
+        return ("https://openparliament.ca/search/?"
+                + urllib.parse.urlencode({'q': query.encode('utf8'), 'sort': 'date desc'}))
 
     def description(self, query):
         return "From openparliament.ca, search results for '%s'" % query

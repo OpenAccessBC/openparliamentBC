@@ -24,7 +24,8 @@ def haiku(request, haiku_id=None):
     if is_ajax(request):
         # time.sleep(2)
         return HttpResponse(
-            json.dumps([[haiku.line1, haiku.line2, haiku.line3, haiku.attribution_url, haiku.attribution, haiku.id] for haiku in haikus]),
+            json.dumps([[haiku.line1, haiku.line2, haiku.line3, haiku.attribution_url, haiku.attribution, haiku.id]
+                        for haiku in haikus]),
             content_type="application/json")
     else:
         t = loader.get_template("haiku/haiku.html")

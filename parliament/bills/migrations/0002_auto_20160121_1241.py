@@ -18,7 +18,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='votequestion',
             name='context_statement',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='hansards.Statement', null=True),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.SET_NULL, blank=True, to='hansards.Statement', null=True),
         ),
         migrations.AddField(
             model_name='votequestion',
@@ -93,7 +94,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='billevent',
             name='debate',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='hansards.Document', null=True),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.SET_NULL, blank=True, to='hansards.Document', null=True),
         ),
         migrations.AddField(
             model_name='bill',

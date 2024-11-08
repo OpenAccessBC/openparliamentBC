@@ -6,6 +6,22 @@ import datetime
 from django.db import migrations, models
 
 
+PROVINCES = [
+    (b'AB', b'Alberta'),
+    (b'BC', b'B.C.'),
+    (b'SK', b'Saskatchewan'),
+    (b'MB', b'Manitoba'),
+    (b'ON', b'Ontario'),
+    (b'QC', b'Qu\xc3\xa9bec'),
+    (b'NB', b'New Brunswick'),
+    (b'NS', b'Nova Scotia'),
+    (b'PE', b'P.E.I.'),
+    (b'NL', b'Newfoundland & Labrador'),
+    (b'YT', b'Yukon'),
+    (b'NT', b'Northwest Territories'),
+    (b'NU', b'Nunavut')]
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -75,7 +91,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=200)),
                 ('name_fr', models.CharField(max_length=200, blank=True)),
-                ('province', models.CharField(max_length=2, choices=[(b'AB', b'Alberta'), (b'BC', b'B.C.'), (b'SK', b'Saskatchewan'), (b'MB', b'Manitoba'), (b'ON', b'Ontario'), (b'QC', b'Qu\xc3\xa9bec'), (b'NB', b'New Brunswick'), (b'NS', b'Nova Scotia'), (b'PE', b'P.E.I.'), (b'NL', b'Newfoundland & Labrador'), (b'YT', b'Yukon'), (b'NT', b'Northwest Territories'), (b'NU', b'Nunavut')])),
+                ('province', models.CharField(max_length=2, choices=PROVINCES)),
                 ('slug', models.CharField(unique=True, max_length=60, db_index=True)),
                 ('edid', models.IntegerField(db_index=True, null=True, blank=True)),
                 ('current', models.BooleanField(default=False)),

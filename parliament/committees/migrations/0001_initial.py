@@ -22,7 +22,12 @@ class Migration(migrations.Migration):
                 ('short_name_fr', models.TextField(blank=True)),
                 ('slug', models.SlugField(unique=True)),
                 ('display', models.BooleanField(default=True, db_index=True, verbose_name=b'Display on site?')),
-                ('parent', models.ForeignKey(on_delete=models.CASCADE, related_name='subcommittees', blank=True, to='committees.Committee', null=True)),
+                ('parent', models.ForeignKey(
+                    on_delete=models.CASCADE,
+                    related_name='subcommittees',
+                    blank=True,
+                    to='committees.Committee',
+                    null=True)),
             ],
             options={
                 'ordering': ['name_en'],
@@ -76,7 +81,8 @@ class Migration(migrations.Migration):
                 ('televised', models.BooleanField(default=False)),
                 ('activities', models.ManyToManyField(to='committees.CommitteeActivity')),
                 ('committee', models.ForeignKey(on_delete=models.CASCADE, to='committees.Committee')),
-                ('evidence', models.OneToOneField(on_delete=models.CASCADE, null=True, blank=True, to='hansards.Document')),
+                ('evidence', models.OneToOneField(
+                    on_delete=models.CASCADE, null=True, blank=True, to='hansards.Document')),
                 ('session', models.ForeignKey(on_delete=models.CASCADE, to='core.Session')),
             ],
         ),
@@ -92,7 +98,12 @@ class Migration(migrations.Migration):
                 ('presented_date', models.DateField(null=True, blank=True)),
                 ('government_response', models.BooleanField(default=False)),
                 ('committee', models.ForeignKey(on_delete=models.CASCADE, to='committees.Committee')),
-                ('parent', models.ForeignKey(on_delete=models.CASCADE, related_name='children', blank=True, to='committees.CommitteeReport', null=True)),
+                ('parent', models.ForeignKey(
+                    on_delete=models.CASCADE,
+                    related_name='children',
+                    blank=True,
+                    to='committees.CommitteeReport',
+                    null=True)),
                 ('session', models.ForeignKey(on_delete=models.CASCADE, to='core.Session')),
             ],
         ),

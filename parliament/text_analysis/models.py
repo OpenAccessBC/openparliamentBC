@@ -14,7 +14,8 @@ from parliament.text_analysis.analyze import analyze_statements
 
 class TextAnalysisManager(models.Manager):
 
-    def get_or_create_from_statements(self, key, qs, corpus_name, lang=settings.LANGUAGE_CODE, always_update=False, expiry_days=None):
+    def get_or_create_from_statements(
+            self, key, qs, corpus_name, lang=settings.LANGUAGE_CODE, always_update=False, expiry_days=None):
         try:
             analysis = self.get(key=key, lang=lang)
             if analysis.expired:
@@ -42,7 +43,8 @@ class TextAnalysisManager(models.Manager):
         if data and (data[0][1] is None or data[0][1] > datetime.datetime.now()):
             js = 'OP.wordcloud.drawSVG(%s, wordcloud_opts);' % data[0][0]
         elif settings.PARLIAMENT_GENERATE_TEXT_ANALYSIS:
-            js = '$.getJSON("%s", function(data) { if (data) OP.wordcloud.drawSVG(data, wordcloud_opts); });' % escapejs(key)
+            js = ('$.getJSON("%s", function(data) { if (data) OP.wordcloud.drawSVG(data, wordcloud_opts); });'
+                  % escapejs(key))
         else:
             js = ''
         return mark_safe(js)

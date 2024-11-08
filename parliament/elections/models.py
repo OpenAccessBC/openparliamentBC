@@ -76,8 +76,10 @@ class CandidacyManager(models.Manager):
         for posscand in candidates:
             # You're only a match if you've run for office for the same party in the same province
             match = (
-                ElectedMember.objects.filter(riding__province=riding.province, party=party, politician=posscand).exists()
-                or Candidacy.objects.filter(riding__province=riding.province, party=party, candidate=posscand).exists())
+                ElectedMember.objects.filter(
+                    riding__province=riding.province, party=party, politician=posscand).exists()
+                or Candidacy.objects.filter(
+                    riding__province=riding.province, party=party, candidate=posscand).exists())
             if match:
                 if candidate is not None:
                     if interactive:

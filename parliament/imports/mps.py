@@ -174,7 +174,8 @@ def is_photo_real(photo_url: str) -> bool:
     """Sometimes the scraped photo is just a generic silhouette;
     this will return False if that appears to be the case."""
     photo_response = requests.get(photo_url)
-    return (photo_response.status_code == 200 and hashlib.sha1(photo_response.content).hexdigest() not in IMAGE_PLACEHOLDER_SHA1)
+    return (photo_response.status_code == 200
+            and hashlib.sha1(photo_response.content).hexdigest() not in IMAGE_PLACEHOLDER_SHA1)
 
 
 def _scrape_ourcommons_row(row):
@@ -242,7 +243,8 @@ def _scrape_ourcommons_row(row):
 
     # Constituency Office contacts
     # Some people has more than one, e.g. https://www.ourcommons.ca/Members/en/ben-lobb(35600)#contact
-    for _, constituency_office_el in enumerate(mp_page.xpath('.//div[@class="ce-mip-contact-constituency-office-container"]/div')):
+    for _, constituency_office_el in (
+            enumerate(mp_page.xpath('.//div[@class="ce-mip-contact-constituency-office-container"]/div'))):
         address = constituency_office_el.xpath('./p[1]')[0]
         address = address.text_content().strip().splitlines()
         address = [a.strip() for a in address]

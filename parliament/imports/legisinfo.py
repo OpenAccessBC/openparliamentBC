@@ -204,7 +204,8 @@ def _import_bill(bd, session, previous_session=None):  # type: (BillData, Sessio
             bill._changed = True
 
     introduced = bd['PassedHouseFirstReadingDateTime']
-    if bd['PassedSenateFirstReadingDateTime'] and ((not introduced) or bd['PassedSenateFirstReadingDateTime'] < introduced):
+    if (bd['PassedSenateFirstReadingDateTime']
+            and ((not introduced) or bd['PassedSenateFirstReadingDateTime'] < introduced)):
         introduced = bd['PassedSenateFirstReadingDateTime']
     _update(bis, 'introduced', introduced)
     if not bill.introduced:

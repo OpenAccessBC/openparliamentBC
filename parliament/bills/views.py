@@ -52,9 +52,12 @@ class BillDetailView(ModelDetailView):
     def get_html(self, request, session_id, bill_number):
         bill = get_object_or_404(Bill, sessions=session_id, number=bill_number)
 
-        mentions = bill.statement_set.all().order_by('-time', '-sequence').select_related('member', 'member__politician', 'member__riding', 'member__party')
-        major_speeches = bill.get_second_reading_debate().order_by('-document__session', 'document__date', 'sequence').select_related(
-            'member', 'member__politician', 'member__riding', 'member__party')
+        mentions = (bill.statement_set.all()
+                    .order_by('-time', '-sequence')
+                    .select_related('member', 'member__politician', 'member__riding', 'member__party'))
+        major_speeches = (bill.get_second_reading_debate()
+                          .order_by('-document__session', 'document__date', 'sequence')
+                          .select_related('member', 'member__politician', 'member__riding', 'member__party'))
         meetings = bill.get_committee_meetings()
 
         tab = request.GET.get('tab', 'major-speeches')
@@ -337,7 +340,9 @@ class BillFeed(Feed):
         return "From openparliament.ca, speeches about Bill %s, %s" % (bill.number, bill.name)
 
     def items(self, bill):
-        statements = bill.statement_set.all().order_by('-time', '-sequence').select_related('member', 'member__politician', 'member__riding', 'member__party')[:10]
+        statements = (bill.statement_set.all()
+                      .order_by('-time', '-sequence')
+                      .select_related('member', 'member__politician', 'member__riding', 'member__party')[:10])
         votes = bill.votequestion_set.all().order_by('-date', '-number')[:3]
         merged = list(votes) + list(statements)
         merged.sort(key=lambda i: i.date, reverse=True)

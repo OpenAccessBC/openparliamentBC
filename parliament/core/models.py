@@ -154,7 +154,8 @@ class PoliticianManager(models.Manager):
         return [i.politician for i in (
             PoliticianInfo.sr_objects.filter(schema='alternate_name', value=parsetools.normalizeName(name)))]
 
-    def get_by_name(self, name, session=None, riding=None, election=None, party=None, saveAlternate=True, strictMatch=False):
+    def get_by_name(
+            self, name, session=None, riding=None, election=None, party=None, saveAlternate=True, strictMatch=False):
         """ Return a Politician by name. Uses a bunch of methods to try and deal with variations in names.
         If given any of a session, riding, election, or party, returns only politicians who match.
         If given session and optinally riding, tries to match the name more laxly.
@@ -391,7 +392,9 @@ class Politician(Person):
         """If this politician has been an MP, returns the most recent ElectedMember object.
         Returns None if the politician has never been elected."""
         try:
-            return ElectedMember.objects.filter(politician=self).order_by('-start_date').select_related('party', 'riding')[0]
+            return (ElectedMember.objects.filter(politician=self)
+                    .order_by('-start_date')
+                    .select_related('party', 'riding')[0])
         except IndexError:
             return None
 
@@ -764,9 +767,11 @@ class ElectedMember(models.Model):
 
     def __str__(self):
         if self.end_date:
-            return "%s (%s) was the member from %s from %s to %s" % (self.politician, self.party, self.riding, self.start_date, self.end_date)
+            return ("%s (%s) was the member from %s from %s to %s"
+                    % (self.politician, self.party, self.riding, self.start_date, self.end_date))
         else:
-            return "%s (%s) is the member from %s (since %s)" % (self.politician, self.party, self.riding, self.start_date)
+            return ("%s (%s) is the member from %s (since %s)"
+                    % (self.politician, self.party, self.riding, self.start_date))
 
     def to_api_dict(self, representation, include_politician=True):
         d = dict(

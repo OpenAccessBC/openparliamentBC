@@ -22,14 +22,18 @@ class Migration(migrations.Migration):
                 ('short_title_fr', models.TextField(blank=True)),
                 ('number', models.CharField(max_length=10)),
                 ('number_only', models.SmallIntegerField()),
-                ('institution', models.CharField(db_index=True, max_length=1, choices=[(b'C', b'House'), (b'S', b'Senate')])),
+                ('institution', models.CharField(
+                    db_index=True, max_length=1, choices=[(b'C', b'House'), (b'S', b'Senate')])),
                 ('privatemember', models.NullBooleanField()),
                 ('law', models.NullBooleanField()),
                 ('status_date', models.DateField(db_index=True, null=True, blank=True)),
                 ('status_code', models.CharField(max_length=50, blank=True)),
                 ('added', models.DateField(default=datetime.date.today, db_index=True)),
                 ('introduced', models.DateField(null=True, blank=True)),
-                ('text_docid', models.IntegerField(help_text=b"The parl.gc.ca document ID of the latest version of the bill's text", null=True, blank=True)),
+                ('text_docid', models.IntegerField(
+                    help_text=b"The parl.gc.ca document ID of the latest version of the bill's text",
+                    null=True,
+                    blank=True)),
             ],
             options={
                 'ordering': ('privatemember', 'institution', 'number_only'),
@@ -68,7 +72,8 @@ class Migration(migrations.Migration):
             name='MemberVote',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('vote', models.CharField(max_length=1, choices=[(b'Y', b'Yes'), (b'N', b'No'), (b'P', b'Paired'), (b'A', b"Didn't vote")])),
+                ('vote', models.CharField(
+                    max_length=1, choices=[(b'Y', b'Yes'), (b'N', b'No'), (b'P', b'Paired'), (b'A', b"Didn't vote")])),
                 ('dissent', models.BooleanField(default=False, db_index=True)),
             ],
         ),
@@ -76,7 +81,8 @@ class Migration(migrations.Migration):
             name='PartyVote',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('vote', models.CharField(max_length=1, choices=[(b'Y', b'Yes'), (b'N', b'No'), (b'P', b'Paired'), (b'A', b"Didn't vote"), (b'F', b'Free vote')])),
+                ('vote', models.CharField(max_length=1, choices=[
+                    (b'Y', b'Yes'), (b'N', b'No'), (b'P', b'Paired'), (b'A', b"Didn't vote"), (b'F', b'Free vote')])),
                 ('disagreement', models.FloatField(null=True)),
             ],
         ),

@@ -167,7 +167,8 @@ def replace_links(old, new, allow_self_relation=False):
                 else:
                     raise Exception("Relation to self!")
             print(relation.field.name)
-            relation.related_model._default_manager.filter(**{relation.field.name: old}).update(**{relation.field.name: new})
+            relation.related_model._default_manager.filter(
+                **{relation.field.name: old}).update(**{relation.field.name: new})
         elif relation.many_to_many:
             if relation.related_model == old.__class__:
                 raise Exception("Relation to self!")
@@ -205,7 +206,10 @@ def _merge_pols(good, bad):
 def merge_by_party(parties):
     raise Exception("Not yet implemented after ElectedMember refactor")
 
-    dupelist = Politician.objects.values('name').annotate(namecount=Count('name')).filter(namecount__gt=1).order_by('-namecount')
+    dupelist = (Politician.objects.values('name')
+                .annotate(namecount=Count('name'))
+                .filter(namecount__gt=1)
+                .order_by('-namecount'))
     for dupeset in dupelist:
         pols = Politician.objects.filter(name=dupeset['name'])
         province = None
@@ -306,7 +310,8 @@ def merge_pols():
 
 def fix_mac():
     """ Alexa Mcdonough -> Alexa McDonough """
-    for p in Politician.objects.filter(models.Q(name_family__startswith='Mc') | models.Q(name_family__startswith='Mac')):
+    for p in Politician.objects.filter(
+            models.Q(name_family__startswith='Mc') | models.Q(name_family__startswith='Mac')):
         nforig = p.name_family
 
         def mac_replace(match):
