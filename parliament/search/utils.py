@@ -5,7 +5,7 @@ from collections import namedtuple
 _FakePaginator = namedtuple('FakePaginator', 'num_pages count')
 
 
-class SearchPaginator(object):
+class SearchPaginator():
     """A dumb imitation of the Django Paginator."""
 
     def __init__(self, object_list, hits, pagenum, perpage):
@@ -35,7 +35,7 @@ class SearchPaginator(object):
         return self.number + 1
 
 
-class BaseSearchQuery(object):
+class BaseSearchQuery():
 
     ALLOWABLE_FILTERS = {}
 

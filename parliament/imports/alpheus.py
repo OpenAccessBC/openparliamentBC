@@ -129,7 +129,7 @@ class AlpheusError(Exception):
     pass
 
 
-class Document(object):
+class Document():
 
     BASE_HTML = """<!DOCTYPE html>
     <html lang="%(lang)s"><head>
@@ -175,7 +175,7 @@ class Document(object):
         self.meta = {}
 
 
-class Statement(object):
+class Statement():
 
     def __init__(self, attributes, more_attributes):
         self.meta = dict(attributes)
@@ -209,7 +209,7 @@ class Statement(object):
         return _build_tag('div', attrs) + self.content + '</div>'
 
 
-class ParseHandler(object):
+class ParseHandler():
     """This class contains the bulk of the parsing logic.
 
     The parse tree is iterated through in document order. Every time we come

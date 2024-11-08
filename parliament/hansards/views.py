@@ -265,7 +265,7 @@ def document_cache(request, document_id, language):
     return resp
 
 
-class TitleAdder(object):
+class TitleAdder():
 
     def get_context_data(self, **kwargs):
         context = super(TitleAdder, self).get_context_data(**kwargs)

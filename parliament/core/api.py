@@ -160,7 +160,7 @@ class APIView(View):
         return render(request, 'api/browser.html', ctx)
 
 
-class APIFilters(object):
+class APIFilters():
 
     string_filters = ['exact', 'iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith']
 
@@ -341,7 +341,7 @@ class BadRequest(Exception):
     pass
 
 
-class APIPaginator(object):
+class APIPaginator():
     """
     Largely cribbed from django-tastypie.
     """

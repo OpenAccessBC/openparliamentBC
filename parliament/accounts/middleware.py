@@ -4,7 +4,7 @@ from django.http import HttpRequest
 EMAIL_COOKIE_NAME = 'email'
 
 
-class AuthenticatedEmailDescriptor(object):
+class AuthenticatedEmailDescriptor():
     """Make request.authenticated_email an alias of request.session['_ae']"""
 
     def __get__(self, request, objtype=None):
@@ -15,7 +15,7 @@ class AuthenticatedEmailDescriptor(object):
         request.session.modified = True
 
 
-class AuthenticatedEmailUserDescriptor(object):
+class AuthenticatedEmailUserDescriptor():
 
     def __get__(self, request, objtype=None):
         from parliament.accounts.models import User

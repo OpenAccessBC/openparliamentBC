@@ -29,7 +29,7 @@ def _get_previous_session(session):
         return None
 
 
-class BillData(object):
+class BillData():
     """
     A wrapper for JSON bill data from parl.ca.
     """

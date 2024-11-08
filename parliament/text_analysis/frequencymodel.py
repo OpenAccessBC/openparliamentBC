@@ -140,7 +140,7 @@ class WordCounter(dict):
         return nlargest(n, iter(self.items()), key=itemgetter(1))
 
 
-class WordAndAttributeCounter(object):
+class WordAndAttributeCounter():
 
     def __init__(self, stopwords=STOPWORDS):
         self.counter = defaultdict(WordAttributeCount)
@@ -156,7 +156,7 @@ class WordAndAttributeCounter(object):
         return nlargest(n, iter(self.counter.items()), key=lambda x: x[1].count)
 
 
-class WordAttributeCount(object):
+class WordAttributeCount():
 
     __slots__ = ('count', 'attributes')
 
