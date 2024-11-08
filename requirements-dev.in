@@ -5,6 +5,7 @@ pylint
 mypy
 flake8
 isort
+pyright
 
 # Typing
 django-stubs
