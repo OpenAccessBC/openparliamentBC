@@ -33,10 +33,10 @@ class TopicManager(models.Manager):
 
 class Topic(models.Model):
     """A search that one or more people have saved."""
-    query = models.CharField(max_length=800, unique=True)
-    created = models.DateTimeField(default=datetime.datetime.now)
-    last_checked = models.DateTimeField(blank=True, null=True)
-    last_found = models.DateTimeField(blank=True, null=True)
+    query: models.CharField = models.CharField(max_length=800, unique=True)
+    created: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
+    last_checked: models.DateTimeField = models.DateTimeField(blank=True, null=True)
+    last_found: models.DateTimeField = models.DateTimeField(blank=True, null=True)
 
     objects = TopicManager()
 
@@ -120,9 +120,9 @@ class Topic(models.Model):
 
 class SeenItem(models.Model):
     """A record that users have already seen a given item for a topic."""
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    item_id = models.CharField(max_length=400, db_index=True)
-    timestamp = models.DateTimeField(default=datetime.datetime.now)
+    topic: models.ForeignKey = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    item_id: models.CharField = models.CharField(max_length=400, db_index=True)
+    timestamp: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
 
     class Meta:
         unique_together = [
@@ -142,12 +142,12 @@ class SubscriptionManager(models.Manager):
 
 class Subscription(models.Model):
     """A specific user's alert subscription for a specific search."""
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    user = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
+    topic: models.ForeignKey = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    user: models.ForeignKey = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
 
-    created = models.DateTimeField(default=datetime.datetime.now)
-    active = models.BooleanField(default=True)
-    last_sent = models.DateTimeField(blank=True, null=True)
+    created: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
+    active: models.BooleanField = models.BooleanField(default=True)
+    last_sent: models.DateTimeField = models.DateTimeField(blank=True, null=True)
 
     objects = SubscriptionManager()
 
@@ -229,10 +229,10 @@ class Subscription(models.Model):
 
 class PoliticianAlert(models.Model):
 
-    email = models.EmailField('Your e-mail')
-    politician = models.ForeignKey(Politician, on_delete=models.CASCADE)
-    active = models.BooleanField(default=False)
-    created = models.DateTimeField(default=datetime.datetime.now)
+    email: models.EmailField = models.EmailField('Your e-mail')
+    politician: models.ForeignKey = models.ForeignKey(Politician, on_delete=models.CASCADE)
+    active: models.BooleanField = models.BooleanField(default=False)
+    created: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
 
     objects = models.Manager()
     public = ActiveManager()

@@ -1,6 +1,7 @@
 import math
 import re
 from collections import namedtuple
+from typing import Dict
 
 _FakePaginator = namedtuple('FakePaginator', 'num_pages count')
 
@@ -36,7 +37,7 @@ class SearchPaginator():
 
 class BaseSearchQuery():
 
-    ALLOWABLE_FILTERS = {}
+    ALLOWABLE_FILTERS: Dict[str, str] = {}
 
     def __init__(self, query):
         self.raw_query = query

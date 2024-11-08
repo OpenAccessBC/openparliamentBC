@@ -7,14 +7,14 @@ from django.db import models
 
 class IndexingTask(models.Model):
 
-    action = models.CharField(max_length=10)
-    identifier = models.CharField(max_length=100)
+    action: models.CharField = models.CharField(max_length=10)
+    identifier: models.CharField = models.CharField(max_length=100)
 
-    timestamp = models.DateTimeField(default=datetime.datetime.now)
+    timestamp: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
 
-    content_type = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.CASCADE)
-    object_id = models.CharField(max_length=20, blank=True)
-    content_object = GenericForeignKey('content_type', 'object_id')
+    content_type: models.ForeignKey = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.CASCADE)
+    object_id: models.CharField = models.CharField(max_length=20, blank=True)
+    content_object: GenericForeignKey = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
         return '%s %s' % (self.action, self.identifier)
