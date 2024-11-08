@@ -240,7 +240,7 @@ def import_committee_meetings(committee, session):
                     urljoin(url, study_link.get('href')),
                     committee=committee, session=session)
                 meeting.activities.add(study)
-            except:
+            except Exception:
                 logger.exception(
                     "Error fetching committee activity for %r %s %s",
                     committee, name, study_link.get('href'))

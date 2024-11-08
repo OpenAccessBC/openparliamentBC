@@ -553,10 +553,10 @@ class VoteQuestion(models.Model):
             PartyVote.objects.create(party=party, votequestion=self, vote=partyvotes[party], disagreement=disagreement)
 
         for mv in membervotes:
-            if (mv.member.party.name != 'Independent' and
-                    mv.vote != partyvotes[mv.member.party] and
-                    mv.vote in ('Y', 'N') and
-                    partyvotes[mv.member.party] in ('Y', 'N')):
+            if (mv.member.party.name != 'Independent'
+                    and mv.vote != partyvotes[mv.member.party]
+                    and mv.vote in ('Y', 'N')
+                    and partyvotes[mv.member.party] in ('Y', 'N')):
                 mv.dissent = True
                 mv.save()
 

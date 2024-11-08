@@ -13,8 +13,8 @@ def memcached_status(request):
     except ImportError:
         raise http.Http404
 
-    if not (request.user.is_authenticated() and
-            request.user.is_staff):
+    if not (request.user.is_authenticated()
+            and request.user.is_staff):
         raise http.Http404
 
     # get first memcached URI

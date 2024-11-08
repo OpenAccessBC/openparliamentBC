@@ -307,7 +307,9 @@ class DebateYearArchive(TitleAdder, YearArchiveView, APIArchiveView):
     date_field = 'date'
     make_object_list = True
     template_name = "hansards/hansard_archive_year.html"
-    page_title = lambda self: 'Debates from %s' % self.get_year()
+
+    def page_title(self):
+        return 'Debates from %s' % self.get_year()
 
 
 by_year = DebateYearArchive.as_view()
@@ -319,7 +321,9 @@ class DebateMonthArchive(TitleAdder, MonthArchiveView, APIArchiveView):
     make_object_list = True
     month_format = "%m"
     template_name = "hansards/hansard_archive_year.html"
-    page_title = lambda self: 'Debates from %s' % self.get_year()
+
+    def page_title(self):
+        return 'Debates from %s' % self.get_year()
 
 
 by_month = DebateMonthArchive.as_view()

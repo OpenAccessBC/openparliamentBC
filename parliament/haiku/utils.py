@@ -14,7 +14,7 @@ def gen_haiku(qs):
                 h.save()
                 try:
                     print(h)
-                except:
+                except Exception:
                     print('unprintable')
             except ValidationError as e:
                 print(e)

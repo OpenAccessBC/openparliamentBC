@@ -175,7 +175,7 @@ def try_politician_first(request):
         pol = Politician.objects.get_by_name(request.GET['q'].strip(), session=Session.objects.current(), saveAlternate=False, strictMatch=True)
         if pol:
             return HttpResponseRedirect(pol.get_absolute_url())
-    except:
+    except Exception:
         return None
 
 

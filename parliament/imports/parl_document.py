@@ -392,8 +392,8 @@ def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_i
         raise Exception("Document at source_id %s already exists but not sitting %s" % (source_id, sitting_number))
     assert int(doc_fr.get('id')) == source_id
 
-    if ((not import_without_paragraph_ids) and
-            not (_test_has_paragraph_ids(doc_en) and _test_has_paragraph_ids(doc_fr))):
+    if ((not import_without_paragraph_ids)
+            and not (_test_has_paragraph_ids(doc_en) and _test_has_paragraph_ids(doc_fr))):
         logger.warning("Missing paragraph IDs, cancelling")
         return
 

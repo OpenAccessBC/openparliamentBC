@@ -40,9 +40,9 @@ def _tame_whitespace(s):
 
 def _text_content(el, tail=False):
     return _tame_whitespace(
-        _n2s(el.text) +
-        ''.join([_text_content(subel, True) for subel in el]) +
-        (_n2s(el.tail) if tail else ''))
+        _n2s(el.text)
+        + ''.join([_text_content(subel, True) for subel in el])
+        + (_n2s(el.tail) if tail else ''))
 
 
 def _letters_only(s):
