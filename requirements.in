@@ -14,6 +14,7 @@ requests
 psycopg
 webob
 oauth2client # WARNING: deprecated
+text_utils
 
 # The following are only used in production
 whitenoise

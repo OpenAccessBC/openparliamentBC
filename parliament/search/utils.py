@@ -15,8 +15,7 @@ class SearchPaginator():
         self.number = pagenum
         self.start_index = ((pagenum - 1) * perpage) + 1
         self.end_index = self.start_index + perpage - 1
-        if self.end_index > self.hits:
-            self.end_index = self.hits
+        self.end_index = min(self.end_index, self.hits)
 
     @property
     def paginator(self):

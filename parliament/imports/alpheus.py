@@ -156,6 +156,8 @@ class Document():
                 title = 'House Debates'
             else:
                 title = 'Débats du Chambre'
+        else:
+            title = ""
         title += ', ' + str(self.meta['date'])
 
         metadata_rows = []

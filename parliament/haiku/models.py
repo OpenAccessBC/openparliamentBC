@@ -22,7 +22,7 @@ def validate_line(line):
         raise ValidationError("Digits")
     if '[' in line:
         raise ValidationError("Brackets")
-    if u'—' in line or '--' in line:
+    if '—' in line or '--' in line:
         raise ValidationError("Dash")
 
 

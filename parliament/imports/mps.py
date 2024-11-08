@@ -147,11 +147,9 @@ def update_ridings_from_represent(boundary_set='federal-electoral-districts'):
 # This section of code lifted from
 # https://github.com/opencivicdata/scrapers-ca/blob/master/ca/people.py
 
-"""
 # The CSV at http://www.parl.gc.ca/Parliamentarians/en/members/export?output=CSV
 # accessible from http://www.parl.gc.ca/Parliamentarians/en/members has no
 # contact information or photo URLs.
-"""
 
 
 def _scrape_url(url):

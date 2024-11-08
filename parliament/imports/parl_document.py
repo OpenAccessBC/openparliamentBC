@@ -268,13 +268,13 @@ def _process_related_links(content, statement):
 
 def _process_related_link(match, statement):
     (link_type, tagattrs, text) = match.groups()
-    params = dict([(m.group(1), m.group(2)) for m in re.finditer(r'data-([\w-]+)="([^"]+)"', tagattrs)])
+    params = {m.group(1): m.group(2) for m in re.finditer(r'data-([\w-]+)="([^"]+)"', tagattrs)}
     hocid = int(params['HoCid'])
     if link_type == 'politician':
         try:
             pol = Politician.objects.get_by_parl_affil_id(hocid)
         except Politician.DoesNotExist:
-            logger.warning("Could not resolve related politician #%s, %s", (hocid, text))
+            logger.warning("Could not resolve related politician #%s, %s", hocid, text)
             return text
         url = pol.get_absolute_url()
         title = pol.name

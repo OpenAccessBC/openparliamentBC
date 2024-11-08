@@ -86,9 +86,8 @@ class CandidacyManager(models.Manager):
                         print("Please enter Politician ID for %r (%r)" % (fullname, riding.name))
                         candidate = Politician.objects.get(pk=input().strip())
                         break
-                    else:
-                        raise Politician.MultipleObjectsReturned(
-                            "Could not disambiguate among existing candidates for %s" % fullname)
+                    raise Politician.MultipleObjectsReturned(
+                        "Could not disambiguate among existing candidates for %s" % fullname)
                 candidate = posscand
 
         if candidate is None:

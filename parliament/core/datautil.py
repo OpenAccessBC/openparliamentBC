@@ -14,7 +14,6 @@ from collections import defaultdict
 import text_utils
 from django.core.files import File
 from django.db import models, transaction
-from django.db.models import Count
 
 from parliament.core.models import ElectedMember, InternalXref, Politician, PoliticianInfo, Session
 from parliament.core.parsetools import slugify
@@ -140,8 +139,8 @@ def populate_members(election, session, start_date):
 
 def copy_members(from_session, to_session):
     raise Exception("Not yet implemented after ElectedMember refactor")
-    for member in ElectedMember.objects.filter(session=from_session):
-        ElectedMember(session=to_session, politician=member.politician, party=member.party, riding=member.riding).save()
+    # for member in ElectedMember.objects.filter(session=from_session):
+    #     ElectedMember(session=to_session, politician=member.politician, party=member.party, riding=member.riding).save()
 
 
 def populate_parlid():
@@ -164,11 +163,12 @@ def replace_links(old, new, allow_self_relation=False):
                 if allow_self_relation:
                     print("self: %r" % relation)
                     continue
-                else:
-                    raise Exception("Relation to self!")
+                raise Exception("Relation to self!")
+
             print(relation.field.name)
             relation.related_model._default_manager.filter(
                 **{relation.field.name: old}).update(**{relation.field.name: new})
+
         elif relation.many_to_many:
             if relation.related_model == old.__class__:
                 raise Exception("Relation to self!")
@@ -206,52 +206,52 @@ def _merge_pols(good, bad):
 def merge_by_party(parties):
     raise Exception("Not yet implemented after ElectedMember refactor")
 
-    dupelist = (Politician.objects.values('name')
-                .annotate(namecount=Count('name'))
-                .filter(namecount__gt=1)
-                .order_by('-namecount'))
-    for dupeset in dupelist:
-        pols = Politician.objects.filter(name=dupeset['name'])
-        province = None
-        fail = False
-        events = []
-        for pol in pols:
-            for em in ElectedMember.objects.filter(politician=pol):
-                if em.party not in parties:
-                    fail = True
-                    print("%s not acceptable" % em.party)
-                    break
-                if em.session in events:
-                    fail = True
-                    print("Duplicate event for %s, %s" % (pol, em.session))
-                    events.append(em.session)
-                    break
-                if province is None:
-                    province = em.riding.province
-                elif em.riding.province != province:
-                    fail = True
-                    print("Province doesn't match for %s: %s, %s" % (pol, em.riding.province, province))
-            for cand in Candidacy.objects.filter(candidate=pol):
-                if cand.party not in parties:
-                    fail = True
-                    print("%s not acceptable" % cand.party)
-                    break
-                if cand.election in events:
-                    fail = True
-                    print("Duplicate event for %s, %s" % (pol, cand.election))
-                    events.append(cand.election)
-                    break
-                if province is None:
-                    province = cand.riding.province
-                elif cand.riding.province != province:
-                    fail = True
-                    print("Province doesn't match for %s: %s, %s" % (pol, cand.riding.province, province))
-        if not fail:
-            good = pols[0]
-            bads = pols[1:]
-            for bad in bads:
-                _merge_pols(good, bad)
-            print("Merged %s" % good)
+    # dupelist = (Politician.objects.values('name')
+    #             .annotate(namecount=Count('name'))
+    #             .filter(namecount__gt=1)
+    #             .order_by('-namecount'))
+    # for dupeset in dupelist:
+    #     pols = Politician.objects.filter(name=dupeset['name'])
+    #     province = None
+    #     fail = False
+    #     events = []
+    #     for pol in pols:
+    #         for em in ElectedMember.objects.filter(politician=pol):
+    #             if em.party not in parties:
+    #                 fail = True
+    #                 print("%s not acceptable" % em.party)
+    #                 break
+    #             if em.session in events:
+    #                 fail = True
+    #                 print("Duplicate event for %s, %s" % (pol, em.session))
+    #                 events.append(em.session)
+    #                 break
+    #             if province is None:
+    #                 province = em.riding.province
+    #             elif em.riding.province != province:
+    #                 fail = True
+    #                 print("Province doesn't match for %s: %s, %s" % (pol, em.riding.province, province))
+    #         for cand in Candidacy.objects.filter(candidate=pol):
+    #             if cand.party not in parties:
+    #                 fail = True
+    #                 print("%s not acceptable" % cand.party)
+    #                 break
+    #             if cand.election in events:
+    #                 fail = True
+    #                 print("Duplicate event for %s, %s" % (pol, cand.election))
+    #                 events.append(cand.election)
+    #                 break
+    #             if province is None:
+    #                 province = cand.riding.province
+    #             elif cand.riding.province != province:
+    #                 fail = True
+    #                 print("Province doesn't match for %s: %s, %s" % (pol, cand.riding.province, province))
+    #     if not fail:
+    #         good = pols[0]
+    #         bads = pols[1:]
+    #         for bad in bads:
+    #             _merge_pols(good, bad)
+    #         print("Merged %s" % good)
 
 
 def merge_polnames():

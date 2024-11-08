@@ -52,10 +52,11 @@ class PartyManager(models.Manager):
         x = InternalXref.objects.filter(schema='party_names', text_value=name.strip().lower())
         if len(x) == 0:
             raise Party.DoesNotExist()
-        elif len(x) > 1:
+
+        if len(x) > 1:
             raise Exception("More than one party matched %s" % name.strip().lower())
-        else:
-            return self.get_queryset().get(pk=x[0].target_id)
+
+        return self.get_queryset().get(pk=x[0].target_id)
 
 
 class Party(models.Model):
@@ -199,8 +200,9 @@ class PoliticianManager(models.Manager):
                 # No extra criteria -- return what we got (or die if we can't disambiguate)
                 if len(poss) > 1:
                     raise Politician.MultipleObjectsReturned(name)
-                else:
-                    return poss[0].politician
+
+                return poss[0].politician
+
         if session and not strictMatch:
             # We couldn't find the pol, but we have the session and riding, so let's give this one more shot
             # We'll try matching only on last name
@@ -444,7 +446,7 @@ class Politician(Person):
         """Returns a dictionary of PoliticianInfo attributes for this politician.
         e.g. politician.info()['web_site']
         """
-        return dict([i for i in self.politicianinfo_set.all().values_list('schema', 'value')])
+        return dict(self.politicianinfo_set.all().values_list('schema', 'value'))
 
     @memoize_property
     def info_multivalued(self):
@@ -497,7 +499,9 @@ class Politician(Person):
         file = ContentFile(resp.content)
         pil_img = Image.open(BytesIO(resp.content))
         if not pil_img.size == (142, 230):
-            logger.warning(f'Headshot image for {self.name} is incorrect size, {pil_img.size}. Resizing to (142,230)')
+            logger.warning(
+                'Headshot image for %s is incorrect size, (%d,%d). Resizing to (142,230)',
+                self.name, pil_img.size[0], pil_img.size[1])
             bio = BytesIO()
             ImageOps.fit(pil_img, (142, 230), method=Image.Resampling.LANCZOS).save(bio, format='JPEG', quality=90)
             file = ContentFile(bio.getvalue())
@@ -750,7 +754,7 @@ class ElectedMemberManager(models.Manager):
             # In the case of floor crossers, there may be more than one ElectedMember
             # We haven't been given a date, so just return the first EM
             qs = self.get_queryset().filter(politician=politician, sessions=session).order_by('-start_date')
-            if not len(qs):
+            if len(qs) == 0:
                 raise ElectedMember.DoesNotExist("No elected member for %s, session %s" % (politician, session))
             return qs[0]
 

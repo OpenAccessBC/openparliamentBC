@@ -213,7 +213,7 @@ class Document(models.Model):
 
     def save_activity(self):
         statements = self.statement_set.filter(procedural=False).select_related('member', 'politician')
-        politicians = set([s.politician for s in statements if s.politician])
+        politicians = {s.politician for s in statements if s.politician}
         for pol in politicians:
             topics = {}
             wordcount = 0

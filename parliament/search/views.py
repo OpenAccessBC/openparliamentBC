@@ -168,7 +168,6 @@ def postcode_to_edid_ec(postcode):
     if match:
         return int(match.group(1))
     raise AmbiguousPostcodeException(postcode=postcode, ec_url=urljoin(EC_POSTCODE_URL, redirect_url))
-    return None
 
 
 def try_politician_first(request):

@@ -123,7 +123,7 @@ def import_committee_documents(session):
         try:
             import_committee_meetings(comm, session)
         except requests.exceptions.HTTPError:
-            logger.exception("Error importing committee %s, #%s", (comm, comm.id))
+            logger.exception("Error importing committee %s, #%s", comm, comm.id)
         # import_committee_reports(comm, session)
         # time.sleep(1)
 
@@ -176,13 +176,13 @@ def import_committee_meetings(committee, session):
                     logger.error("Source ID mismatch for %s meeting %s (orig %s new %s)" % (
                         committee, number, meeting.source_id, source_id))
                     continue
-                else:
-                    # As long as there was no evidence loaded, just replace the old meeting
-                    # with the new one
-                    meeting.delete()
-                    meeting = CommitteeMeeting(
-                        committee=committee, source_id=source_id,
-                        session=session, number=number)
+
+                # As long as there was no evidence loaded, just replace the old meeting
+                # with the new one
+                meeting.delete()
+                meeting = CommitteeMeeting(
+                    committee=committee, source_id=source_id,
+                    session=session, number=number)
         else:
             meeting.source_id = source_id
             if meeting.id:

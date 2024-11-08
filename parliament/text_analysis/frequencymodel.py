@@ -38,14 +38,12 @@ r_whitespace = re.compile(r'[\s—]+')
 
 def text_token_iterator(text):
     text = r_punctuation.sub('', text.lower())
-    for word in r_whitespace.split(text):
-        yield word
+    yield from r_whitespace.split(text)
 
 
 def statements_token_iterator(statements, statement_separator=None):
     for statement in statements:
-        for x in text_token_iterator(statement.text_plain()):
-            yield x
+        yield from text_token_iterator(statement.text_plain())
         if statement_separator is not None:
             yield statement_separator
 
