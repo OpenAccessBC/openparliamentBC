@@ -5,6 +5,7 @@ import logging
 import os
 import re
 from collections import OrderedDict, defaultdict
+from typing import Dict
 
 from django.conf import settings
 from django.db import models
@@ -98,7 +99,11 @@ class Document(models.Model):
 
     def get_text_analysis_url(self):
         # Let's violate DRY!
-        return self.get_absolute_url() + 'text-analysis/'
+        base_url = self.get_absolute_url()
+        if base_url is None:
+            raise TypeError("text analysis base url was unspecified")
+        
+        return base_url + 'text-analysis/'
 
     def to_api_dict(self, representation):
         d = dict(
@@ -494,7 +499,7 @@ class Statement(models.Model):
         return self.h2
 
     def to_api_dict(self, representation):
-        d = dict(
+        d: Dict[str, str | None] = dict(
             time=str(self.time) if self.time else None,
             attribution={'en': self.who_en, 'fr': self.who_fr},
             content={'en': self.content_en, 'fr': self.content_fr},
@@ -509,7 +514,9 @@ class Statement(models.Model):
         for h in ('h1', 'h2', 'h3'):
             if getattr(self, h):
                 d[h] = {'en': getattr(self, h + '_en'), 'fr': getattr(self, h + '_fr')}
-        d['document_url'] = d['url'][:d['url'].rstrip('/').rfind('/') + 1]
+
+        if d['url']:
+            d['document_url'] = d['url'][:d['url'].rstrip('/').rfind('/') + 1]
         return d
 
     @property

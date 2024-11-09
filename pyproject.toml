@@ -2,30 +2,21 @@
 python_version = "3.12"
 disable_error_code = "name-defined,attr-defined,import-untyped,import-not-found"
 exclude = ["imports/hans_old/"]
+check_untyped_defs = true
 
 
 [tool.pyright]
-exclude = ["**/hans_old", ".mypy_cache", ".venv"]
+exclude = ["**/hans_old", ".mypy_cache", ".venv", "parliament/politicians/twit.py"]
 
 pythonVersion = "3.12"
 
-# Temporarily disabled (WIP)
+# TODO make strict
+typeCheckingMode = "basic"
 
 reportArgumentType = "none"
 reportAttributeAccessIssue = "none"
 reportCallIssue = "none"
-reportFunctionMemberAccess = "none"
-reportGeneralTypeIssues = "none"
-reportIncompatibleMethodOverride = "none"
 reportIndexIssue = "none"
-reportInvalidTypeArguments = "none"
 reportMissingImports = "none"
-reportOperatorIssue = "none"
-reportOptionalIterable = "none"
 reportOptionalMemberAccess = "none"
-reportOptionalOperand = "none"
-reportOptionalSubscript = "none"
-reportPossiblyUnboundVariable = "none"
-reportReturnType = "none"
-reportSelfClsParameterName = "none"
 reportUndefinedVariable = "none"

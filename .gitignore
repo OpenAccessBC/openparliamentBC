@@ -29,3 +29,4 @@ docker-compose.yml
 venv/
 .venv/
 .mypy_cache
+.vscode

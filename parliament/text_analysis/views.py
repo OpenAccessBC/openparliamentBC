@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.views.generic import View

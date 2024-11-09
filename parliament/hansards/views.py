@@ -153,6 +153,7 @@ def document_view(request, document, meeting=None, slug=None):
 
 class SpeechesView(ModelListView):
 
+    @staticmethod
     def document_filter(qs, view, filter_name, filter_extra, val):
         u = val.strip('/').split('/')
         if len(u) < 4:
@@ -177,6 +178,7 @@ class SpeechesView(ModelListView):
             return qs.filter(document=meeting.evidence_id).order_by('sequence')
         else:
             raise BadRequest("Invalid document URL")
+
     document_filter.help = "the URL of the debate or committee meeting"
 
     filters = {

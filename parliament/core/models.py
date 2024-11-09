@@ -5,6 +5,7 @@ import logging
 import re
 from io import BytesIO
 from urllib.parse import urljoin
+from typing import Optional
 
 import lxml.etree
 import lxml.html
@@ -285,10 +286,10 @@ class PoliticianManager(models.Manager):
         xml_resp.raise_for_status()
         xml_doc = lxml.etree.fromstring(xml_resp.content)
 
-        polname = (
-            xml_doc.findtext('MemberOfParliamentRole/PersonOfficialFirstName')
-            + ' '
-            + xml_doc.findtext('MemberOfParliamentRole/PersonOfficialLastName'))
+        first_name = xml_doc.findtext('MemberOfParliamentRole/PersonOfficialFirstName') or ''
+        last_name = xml_doc.findtext('MemberOfParliamentRole/PersonOfficialLastName') or ''
+
+        polname = first_name + ' ' + last_name
         polriding = xml_doc.findtext('MemberOfParliamentRole/ConstituencyName')
 
         try:
@@ -430,7 +431,7 @@ class Politician(Person):
         return "http://openparliament.ca" + self.get_absolute_url()
 
     @property
-    def parlpage(self):
+    def parlpage(self) -> Optional[str]:
         parlid = self.info().get('parl_mp_id')
         if parlid:
             return f"https://www.ourcommons.ca/members/{settings.LANGUAGE_CODE}/{self.identifier}({parlid})"

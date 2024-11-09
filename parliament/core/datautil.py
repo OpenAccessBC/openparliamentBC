@@ -12,6 +12,7 @@ import urllib.request
 from collections import defaultdict
 
 import text_utils
+from bs4 import BeautifulSoup
 from django.core.files import File
 from django.db import models, transaction
 
@@ -409,6 +410,9 @@ def slugs_for_pols(qs=None):
 
 def pol_urls_to_ids():
     for pol in Politician.objects.exclude(parlpage=''):
+        if pol.parlpage is None:
+            raise TypeError("parlpage is None")
+
         if 'Item' in pol.parlpage and 'parlinfo_id' not in pol.info():
             print(pol.parlpage)
             match = re.search(r'Item=([A-Z0-9-]+)', pol.parlpage)

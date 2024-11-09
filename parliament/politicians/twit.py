@@ -2,6 +2,7 @@ import datetime
 import email
 import logging
 import time
+from typing import Any, Dict, Optional, Union
 
 import requests
 from django.conf import settings
@@ -43,34 +44,41 @@ def save_tweets():
         except requests.ConnectionError:
             continue
 
-        if timeline and timeline[0]['user']['screen_name'] != pol.info()['twitter']:
-            # Changed screen name
-            new_name = timeline[0]['user']['screen_name']
-            logger.warning("Screen name change: new %s old %s", new_name, pol.info()['twitter'])
-            pol.set_info('twitter', new_name)
+        if timeline:
+            user = timeline[0]['user']
+            if user['screen_name'] != pol.info()['twitter']:
+                # Changed screen name
+                new_name = user['screen_name']
+                logger.warning("Screen name change: new %s old %s", new_name, pol.info()['twitter'])
+                pol.set_info('twitter', new_name)
 
-        timeline.reverse()
-        for tweet in timeline:
-            date = datetime.date.fromtimestamp(
-                email.utils.mktime_tz(
-                    email.utils.parsedate_tz(tweet['created_at'])
-                )
-            )  # fuck you, time formats
-            if date < OLDEST:
-                continue
+            timeline.reverse()
+            for tweet in timeline:
+                date = datetime.date.fromtimestamp(
+                    email.utils.mktime_tz(
+                        email.utils.parsedate_tz(tweet['created_at'])
+                    )
+                )  # fuck you, time formats
+                if date < OLDEST:
+                    continue
 
-            guid = 'twit_%s' % tweet['id']
-            # Twitter apparently escapes < > but not & "
-            # so I'm clunkily unescaping lt and gt then reescaping in the template
-            text = tweet['text'].replace('&lt;', '<').replace('&gt;', '>')
-            activity.save_activity({'text': text}, politician=pol, date=date, guid=guid, variety='twitter')
-
-
-def get_id_from_screen_name(screen_name):
-    return twitter_api_request('users/show', params={'screen_name': screen_name})['id']
+                guid = 'twit_%s' % tweet['id']
+                # Twitter apparently escapes < > but not & "
+                # so I'm clunkily unescaping lt and gt then reescaping in the template
+                text: str = tweet['text'].replace('&lt;', '<').replace('&gt;', '>')
+                activity.save_activity({'text': text}, politician=pol, date=date, guid=guid, variety='twitter')
 
 
-def twitter_api_request(endpoint, params=None):
+def get_id_from_screen_name(screen_name: str) -> str:
+    response = twitter_api_request('users/show', params={'screen_name': screen_name})
+    if response is not dict:
+        raise TypeError("twitter response was unexpected")
+
+    return response['id']
+
+
+# TODO fix this return type salad
+def twitter_api_request(endpoint: str, params: Optional[Dict[str, str]] = None) -> Union[Dict[str, Any], List[Any], None]:
     url = 'https://api.twitter.com/1.1/' + endpoint + '.json'
     auth = OAuth1(
         settings.TWITTER_OAUTH['consumer_key'],
@@ -78,7 +86,7 @@ def twitter_api_request(endpoint, params=None):
         settings.TWITTER_OAUTH['token'],
         settings.TWITTER_OAUTH['token_secret'],
     )
-    resp = requests.get(url, auth=auth, params=params)
+    resp: requests.Response = requests.get(url, auth=auth, params=params)
     if resp.status_code == 200:
         return resp.json()
     elif resp.status_code == 429:

@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import re
+from typing import Optional
 
 import requests
 from django.db import transaction
@@ -131,7 +132,7 @@ def _update(obj, field, value):
         obj._changed = True
 
 
-def _import_bill(bd: BillData, session: Session, previous_session: Optional[Session] = None) -> None:
+def _import_bill(bd: BillData, session: Session, previous_session: Optional[Session] = None) -> Bill:
 
     if previous_session is None:
         previous_session = _get_previous_session(session)

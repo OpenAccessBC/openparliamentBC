@@ -3,6 +3,7 @@
 import datetime
 import re
 from calendar import monthrange
+from typing import Any, Dict
 
 import pysolr
 from django.conf import settings
@@ -75,7 +76,7 @@ class SearchQuery(BaseSearchQuery):
         self.extra_solr_params = solr_params
 
     def get_solr_query(self):
-        searchparams = {
+        searchparams: Dict[str, Any] = {
             'start': self.start,
             'rows': self.limit
         }
