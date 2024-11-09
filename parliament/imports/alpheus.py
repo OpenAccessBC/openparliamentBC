@@ -517,10 +517,10 @@ class ParseHandler():
         try:
             affil = el.xpath('Affiliation')[0]
         except IndexError:
-            logger.warning("No affiliation in PersonSpeaking: %s" % etree.tostring(el))
+            logger.warning("No affiliation in PersonSpeaking: %s", etree.tostring(el))
             return NO_DESCEND
         if not affil.text:
-            logger.warning("Empty affiliation: %s" % etree.tostring(el))
+            logger.warning("Empty affiliation: %s", etree.tostring(el))
             return NO_DESCEND
         self._new_person(affil.get('DbId'), affil.text, affil.get('Type'))
         self.main_statement_speaker = (affil.get('DbId'), affil.text, affil.get('Type'))
