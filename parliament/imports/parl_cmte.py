@@ -37,7 +37,7 @@ def import_committee_list(session=None):
                 name_en=name_en,
                 name_fr=name_fr, parent=parent)
             if created:
-                logger.warning("Creating committee: %s, %s" % (committee.name_en, committee.slug))
+                logger.warning("Creating committee: %s, %s", committee.name_en, committee.slug)
             CommitteeInSession.objects.get_or_create(
                 committee=committee, session=session, acronym=acronym)
             return committee
@@ -68,7 +68,7 @@ def import_committee_list(session=None):
         if name_fr:
             name_fr = name_fr[0].strip()
         else:
-            logger.error("Could not find French name for committee %s" % acronym)
+            logger.error("Could not find French name for committee %s", acronym)
         com = make_committee(name, name_fr, acronym)
         found = True
 
@@ -78,7 +78,7 @@ def import_committee_list(session=None):
             'ancestor::div[@class="accordion-item"][1]/'
             'descendant::div[@class="subcommittee-name"]/text()' % acronym)
         if len(sub_names) != len(sub_names_fr):
-            logger.error("Couldn't get French subcommittee names for %s" % acronym)
+            logger.error("Couldn't get French subcommittee names for %s", acronym)
             sub_names_fr = [''] * len(sub_names)
         for sub, sub_fr in zip(sub_names, sub_names_fr):
             match = re.search(r'^(.+) \(([A-Z0-9]{3,5})\)$', sub.text_content())
@@ -175,8 +175,8 @@ def import_committee_meetings(committee, session):
         if meeting.source_id:
             if meeting.source_id != source_id:
                 if meeting.evidence_id:
-                    logger.error("Source ID mismatch for %s meeting %s (orig %s new %s)" % (
-                        committee, number, meeting.source_id, source_id))
+                    logger.error("Source ID mismatch for %s meeting %s (orig %s new %s)",
+                                 committee, number, meeting.source_id, source_id)
                     continue
 
                 # As long as there was no evidence loaded, just replace the old meeting
@@ -284,8 +284,8 @@ def _download_evidence(meeting, evidence_viewer_url):
     if not source_id:
         assert meeting.source_id
         source_id = int('9' + str(meeting.source_id))
-        logger.error("No source ID in evidence for %s, using constructed ID %s" % (
-            evidence_viewer_url, source_id))
+        logger.error("No source ID in evidence for %s, using constructed ID %s",
+                     evidence_viewer_url, source_id)
 
     meeting.evidence = Document.objects.create(
         source_id=source_id,
@@ -328,8 +328,8 @@ def get_activity_by_url(activity_url, committee, session):
     if CommitteeActivityInSession.objects.exclude(source_id=activity_id).filter(
             session=session, activity=activity).exists():
         logger.info(
-            "Apparent duplicate activity ID for %s %s %s: %s" %
-            (activity, activity.committee, session, activity_id))
+            "Apparent duplicate activity ID for %s %s %s: %s",
+            activity, activity.committee, session, activity_id)
         return activity
 
     CommitteeActivityInSession.objects.create(

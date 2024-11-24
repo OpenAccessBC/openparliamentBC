@@ -31,7 +31,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
     if document.statement_set.all().exists():
         if reimport_preserving_sequence:
             if OldSequenceMapping.objects.filter(document=document).exists():
-                logger.error("Sequence mapping already exits for %s" % document)
+                logger.error("Sequence mapping already exits for %s", document)
                 return None
             old_statements = list(document.statement_set.all())
             document.statement_set.all().delete()
@@ -56,8 +56,8 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
     if document.date and document.date != pdoc_en.meta['date']:
         # Sometimes they get the date wrong
         if document.date != pdoc_fr.meta['date']:
-            logger.error("Date mismatch on document #%s: %s %s" % (
-                document.id, document.date, pdoc_en.meta['date']))
+            logger.error("Date mismatch on document #%s: %s %s",
+                         document.id, document.date, pdoc_en.meta['date'])
     else:
         document.date = pdoc_en.meta['date']
     document.number = pdoc_en.meta['document_number']
@@ -98,7 +98,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
                 s.politician = Politician.objects.get_by_parl_affil_id(s.who_hocid, session=document.session)
                 s.member = ElectedMember.objects.get_by_pol(s.politician, date=document.date)
             except Politician.DoesNotExist:
-                logger.info("Could not resolve speaking politician ID %s for %r" % (s.who_hocid, s.who))
+                logger.info("Could not resolve speaking politician ID %s for %r", s.who_hocid, s.who)
 
         s._related_pols = set()
         s._related_bills = set()
@@ -107,7 +107,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
         statements.append(s)
 
     if len(statements) != len(pdoc_fr.statements):
-        logger.info("French and English statement counts don't match for %r" % document)
+        logger.info("French and English statement counts don't match for %r", document)
 
     _r_paragraphs = re.compile(r'<p[^>]* data-HoCid=.+?</p>')
     _r_paragraph_id = re.compile(r'<p[^>]* data-HoCid="(?P<id>\d+)"')
@@ -138,7 +138,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
             else:
                 return match.group(0)
         except KeyError:
-            logger.error("Paragraph ID %s not found in French for %s" % (match.group(0), document))
+            logger.error("Paragraph ID %s not found in French for %s", match.group(0), document)
             return match.group(0)
 
     if missing_id_count > float(len(fr_paragraphs)):
@@ -235,16 +235,16 @@ def _align_sequences(new_statements, old_statements):
                 score = calculate_similarity(old, new)
                 if score < 0.9:
                     logger.warning(
-                        "Low similarity for easy match %s: %r %r / %r %r"
-                        % (score, old, old.text_plain(), new, new.text_plain()))
+                        "Low similarity for easy match %s: %r %r / %r %r",
+                        score, old, old.text_plain(), new, new.text_plain())
                 mappings.append((old.sequence, new.slug))
         else:
             # Try and pair the most similar statement
             if news:
-                logger.info("Count mismatch for %s" % speaker)
+                logger.info("Count mismatch for %s", speaker)
                 candidates = news
             else:
-                logger.warning("No new statements for %s" % speaker)
+                logger.warning("No new statements for %s", speaker)
                 candidates = new_statements  # Calculate similarity with all possibilities
             for old in olds:
                 scores = ((cand, calculate_similarity(old, cand)) for cand in candidates)
@@ -252,8 +252,8 @@ def _align_sequences(new_statements, old_statements):
                 chosen.add(choice)
                 if score < 0.75:
                     logger.warning(
-                        "Low-score similarity match %s: %r %r / %r %r"
-                        % (score, old, old.text_plain(), choice, choice.text_plain()))
+                        "Low-score similarity match %s: %r %r / %r %r",
+                        score, old, old.text_plain(), choice, choice.text_plain())
                 mappings.append((old.sequence, choice.slug))
 
     return mappings
@@ -287,7 +287,7 @@ def _process_related_link(match, statement):
         except Bill.DoesNotExist:
             match = re.search(r'\b[CS]\-\d+[A-E]?\b', text)
             if not match:
-                logger.error("Invalid bill link %s" % text)
+                logger.error("Invalid bill link %s", text)
                 return text
             bill = Bill.objects.create_temporary_bill(
                 legisinfo_id=hocid,

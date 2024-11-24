@@ -44,7 +44,7 @@ def committee_evidence():
             if document.statement_set.all().count():
                 document.save_activity()
         except Exception as e:
-            logger.exception("Evidence parse failure on #%s: %r" % (document.id, e))
+            logger.exception("Evidence parse failure on #%s: %r", document.id, e)
             continue
 
 
@@ -83,7 +83,7 @@ def hansards_parse():
                 with transaction.atomic():
                     parl_document.import_document(hansard, interactive=False)
             except Exception as e:
-                logger.exception("Hansard parse failure on #%s: %r" % (hansard.id, e))
+                logger.exception("Hansard parse failure on #%s: %r", hansard.id, e)
                 continue
             # now reload the Hansard to get the date
             hansard = Document.objects.get(pk=hansard.id)

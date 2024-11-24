@@ -48,7 +48,7 @@ def news_items_for_pol(pol):
         try:
             item['summary'] = strip_tags(str(soup.findAll('font', size='-1')[1]))
         except Exception:
-            logger.exception("Error getting news for %s" % pol.slug)
+            logger.exception("Error getting news for %s", pol.slug)
             continue
         if pol.name not in item['summary']:
             continue

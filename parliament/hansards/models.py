@@ -384,7 +384,7 @@ class Statement(models.Model):
             return self.content_en
         el, fl = self.content_en.split('\n'), self.content_fr.split('\n')
         if len(el) != len(fl):
-            logger.error("Different en/fr paragraphs in %s" % self.get_absolute_url())
+            logger.error("Different en/fr paragraphs in %s", self.get_absolute_url())
             return self.content_en
         r = []
         for e, f in zip(el, fl):

@@ -374,7 +374,7 @@ class Politician(Person):
             return True
         slug = slugify(self.name)
         if Politician.objects.filter(slug=slug).exists():
-            logger.warning("Slug %s already taken" % slug)
+            logger.warning("Slug %s already taken", slug)
             return False
         self.slug = slug
         self.save()
@@ -467,11 +467,10 @@ class Politician(Person):
         except PoliticianInfo.DoesNotExist:
             info = PoliticianInfo(politician=self, schema=key)
         except PoliticianInfo.MultipleObjectsReturned:
-            logger.error("Multiple objects found for schema %s on politician %r: %r" % (
-                key,
-                self,
-                self.politicianinfo_set.filter(schema=key).values_list('value', flat=True)
-            ))
+            logger.error("Multiple objects found for schema %s on politician %r: %r",
+                         key,
+                         self,
+                         self.politicianinfo_set.filter(schema=key).values_list('value', flat=True))
             self.politicianinfo_set.filter(schema=key).delete()
             info = PoliticianInfo(politician=self, schema=key)
         info.value = str(value)

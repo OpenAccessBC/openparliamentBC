@@ -171,10 +171,10 @@ def _import_bill(bd: BillData, session: Session, previous_session: Optional[Sess
                 if bill.id:
                     # If the new bill has already been saved, let's not try
                     # to merge automatically
-                    logger.error("Bill %s may need to be merged. IDs: %s %s" %
-                                 (bill.number, bill.id, mergebill.id))
+                    logger.error("Bill %s may need to be merged. IDs: %s %s",
+                                 bill.number, bill.id, mergebill.id)
                 else:
-                    logger.warning("Merging bill %s" % bill.number)
+                    logger.warning("Merging bill %s", bill.number)
                     bill = mergebill
                     bis.bill = bill
         except Bill.DoesNotExist:
@@ -191,14 +191,14 @@ def _import_bill(bd: BillData, session: Session, previous_session: Optional[Sess
         try:
             bis.sponsor_politician = Politician.objects.get_by_parl_mp_id(pol_id)
         except Politician.DoesNotExist:
-            logger.error("Couldn't find sponsor politician for bill %s, pol ID %s, name %s" % (
-                bill.number, pol_id, bd.get('SponsorPersonName')))
+            logger.error("Couldn't find sponsor politician for bill %s, pol ID %s, name %s",
+                         bill.number, pol_id, bd.get('SponsorPersonName'))
         bis._changed = True
         try:
             bis.sponsor_member = ElectedMember.objects.get_by_pol(politician=bis.sponsor_politician, session=session)
         except Exception:
-            logger.error("Couldn't find ElectedMember for bill %s, pol %r" %
-                         (bill.number, bis.sponsor_politician))
+            logger.error("Couldn't find ElectedMember for bill %s, pol %r",
+                         bill.number, bis.sponsor_politician)
         if not bill.sponsor_politician:
             bill.sponsor_politician = bis.sponsor_politician
             bill.sponsor_member = bis.sponsor_member
@@ -217,7 +217,7 @@ def _import_bill(bd: BillData, session: Session, previous_session: Optional[Sess
     if status_code:
         _update(bill, 'status_code', status_code)
     else:
-        logger.error("Unknown bill status %s" % status_name)
+        logger.error("Unknown bill status %s", status_name)
 
     _update(bill, 'status_date', bd['LatestBillEventDateTime'])
 
@@ -251,6 +251,6 @@ def _import_bill(bd: BillData, session: Session, previous_session: Optional[Sess
             )
             bill.save()  # to trigger search indexing
         except CannotScrapeException:
-            logger.warning("Could not get bill text for %s" % bill)
+            logger.warning("Could not get bill text for %s", bill)
 
     return bill

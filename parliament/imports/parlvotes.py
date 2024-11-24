@@ -46,7 +46,7 @@ def import_votes():
             nay_total=int(vote.findtext('DecisionDivisionNumberOfNays', -1)),
             paired_total=int(vote.findtext('DecisionDivisionNumberOfPaired', -1)))
         if sum((votequestion.yea_total, votequestion.nay_total)) < 100:
-            logger.error("Fewer than 100 votes on vote#%s" % votenumber)
+            logger.error("Fewer than 100 votes on vote#%s", votenumber)
         decision = vote.findtext('DecisionResultName')
         if decision in ('Agreed to', 'Agreed To'):
             votequestion.result = 'Y'
@@ -62,7 +62,7 @@ def import_votes():
                 votequestion.bill = Bill.objects.get(sessions=session, number=billnumber)
             except Bill.DoesNotExist:
                 votequestion.bill = Bill.objects.create_temporary_bill(session=session, number=billnumber)
-                logger.warning("Temporary bill %s created for vote %s" % (billnumber, votenumber))
+                logger.warning("Temporary bill %s created for vote %s", billnumber, votenumber)
 
         votequestion.description_en = vote.findtext('DecisionDivisionSubject')
         try:
@@ -70,7 +70,7 @@ def import_votes():
                 'Vote/DecisionDivisionNumber[text()=%s]/../DecisionDivisionSubject/text()'
                 % votenumber)[0]
         except Exception:
-            logger.exception("Couldn't get french description for vote %s" % votenumber)
+            logger.exception("Couldn't get french description for vote %s", votenumber)
 
         # Okay, save the question, start processing members.
         votequestion.save()

@@ -49,8 +49,8 @@ class BillManager(models.Manager):
         try:
             bill = Bill.objects.get(number=number, sessions=session)
             logger.error(
-                "Potential duplicate LEGISinfo ID: %s in %s exists, but trying to create with ID %s" %
-                (number, session, legisinfo_id))
+                "Potential duplicate LEGISinfo ID: %s in %s exists, but trying to create with ID %s",
+                number, session, legisinfo_id)
             return bill
         except Bill.DoesNotExist:
             bill = self.create(number=number)

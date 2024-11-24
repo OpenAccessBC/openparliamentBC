@@ -527,7 +527,7 @@ class ParseHandler():
         if affil.tail and affil.tail.replace(':', '').strip():
             content = affil.tail.replace(':', '').strip()
             if not content.startswith('('):
-                logger.warning("Looks like there's content in PersonSpeaking: %s" % content)
+                logger.warning("Looks like there's content in PersonSpeaking: %s", content)
                 self._add_text(content)
         return NO_DESCEND
 

@@ -34,4 +34,4 @@ def clear_former_mp_alerts(qs=None):
             alert.active = False
             alert.save()
         except Exception as e:
-            logger.error("Couldn't send mail for alert %s; %r" % (alert.id, e))
+            logger.error("Couldn't send mail for alert %s; %r", alert.id, e)
