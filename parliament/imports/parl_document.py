@@ -387,10 +387,10 @@ def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_i
     doc_en = etree.fromstring(xml_en)
     doc_fr = etree.fromstring(xml_fr)
 
-    source_id = int(doc_en.get('id'))
+    source_id = int(doc_en.get('id', -1))
     if Document.objects.filter(source_id=source_id).exists():
-        raise Exception("Document at source_id %s already exists but not sitting %s" % (source_id, sitting_number))
-    assert int(doc_fr.get('id')) == source_id
+        raise Exception("Document at source_id %d already exists but not sitting %s" % (source_id, sitting_number))
+    assert int(doc_fr.get('id', -1)) == source_id
 
     if ((not import_without_paragraph_ids)
             and not (_test_has_paragraph_ids(doc_en) and _test_has_paragraph_ids(doc_fr))):

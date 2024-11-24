@@ -239,10 +239,10 @@ class PoliticianAlert(models.Model):
 
     def get_key(self):
         h = hashlib.sha1()
-        h.update(str(self.id))
+        h.update(str(self.id).encode('utf-8'))
         h.update(self.email)
         h.update(settings.SECRET_KEY)
-        return base64.urlsafe_b64encode(h.digest()).replace('=', '')
+        return base64.urlsafe_b64encode(h.digest()).replace(b'=', b'')
 
     def __str__(self):
         return "%s for %s (%s)" % \

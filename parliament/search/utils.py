@@ -1,6 +1,7 @@
 import math
 import re
 from collections import namedtuple
+from re import Match
 from typing import Dict
 
 _FakePaginator = namedtuple('_FakePaginator', 'num_pages count')
@@ -41,9 +42,9 @@ class BaseSearchQuery():
 
     def __init__(self, query):
         self.raw_query = query
-        self.filters = {}
+        self.filters: Dict[str, str] = {}
 
-        def extract_filter(match):
+        def extract_filter(match: Match):
             self.filters[match.group(1)] = match.group(2)
             return ''
 

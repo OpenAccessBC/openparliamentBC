@@ -78,7 +78,7 @@ def get_id_from_screen_name(screen_name: str) -> str:
 
 
 # TODO fix this return type salad
-def twitter_api_request(endpoint: str, params: Optional[Dict[str, str]] = None) -> Union[Dict[str, Any], List[Any], None]:
+def twitter_api_request(endpoint: str, params: Optional[Dict[str, Any]] = None) -> Union[Dict[str, Any], List[Any], None]:
     url = 'https://api.twitter.com/1.1/' + endpoint + '.json'
     auth = OAuth1(
         settings.TWITTER_OAUTH['consumer_key'],

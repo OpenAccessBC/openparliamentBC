@@ -28,23 +28,23 @@ def import_votes():
 
     votelist = root.findall('Vote')
     for vote in votelist:
-        votenumber = int(vote.findtext('DecisionDivisionNumber'))
+        votenumber = int(vote.findtext('DecisionDivisionNumber', -1))
         session = Session.objects.get(
-            parliamentnum=int(vote.findtext('ParliamentNumber')),
-            sessnum=int(vote.findtext('SessionNumber'))
+            parliamentnum=int(vote.findtext('ParliamentNumber', -1)),
+            sessnum=int(vote.findtext('SessionNumber', -1))
         )
         if VoteQuestion.objects.filter(session=session, number=votenumber).count():
             continue
-        print("Processing vote #%s" % votenumber)
-        date_str = vote.findtext('DecisionEventDateTime')
+        print("Processing vote #%d" % votenumber)
+        date_str = vote.findtext('DecisionEventDateTime', 'NOTFOUND')
         date = datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S').date()
         votequestion = VoteQuestion(
             number=votenumber,
             session=session,
             date=date,
-            yea_total=int(vote.findtext('DecisionDivisionNumberOfYeas')),
-            nay_total=int(vote.findtext('DecisionDivisionNumberOfNays')),
-            paired_total=int(vote.findtext('DecisionDivisionNumberOfPaired')))
+            yea_total=int(vote.findtext('DecisionDivisionNumberOfYeas', -1)),
+            nay_total=int(vote.findtext('DecisionDivisionNumberOfNays', -1)),
+            paired_total=int(vote.findtext('DecisionDivisionNumberOfPaired', -1)))
         if sum((votequestion.yea_total, votequestion.nay_total)) < 100:
             logger.error("Fewer than 100 votes on vote#%s" % votenumber)
         decision = vote.findtext('DecisionResultName')

@@ -190,7 +190,7 @@ def import_committee_meetings(committee, session):
 
         date_string = mtg_row.cssselect('.meeting-title .date-label')[0].text_content().strip()
         if date_string in ('Earlier Today', 'Later Today', 'In Progress', 'Tomorrow', 'Yesterday', 'Suspended'):
-            match = re.search(r'-(20\d\d)-(\d\d)-(\d\d)', mtg_row.get('class'))
+            match = re.search(r'-(20\d\d)-(\d\d)-(\d\d)', mtg_row.get('class', ''))
             assert match
             meeting.date = datetime.date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
         else:
@@ -277,7 +277,7 @@ def _download_evidence(meeting, evidence_viewer_url):
     resp.raise_for_status()
     xml_fr = resp.content
 
-    source_id = int(lxml.etree.fromstring(xml_en).get('id'))
+    source_id = int(lxml.etree.fromstring(xml_en).get('id', 0))
     if not source_id:
         assert meeting.source_id
         source_id = int('9' + str(meeting.source_id))

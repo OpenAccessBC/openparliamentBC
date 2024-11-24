@@ -10,6 +10,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import defaultdict
+from typing import Dict
 
 import text_utils
 from bs4 import BeautifulSoup
@@ -35,9 +36,9 @@ def load_pol_pic(pol):
     if 'BlankMPPhoto' in imgurl:
         print("Blank photo")
         return
-    imgurl = urllib.parse.urljoin(pol.parlpage, imgurl)
+    imgurl_joined = urllib.parse.urljoin(pol.parlpage, imgurl)
     # test = urllib.request.urlopen(imgurl)
-    content = urllib.request.urlretrieve(imgurl)
+    content = urllib.request.urlretrieve(imgurl_joined)
     # filename = urlparse.urlparse(imgurl).path.split('/')[-1]
     pol.headshot.save(str(pol.id) + ".jpg", File(open(content[0])), save=True)
     pol.save()
@@ -95,7 +96,7 @@ r_splitter = re.compile(r'[^\w\'\-]+', re.UNICODE)
 
 
 def spark_index(bucketsize, bigrams=False):
-    index = defaultdict(int)
+    index: Dict[str, int] = defaultdict(int)
     bucketidx = 0
     bucketcount = 0
     for s in Statement.objects.all().order_by('time'):
