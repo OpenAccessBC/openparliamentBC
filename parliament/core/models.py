@@ -263,7 +263,7 @@ class PoliticianManager(models.Manager):
                 raise Politician.DoesNotExist("Couldn't resolve affil ID %s" % parlid)
             if len(profile_link) > 1:
                 raise Exception("Weird scrape: multiple CSS results for ID %s in get_by_parl_affil_id" % parlid)
-            profile_url = urljoin(resp.url, profile_link[0].attrib['href'])
+            profile_url = urljoin(resp.url, str(profile_link[0].attrib['href']))
             pol, parl_mp_id = self._get_pol_from_ourcommons_profile_url(profile_url, session, riding_name)
             try:
                 mpid_info = PoliticianInfo.objects.get(schema='parl_mp_id', value=str(parl_mp_id))
@@ -511,7 +511,7 @@ class Politician(Person):
         self.save()
 
     def save_headshot_thumbnail(self):
-        pil_img = Image.open(self.headshot)
+        pil_img: Image.Image = Image.open(self.headshot)
         (w, h) = pil_img.size
         if not (w == 142 and h == 230):
             raise Exception(f'Headshot image for {self.name} is incorrect size, {pil_img.size}. Should be (142, 230)')

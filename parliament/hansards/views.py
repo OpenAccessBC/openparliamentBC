@@ -84,7 +84,7 @@ def document_redirect(request, document_id, slug=None):
 @vary_on_headers('X-Requested-With')
 def document_view(request, document, meeting=None, slug=None):
 
-    per_page = 25
+    per_page: int = 25
     if 'singlepage' in request.GET:
         per_page = 50000
 
@@ -92,7 +92,7 @@ def document_view(request, document, meeting=None, slug=None):
         .select_related('member__politician', 'member__riding', 'member__party')
     paginator = Paginator(statement_qs, per_page)
 
-    highlight_statement = None
+    highlight_statement: int = 0
     try:
         if slug is not None and 'page' not in request.GET:
             if slug.isdigit():

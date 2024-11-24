@@ -144,9 +144,9 @@ def import_committee_meetings(committee, session):
     resp.raise_for_status()
     root = lxml.html.fromstring(resp.text)
     for mtg_row in root.cssselect('#meeting-accordion .accordion-item'):
-        source_id = mtg_row.get('id')
-        assert source_id.startswith('meeting-item-')
-        source_id = int(source_id.replace('meeting-item-', '').strip())
+        source_id_str = mtg_row.get('id')
+        assert source_id_str.startswith('meeting-item-')
+        source_id = int(source_id_str.replace('meeting-item-', '').strip())
 
         number = int(re.sub(r'\D', '', mtg_row.cssselect('.meeting-title .meeting-number')[0].text))
         assert number > 0

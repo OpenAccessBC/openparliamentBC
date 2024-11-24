@@ -15,6 +15,6 @@ class Form(forms.Form):
         for field in list(self.fields.values()):
             if field.help_text:
                 field.widget.attrs['data-helptext'] = field.help_text
-                field.help_text = None
+                field.help_text = ""
 
         return super(Form, self)._html_output(*args, **kwargs)

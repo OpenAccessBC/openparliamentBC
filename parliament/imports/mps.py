@@ -211,7 +211,7 @@ def _scrape_ourcommons_row(row):
         './/div[@class="ce-mip-mp-profile-container"]//img/@src')[0]
 
     if photo:
-        d['photo_url'] = urljoin(OURCOMMONS_MPS_URL, photo)
+        d['photo_url'] = urljoin(OURCOMMONS_MPS_URL, str(photo))
 
     # Hill Office contacts
     # Now phone and fax are in the same element

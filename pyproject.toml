@@ -1,6 +1,6 @@
 [tool.mypy]
 python_version = "3.12"
-disable_error_code = "name-defined,attr-defined,import-untyped,import-not-found,var-annotated,arg-type,index,dict-item,union-attr,assignment,misc,override,type-var,call-overload,operator"
+disable_error_code = "name-defined,attr-defined,import-untyped,import-not-found,var-annotated,arg-type,index,dict-item,union-attr,assignment,misc,override,call-overload"
 exclude = ["imports/hans_old/"]
 check_untyped_defs = true
 

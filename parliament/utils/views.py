@@ -1,5 +1,6 @@
 import json
 import re
+from http import HTTPStatus
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View
@@ -29,7 +30,7 @@ class JSONView(View):
             callback = re.sub(r'[^a-zA-Z0-9_]', '', request.GET['callback'])
             resp.write(callback + '(')
         if self.wrap:
-            result = {'status': 'ok', 'content': result}
+            result = HttpResponse(content=result, status=HTTPStatus.OK)
         json.dump(result, resp, indent=indent_response)
         if callback:
             resp.write(');')
@@ -42,7 +43,7 @@ class JSONView(View):
 
 class AjaxRedirectResponse(HttpResponse):
 
-    def __init__(self, url, status_code=403):
+    def __init__(self, url, status_code=HTTPStatus.FORBIDDEN):
         super(AjaxRedirectResponse, self).__init__(
             '<script>window.location.href = "%s";</script>' % url,
             content_type='text/html'

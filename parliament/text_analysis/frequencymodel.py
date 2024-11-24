@@ -74,9 +74,8 @@ class FrequencyModel(dict):
                 counts[item] += 1
                 total_count += 1
         self.count = total_count
-        total_count = float(total_count)
         self.update(
-            (k, v / total_count) for k, v in counts.items() if v >= min_count
+            (k, v / float(total_count)) for k, v in counts.items() if v >= min_count
         )
 
     def __missing__(self, key):

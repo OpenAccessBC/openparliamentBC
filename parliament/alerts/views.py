@@ -1,6 +1,7 @@
 import datetime
 import json
 import re
+from typing import Any, Dict
 
 from django import forms
 from django.conf import settings
@@ -204,7 +205,7 @@ def politician_hansard_subscribe(request, signed_key):
 
 @never_cache
 def unsubscribe(request, key):
-    ctx = {
+    ctx: Dict[str, Any] = {
         'title': 'Email alerts'
     }
     try:

@@ -41,8 +41,9 @@ class Election (models.Model):
         riding_candidacies = defaultdict(list)
         for candidacy in candidacies:
             riding_candidacies[candidacy.riding_id].append(candidacy)
-        for riding_candidacies in list(riding_candidacies.values()):
-            winner = max(riding_candidacies, key=lambda c: c.votetotal)
+
+        for candidacy in riding_candidacies.values():
+            winner = max(candidacy, key=lambda c: c.votetotal)
             winner.elected = True
             winner.save()
         candidacies.filter(elected=None).update(elected=False)

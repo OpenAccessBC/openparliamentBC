@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from collections import OrderedDict, defaultdict
-from typing import Dict
+from typing import Any, Dict
 
 from django.conf import settings
 from django.db import models
@@ -102,7 +102,7 @@ class Document(models.Model):
         base_url = self.get_absolute_url()
         if base_url is None:
             raise TypeError("text analysis base url was unspecified")
-        
+
         return base_url + 'text-analysis/'
 
     def to_api_dict(self, representation):
@@ -499,7 +499,7 @@ class Statement(models.Model):
         return self.h2
 
     def to_api_dict(self, representation):
-        d: Dict[str, str | None] = dict(
+        d: Dict[str, str | Dict[str, str] | None] = dict(
             time=str(self.time) if self.time else None,
             attribution={'en': self.who_en, 'fr': self.who_fr},
             content={'en': self.content_en, 'fr': self.content_fr},
@@ -522,7 +522,7 @@ class Statement(models.Model):
     @property
     @memoize_property
     def name_info(self):
-        info = {
+        info: Dict[str, Any] = {
             'post': None,
             'named': True
         }

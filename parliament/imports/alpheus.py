@@ -523,7 +523,7 @@ class ParseHandler():
             logger.warning("Empty affiliation: %s", etree.tostring(el))
             return NO_DESCEND
         self._new_person(affil.get('DbId'), affil.text, affil.get('Type'))
-        self.main_statement_speaker = (affil.get('DbId'), affil.text, affil.get('Type'))
+        self.main_statement_speaker = [affil.get('DbId'), affil.text, affil.get('Type')]
         if affil.tail and affil.tail.replace(':', '').strip():
             content = affil.tail.replace(':', '').strip()
             if not content.startswith('('):
