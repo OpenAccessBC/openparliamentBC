@@ -136,7 +136,7 @@ def try_postcode_first(request):
 
 def postcode_to_edid_represent(postcode):
     url = 'https://represent.opennorth.ca/postcodes/%s/' % postcode.replace(' ', '')
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=5)
     if resp.status_code != 200:
         return None
     content = resp.json()
@@ -160,7 +160,7 @@ r_ec_edid = re.compile(r'&ED=(\d{5})&')
 
 
 def postcode_to_edid_ec(postcode):
-    resp = requests.get(EC_POSTCODE_URL % postcode.replace(' ', ''), allow_redirects=False)
+    resp = requests.get(EC_POSTCODE_URL % postcode.replace(' ', ''), allow_redirects=False, timeout=5)
     if resp.status_code != 302:
         return None
     redirect_url = resp.headers['Location']

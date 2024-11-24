@@ -24,8 +24,7 @@ Importers for MP data, from ourcommons.ca or represent.opennorth.ca
 
 def update_mps_from_represent(download_headshots=False, update_all_headshots=False):
 
-    resp = requests.get(
-        'https://represent.opennorth.ca/representatives/house-of-commons/?limit=500')
+    resp = requests.get('https://represent.opennorth.ca/representatives/house-of-commons/?limit=500', timeout=5)
     resp.raise_for_status()
     data = resp.json()
 
@@ -122,11 +121,11 @@ def update_ridings_from_represent(boundary_set='federal-electoral-districts'):
     Riding.objects.filter(current=True).update(current=False)
 
     base_url = 'http://represent.opennorth.ca/'
-    riding_list = requests.get(
-        urljoin(base_url, '/boundaries/federal-electoral-districts/?limit=500')).json()
+    riding_list = requests.get(urljoin(base_url, '/boundaries/federal-electoral-districts/?limit=500'),
+                               timeout=5).json()
     riding_urls = [r['url'] for r in riding_list['objects']]
     for riding_url in riding_urls:
-        riding_data = requests.get(urljoin(base_url, riding_url)).json()
+        riding_data = requests.get(urljoin(base_url, riding_url), timeout=5).json()
         edid = int(riding_data['external_id'])
         name = riding_data['metadata']['ENNAME']
         name_fr = riding_data['metadata']['FRNAME']
@@ -153,7 +152,7 @@ def update_ridings_from_represent(boundary_set='federal-electoral-districts'):
 
 
 def _scrape_url(url) -> lxml.etree._Element:
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=5)
     resp.raise_for_status()
     return lxml.html.fromstring(resp.content)
 
@@ -171,7 +170,7 @@ def scrape_mps_from_ourcommons():
 def is_photo_real(photo_url: str) -> bool:
     """Sometimes the scraped photo is just a generic silhouette;
     this will return False if that appears to be the case."""
-    photo_response = requests.get(photo_url)
+    photo_response = requests.get(photo_url, timeout=10)
     return (photo_response.status_code == 200
             and hashlib.sha1(photo_response.content).hexdigest() not in IMAGE_PLACEHOLDER_SHA1)
 

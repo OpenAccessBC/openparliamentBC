@@ -71,7 +71,7 @@ class BillData():
         }
 
     def get_detailed(self):
-        resp = requests.get(self.detailed_json_url)
+        resp = requests.get(self.detailed_json_url, timeout=10)
         resp.raise_for_status()
         rj = resp.json()
         assert len(rj) == 1
@@ -81,7 +81,7 @@ class BillData():
 
 def get_bill_list(session):
     url = LEGISINFO_JSON_LIST_URL % dict(sessid=session.id)
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=10)
     resp.raise_for_status()
     jd = resp.json()
     return [BillData(item) for item in jd]
@@ -101,14 +101,14 @@ def import_bill_by_id(legisinfo_id):
     # This request should redirect from an ID to a canonical URL, which we
     # can then tack /json on to
     url = LEGISINFO_BILL_ID_URL % {'id': legisinfo_id, 'lang': 'en'}
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=10)
     resp.raise_for_status()
 
     if not re.search(r'-\d+$', resp.url):
         raise Bill.DoesNotExist("Could not find bill for LEGISinfo ID %s" % legisinfo_id)
 
     detail_url = resp.url + '/json'
-    resp = requests.get(detail_url)
+    resp = requests.get(detail_url, timeout=10)
     resp.raise_for_status()
 
     rj = resp.json()

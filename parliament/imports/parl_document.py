@@ -369,7 +369,7 @@ def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_i
     url = HANSARD_URL.format(
         parliamentnum=session.parliamentnum,
         sessnum=session.sessnum, sitting=sitting_number, lang='E')
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=10)
     if resp.status_code != 200:
         if resp.status_code != 404:
             logger.error("Response %d from %s", resp.status_code, url)
@@ -380,7 +380,7 @@ def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_i
     url = HANSARD_URL.format(
         parliamentnum=session.parliamentnum,
         sessnum=session.sessnum, sitting=sitting_number, lang='F')
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=10)
     resp.raise_for_status()
     xml_fr = resp.content
 
@@ -422,11 +422,11 @@ def refresh_xml(document):
     else:
         raise NotImplementedError
 
-    resp_en = requests.get(url_en)
+    resp_en = requests.get(url_en, timeout=10)
     resp_en.raise_for_status()
     xml_en = resp_en.content
 
-    resp_fr = requests.get(url_fr)
+    resp_fr = requests.get(url_fr, timeout=10)
     resp_fr.raise_for_status()
     xml_fr = resp_fr.content
 

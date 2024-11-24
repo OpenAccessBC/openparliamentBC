@@ -42,13 +42,13 @@ def import_committee_list(session=None):
                 committee=committee, session=session, acronym=acronym)
             return committee
 
-    resp = requests.get(COMMITTEE_LIST_URL.format(
-        lang='en', parl=session.parliamentnum, sess=session.sessnum))
+    resp = requests.get(COMMITTEE_LIST_URL.format(lang='en', parl=session.parliamentnum, sess=session.sessnum),
+                        timeout=10)
     resp.raise_for_status()
     root = lxml.html.fromstring(resp.text)
 
-    resp = requests.get(COMMITTEE_LIST_URL.format(
-        lang='fr', parl=session.parliamentnum, sess=session.sessnum))
+    resp = requests.get(COMMITTEE_LIST_URL.format(lang='fr', parl=session.parliamentnum, sess=session.sessnum),
+                        timeout=10)
     resp.raise_for_status()
     root_fr = lxml.html.fromstring(resp.text)
 
@@ -142,7 +142,7 @@ def import_committee_meetings(committee, session):
         'parliamentnum': session.parliamentnum,
         'sessnum': session.sessnum,
         'domain': 'parl' if committee.joint else 'ourcommons'}
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=10)
     resp.raise_for_status()
     root = lxml.html.fromstring(resp.text)
     for mtg_row in root.cssselect('#meeting-accordion .accordion-item'):
@@ -256,7 +256,7 @@ class NoXMLError(Exception):
 
 
 def _get_xml_url_from_documentviewer_url(url):
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=10)
     resp.raise_for_status()
     root = lxml.html.fromstring(resp.text)
     try:
@@ -272,11 +272,11 @@ def _download_evidence(meeting, evidence_viewer_url):
     assert xml_url_fr.upper().endswith('-F.XML')
     assert not meeting.evidence
 
-    resp = requests.get(xml_url_en)
+    resp = requests.get(xml_url_en, timeout=10)
     resp.raise_for_status()
     xml_en = resp.content
 
-    resp = requests.get(xml_url_fr)
+    resp = requests.get(xml_url_fr, timeout=10)
     resp.raise_for_status()
     xml_fr = resp.content
 
@@ -305,7 +305,7 @@ def get_activity_by_url(activity_url, committee, session):
 
     activity = CommitteeActivity(committee=committee)
     activity.study = True  # not parsing this at the moment
-    resp = requests.get(activity_url)
+    resp = requests.get(activity_url, timeout=10)
     resp.raise_for_status()
     root = lxml.html.fromstring(resp.text)
 
@@ -321,7 +321,7 @@ def get_activity_by_url(activity_url, committee, session):
         )
     except CommitteeActivity.DoesNotExist:
         url = activity_url.replace('/en/', '/fr/')
-        root = lxml.html.fromstring(requests.get(url).text)
+        root = lxml.html.fromstring(requests.get(url, timeout=10).text)
         activity.name_fr = root.cssselect('.core-content .study-title-label, .core-content .study-bill-label')[0].text.strip()[:500]
         activity.save()
 

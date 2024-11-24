@@ -255,7 +255,7 @@ class PoliticianManager(models.Manager):
                 schema='parl_affil_id', value=str(parlid))
             return info.politician
         except PoliticianInfo.DoesNotExist:
-            resp = requests.get(POL_AFFIL_ID_LOOKUP_URL % parlid)
+            resp = requests.get(POL_AFFIL_ID_LOOKUP_URL % parlid, timeout=10)
             resp.raise_for_status()
             root = lxml.html.fromstring(resp.text)
             profile_link = root.cssselect('.mpprofile a')
@@ -282,7 +282,7 @@ class PoliticianManager(models.Manager):
             raise Exception("Couldn't parse ID out of provided profile URL %s" % profile_url)
         parl_mp_id = url_match.group(1)
         xml_url = profile_url + '/xml'
-        xml_resp = requests.get(xml_url)
+        xml_resp = requests.get(xml_url, timeout=10)
         xml_resp.raise_for_status()
         xml_doc = lxml.etree.fromstring(xml_resp.content)
 
@@ -494,7 +494,7 @@ class Politician(Person):
         return statements
 
     def download_headshot(self, url):
-        resp = requests.get(url)
+        resp = requests.get(url, timeout=10)
         resp.raise_for_status()
         file = ContentFile(resp.content)
         pil_img = Image.open(BytesIO(resp.content))

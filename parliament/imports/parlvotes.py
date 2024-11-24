@@ -17,12 +17,12 @@ VOTEDETAIL_URL = 'https://www.ourcommons.ca/members/en/votes/{parliamentnum}/{se
 @transaction.atomic
 def import_votes():
     votelisturl_en = VOTELIST_URL.format(lang='en')
-    resp = requests.get(votelisturl_en)
+    resp = requests.get(votelisturl_en, timeout=10)
     resp.raise_for_status()
     root = etree.fromstring(resp.content)
 
     votelisturl_fr = VOTELIST_URL.format(lang='fr')
-    resp = requests.get(votelisturl_fr)
+    resp = requests.get(votelisturl_fr, timeout=10)
     resp.raise_for_status()
     root_fr = etree.fromstring(resp.content)
 
@@ -78,7 +78,7 @@ def import_votes():
         detailurl = VOTEDETAIL_URL.format(
             parliamentnum=session.parliamentnum,
             sessnum=session.sessnum, votenumber=votenumber)
-        resp = requests.get(detailurl)
+        resp = requests.get(detailurl, timeout=10)
         resp.raise_for_status()
         detailroot = etree.fromstring(resp.content)
 

@@ -13,12 +13,12 @@ def get_bill_text_xml(bill_or_url):
     if hasattr(bill_or_url, 'get_billtext_url'):
         bill_or_url = bill_or_url.get_billtext_url()
 
-    resp = requests.get(bill_or_url)
+    resp = requests.get(bill_or_url, timeout=10)
     html_root = lxml.html.fromstring(resp.content)
     xml_button = html_root.cssselect('a.btn-export-xml')
     xml_url = urljoin(bill_or_url, xml_button[0].get('href'))
 
-    resp2 = requests.get(xml_url)
+    resp2 = requests.get(xml_url, timeout=10)
     return lxml.etree.fromstring(resp2.content)
 
 

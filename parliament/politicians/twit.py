@@ -86,7 +86,7 @@ def twitter_api_request(endpoint: str, params: Optional[Dict[str, Any]] = None) 
         settings.TWITTER_OAUTH['token'],
         settings.TWITTER_OAUTH['token_secret'],
     )
-    resp: requests.Response = requests.get(url, auth=auth, params=params)
+    resp: requests.Response = requests.get(url, auth=auth, params=params, timeout=5)
     if resp.status_code == 200:
         return resp.json()
     elif resp.status_code == 429:
