@@ -345,7 +345,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=120
+max-line-length=140
 
 # Maximum number of lines in a module.
 max-module-lines=1000
@@ -436,7 +436,6 @@ disable=raw-checker-failed,
         broad-exception-caught,
         broad-exception-raised,
         invalid-name,
-        line-too-long,
         consider-using-f-string,
         import-outside-toplevel,
         no-member,

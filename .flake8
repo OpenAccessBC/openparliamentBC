@@ -1,4 +1,4 @@
 [flake8]
 ignore = E501,F821,W503
-max-line-length = 120
+max-line-length = 140
 exclude = parliament/imports/hans_old/*
