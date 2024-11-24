@@ -26,3 +26,4 @@ sentry-sdk
 feedparser
 beautifulsoup4
 requests_oauthlib
+haikufinder @ git+https://github.com/jdf/haikufinder.git@master
