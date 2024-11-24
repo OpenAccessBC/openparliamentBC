@@ -2,7 +2,7 @@ import datetime
 import email
 import logging
 import time
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import requests
 from django.conf import settings
