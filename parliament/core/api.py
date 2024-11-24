@@ -1,5 +1,6 @@
 import json
 import re
+from typing import Dict
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -279,12 +280,12 @@ class ModelListView(APIView):
             objects=[self.object_to_dict(obj) for obj in objects],
             pagination=page_data
         )
-        related = self.get_related_resources(request, qs, result)
+        related: Dict[str, str] | None = self.get_related_resources(request, qs, result)
         if related:
             result['related'] = related
         return result
 
-    def get_related_resources(self, request, qs, result):
+    def get_related_resources(self, request, qs, result) -> Dict[str, str] | None:
         return None
 
 
@@ -304,12 +305,12 @@ class ModelDetailView(APIView):
         except ObjectDoesNotExist:
             raise Http404
         result = self.object_to_dict(obj)
-        related = self.get_related_resources(request, obj, result)
+        related: Dict[str, str] | None = self.get_related_resources(request, obj, result)
         if related:
             result['related'] = related
         return result
 
-    def get_related_resources(self, request, obj, result):
+    def get_related_resources(self, request, obj, result) -> Dict[str, str] | None:
         return None
 
 
