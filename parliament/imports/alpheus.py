@@ -85,9 +85,35 @@ def escape(s):
     return stdlib_escape(s, quote=False)
 
 
-_r_housemet = re.compile(r'^\s*(?P<text>The\s+House\s+met\s+at|La\s+séance\s+est\s+ouverte\s+à)\s+(?P<number>\d[\d:\.]*)\s*(?P<ampm>[ap]\.m\.|)', re.I | re.UNICODE)
-_r_person_label = re.compile(r'^(Mr\.?\s|Mrs\.?\s|Ms\.?\s|Miss\.?s\|Hon\.?\s|Right\sHon\.\s|The\sSpeaker|Le\sprésident|The\sChair|The\sDeputy|The\sActing|An\s[hH]on\.?\s|Une\svoix|Des\svoix|Some\s[hH]on\.\s|M\.\s|Acting\s|L.hon\.?\s|Le\strès\s|Assistant\s|Mme\.?\s|Mlle\.?\s|Dr\.?\s)', re.UNICODE)
-_r_honorific = re.compile(r'^(Mr\.?\s|Mrs\.?\s|Ms\.?\s|Miss\.?\s|Hon\.?\s|Right\sHon\.\s|M\.\s|L.hon\.?\s|Mme\.?\s|Mlle\.?\s|Dr\.?\s)', re.UNICODE)
+_r_housemet = re.compile(
+    r'^\s*(?P<text>The\s+House\s+met\s+at|La\s+séance\s+est\s+ouverte\s+à)\s+(?P<number>\d[\d:\.]*)\s*(?P<ampm>[ap]\.m\.|)',
+    re.I | re.UNICODE)
+
+PERSON_LABELS = [r"Mr\.?\s",
+                 r"Mrs\.?\s",
+                 r"Ms\.?\s",
+                 r"Miss\.?s\|Hon\.?\s",
+                 r"Right\sHon\.\s",
+                 r"The\sSpeaker",
+                 r"Le\sprésident",
+                 r"The\sChair",
+                 r"The\sDeputy",
+                 r"The\sActing",
+                 r"An\s[hH]on\.?\s",
+                 r"Une\svoix",
+                 r"Des\svoix",
+                 r"Some\s[hH]on\.\s",
+                 r"M\.\s",
+                 r"Acting\s",
+                 r"L.hon\.?\s",
+                 r"Le\strès\s",
+                 r"Assistant\s",
+                 r"Mme\.?\s",
+                 r"Mlle\.?\s",
+                 r"Dr\.?\s"]
+_r_person_label = re.compile(r"^(" + r"|".join(PERSON_LABELS) + r")", re.UNICODE)
+_r_honorific = re.compile(
+    r'^(Mr\.?\s|Mrs\.?\s|Ms\.?\s|Miss\.?\s|Hon\.?\s|Right\sHon\.\s|M\.\s|L.hon\.?\s|Mme\.?\s|Mlle\.?\s|Dr\.?\s)', re.UNICODE)
 _r_parens = re.compile(r'\s*\(.+\)\s*')
 _r_indeterminate = re.compile(r'^(An?|Une)\s')
 

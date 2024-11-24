@@ -11,7 +11,8 @@ from parliament.activity import utils as activity
 
 logger = logging.getLogger(__name__)
 
-GOOGLE_NEWS_URL = 'https://news.google.ca/news?pz=1&cf=all&ned=ca&hl=en&as_maxm=3&q=%s&as_qdr=a&as_drrb=q&as_mind=25&as_minm=2&cf=all&as_maxd=27&scoring=n&output=rss'
+GOOGLE_NEWS_URL = ('https://news.google.ca/news?pz=1&cf=all&ned=ca&hl=en&as_maxm=3&q=%s&as_qdr=a&as_drrb=q'
+                   '&as_mind=25&as_minm=2&cf=all&as_maxd=27&scoring=n&output=rss')
 
 
 def get_feed(pol):

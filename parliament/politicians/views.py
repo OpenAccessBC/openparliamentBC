@@ -318,7 +318,9 @@ class PoliticianActivityFeed(Feed):
         return activity.guid
 
     def item_description(self, item):
-        payload = r_excerpt.sub('''<br><span style="display: block; border-left: 1px dotted #AAAAAA; margin-left: 2em; padding-left: 1em; font-style: italic; margin-top: 5px;">''', item.payload_wrapped())
+        payload = r_excerpt.sub(
+            ('<br><span style="display: block; border-left: 1px dotted #AAAAAA; margin-left: 2em; '
+             'padding-left: 1em; font-style: italic; margin-top: 5px;">'), item.payload_wrapped())
         payload = r_title.sub('', payload)
         return payload
 

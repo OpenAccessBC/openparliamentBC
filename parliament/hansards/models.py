@@ -325,7 +325,8 @@ class Statement(models.Model):
     content_fr: models.TextField = models.TextField(blank=True)
     sequence: models.IntegerField = models.IntegerField(db_index=True)
     wordcount: models.IntegerField = models.IntegerField()
-    wordcount_en: models.PositiveSmallIntegerField = models.PositiveSmallIntegerField(null=True, help_text="# words originally spoken in English")
+    wordcount_en: models.PositiveSmallIntegerField = models.PositiveSmallIntegerField(
+        null=True, help_text="# words originally spoken in English")
 
     procedural: models.BooleanField = models.BooleanField(default=False, db_index=True)
     written_question: models.CharField = models.CharField(max_length=1, blank=True, choices=(

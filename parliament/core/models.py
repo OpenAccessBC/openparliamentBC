@@ -215,7 +215,9 @@ class PoliticianManager(models.Manager):
                     pols = pols.filter(electedmember__riding=riding)
                 if len(pols) > 1:
                     if riding:
-                        raise Exception("DATA ERROR: There appear to be two politicians with the same last name elected to the same riding from the same session... %s %s %s" % (lastname, session, riding))
+                        raise Exception(("DATA ERROR: There appear to be two politicians with the same last name "
+                                         "elected to the same riding from the same session... %s %s %s") %
+                                        (lastname, session, riding))
                 elif len(pols) == 1:
                     # yes!
                     pol = pols[0]

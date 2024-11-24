@@ -219,10 +219,12 @@ def _scrape_ourcommons_row(row):
     #   Fax: xxx-xxx-xxx
     # </p>
     offices = [{'type': 'legislature'}]
-    phone_el = mp_page.xpath(
-        './/h4[contains(., "Hill Office")]/../p[contains(., "Telephone")]|.//h4[contains(., "Hill Office")]/../p[contains(., "Téléphone :")]')
-    fax_el = mp_page.xpath(
-        './/h4[contains(., "Hill Office")]/../p[contains(., "Fax")]|.//h4[contains(., "Hill Office")]/../p[contains(., "Télécopieur :")]')
+    phone_el = mp_page.xpath("|".join([
+        './/h4[contains(., "Hill Office")]/../p[contains(., "Telephone")]',
+        './/h4[contains(., "Hill Office")]/../p[contains(., "Téléphone :")]']))
+    fax_el = mp_page.xpath("|".join([
+        './/h4[contains(., "Hill Office")]/../p[contains(., "Fax")]',
+        './/h4[contains(., "Hill Office")]/../p[contains(., "Télécopieur :")]']))
 
     if phone_el:
         phone = phone_el[0].text_content().strip().splitlines()

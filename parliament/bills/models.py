@@ -94,7 +94,8 @@ class Bill(models.Model):
         'ProForma': 'Not a real bill (bills C-1 and S-1 are weird procedural relics)',
         'SenateBillWaitingHouse': 'Senate bill, now waiting to be considered in the House',
         'HouseBillWaitingSenate': 'Bill passed the House, now waiting to be considered in the Senate',
-        'OutsideOrderPrecedence': "Outside the Order of Precedence (a private member's bill that hasn't yet won the draw that determines which private member's bills can be debated)",
+        'OutsideOrderPrecedence': ("Outside the Order of Precedence (a private member's bill that hasn't yet won the "
+                                   "draw that determines which private member's bills can be debated)"),
         'SenConsideringHouseAmendments': 'At consideration in the Senate of amendments made by the House of Commons',
         'HouseConsideringSenAmendments': 'At consideration in the House of Commons of amendments made by the Senate',
     }
