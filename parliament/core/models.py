@@ -4,8 +4,8 @@ import datetime
 import logging
 import re
 from io import BytesIO
+from typing import Dict, Optional
 from urllib.parse import urljoin
-from typing import Optional
 
 import lxml.etree
 import lxml.html
@@ -392,7 +392,7 @@ class Politician(Person):
 
     @property
     @memoize_property
-    def latest_member(self):
+    def latest_member(self) -> "ElectedMember | None":
         """If this politician has been an MP, returns the most recent ElectedMember object.
         Returns None if the politician has never been elected."""
         try:
@@ -529,9 +529,10 @@ class Politician(Person):
         # Only index politicians who've been elected
         return bool(self.latest_member)
 
-    def search_dict(self):
+    def search_dict(self) -> Dict[str, str]:
         member = self.latest_member
-        d = {
+        assert member is not None
+        d: Dict[str, str] = {
             'text': '',
             'politician': self.name,
             'party': member.party.short_name,

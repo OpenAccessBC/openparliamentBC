@@ -18,8 +18,8 @@ from parliament.core.utils import is_ajax
 from parliament.hansards.models import Statement
 
 
-def bill_pk_redirect(request, bill_id):
-    bill = get_object_or_404(Bill, pk=bill_id)
+def bill_pk_redirect(request, bill_id) -> HttpResponsePermanentRedirect:
+    bill: Bill = get_object_or_404(Bill, pk=bill_id)
     return HttpResponsePermanentRedirect(
         reverse('bill', kwargs={'session_id': bill.get_session().id, 'bill_number': bill.number}))
 

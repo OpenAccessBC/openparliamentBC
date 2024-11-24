@@ -417,10 +417,12 @@ def pol_urls_to_ids():
         if 'Item' in pol.parlpage and 'parlinfo_id' not in pol.info():
             print(pol.parlpage)
             match = re.search(r'Item=([A-Z0-9-]+)', pol.parlpage)
+            assert match is not None
             pol.set_info('parlinfo_id', match.group(1))
         if 'Key' in pol.parlpage and 'parl_id' not in pol.info():
             print(pol.parlpage)
             match = re.search(r'Key=(\d+)', pol.parlpage)
+            assert match is not None
             pol.set_info('parl_id', match.group(1))
 
 

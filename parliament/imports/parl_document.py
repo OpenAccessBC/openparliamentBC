@@ -115,7 +115,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
     fr_statements = dict()
     missing_id_count = 0
 
-    def _get_paragraph_id(p):
+    def _get_paragraph_id(p) -> int:
         return int(_r_paragraph_id.match(p).group('id'))
 
     def _get_paragraphs_and_ids(content):

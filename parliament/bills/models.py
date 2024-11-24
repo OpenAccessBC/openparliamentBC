@@ -220,7 +220,7 @@ class Bill(models.Model):
                 variety='billsponsor',
             )
 
-    def get_session(self):
+    def get_session(self) -> Session | None:
         """Returns the most recent session this bill belongs to."""
         try:
             self.__dict__['session'] = s = self.sessions.all().order_by('-start')[0]
@@ -228,7 +228,7 @@ class Bill(models.Model):
         except (IndexError, ValueError):
             return getattr(self, '_session', None)
 
-    def set_temporary_session(self, session):
+    def set_temporary_session(self, session: Session) -> None:
         """To deal with tricky save logic, saves a session to the object for cases
         when self.sessions.all() won't get exist in the DB."""
         self._session = session

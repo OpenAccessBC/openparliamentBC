@@ -173,7 +173,7 @@ def _generate_query_for_politician(pol):
 
 @disable_on_readonly_db
 def politician_hansard_subscribe(request, signed_key):
-    ctx = {
+    ctx: Dict[str, bool | Politician | str] = {
         'key_error': False
     }
     try:

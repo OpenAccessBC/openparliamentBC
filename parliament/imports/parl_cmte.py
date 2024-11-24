@@ -82,9 +82,11 @@ def import_committee_list(session=None):
             sub_names_fr = [''] * len(sub_names)
         for sub, sub_fr in zip(sub_names, sub_names_fr):
             match = re.search(r'^(.+) \(([A-Z0-9]{3,5})\)$', sub.text_content())
+            assert match is not None
             (name_en, acronym) = match.groups()
             if sub_fr:
                 match = re.search(r'^(.+) \(([A-Z0-9]{3,5})\)$', sub_fr)
+                assert match is not None
                 (name_fr, acronym_fr) = match.groups()
                 assert acronym == acronym_fr
             else:
@@ -144,7 +146,7 @@ def import_committee_meetings(committee, session):
     resp.raise_for_status()
     root = lxml.html.fromstring(resp.text)
     for mtg_row in root.cssselect('#meeting-accordion .accordion-item'):
-        source_id_str = mtg_row.get('id')
+        source_id_str = mtg_row.get('id', '')
         assert source_id_str.startswith('meeting-item-')
         source_id = int(source_id_str.replace('meeting-item-', '').strip())
 
@@ -203,6 +205,7 @@ def import_committee_meetings(committee, session):
         match = re.search(
             r'(\d\d?):(\d\d) ([ap]\.?m\.?)(?: - (\d\d?):(\d\d) ([ap]\.?m\.?))?\s\(',
             timestring, re.UNICODE)
+        assert match is not None
         meeting.start_time = datetime.time(_12hr(match.group(1), match.group(3)), int(match.group(2)))
         if match.group(4):
             meeting.end_time = datetime.time(_12hr(match.group(4), match.group(6)), int(match.group(5)))

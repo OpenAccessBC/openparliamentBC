@@ -1,6 +1,7 @@
 import datetime
 import random
 import string
+from typing import Dict
 
 from django.conf import settings
 from django.db import models
@@ -203,7 +204,7 @@ class CommitteeMeeting(models.Model):
         return "%s on %s" % (self.committee.short_name, self.date)
 
     def to_api_dict(self, representation):
-        d = dict(
+        d: Dict[str, str | bool | None] = dict(
             date=str(self.date),
             number=self.number,
             in_camera=self.in_camera,
