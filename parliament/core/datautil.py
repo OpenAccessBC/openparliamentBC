@@ -40,7 +40,7 @@ def load_pol_pic(pol):
     # test = urllib.request.urlopen(imgurl)
     content = urllib.request.urlretrieve(imgurl_joined)
     # filename = urlparse.urlparse(imgurl).path.split('/')[-1]
-    pol.headshot.save(str(pol.id) + ".jpg", File(open(content[0])), save=True)
+    pol.headshot.save(str(pol.id) + ".jpg", File(open(content[0], encoding="utf-8")), save=True)
     pol.save()
 
 

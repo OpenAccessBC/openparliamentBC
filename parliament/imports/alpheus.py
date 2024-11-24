@@ -775,7 +775,7 @@ def main():
     (options, _) = optparser.parse_args()
     try:
         if options.filename:
-            document = parse_file(open(options.filename))
+            document = parse_file(open(options.filename, encoding="utf-8"))
         elif options.docid:
             document = fetch_and_parse(options.docid, options.language[0].upper())
         else:
