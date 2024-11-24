@@ -19,7 +19,7 @@ def heshe(pol):
     match pol.gender:
         case 'F': return 'She'
         case 'M': return 'He'
-        case _: return 'He/she'
+        case _: return 'They'
 
 
 @register.filter(name='hisher')
