@@ -52,7 +52,8 @@ class APIView(View):
     def get_api_format(self, request):
         if request.GET.get('format') in self._formats_list:
             return request.GET['format']
-        elif request.GET.get('format'):
+
+        if request.GET.get('format'):
             return None
 
         mimetype = MIMEAccept(request.META.get('HTTP_ACCEPT', 'application/json')).best_match(

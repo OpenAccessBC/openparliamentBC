@@ -135,8 +135,8 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
             pid = _get_paragraph_id(match.group(0))
             if pid:
                 return fr_paragraphs[pid]
-            else:
-                return match.group(0)
+
+            return match.group(0)
         except KeyError:
             logger.error("Paragraph ID %s not found in French for %s", match.group(0), document)
             return match.group(0)

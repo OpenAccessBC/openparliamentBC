@@ -87,18 +87,19 @@ def twitter_api_request(endpoint: str, params: Optional[Dict[str, Any]] = None) 
         settings.TWITTER_OAUTH['token_secret'],
     )
     resp: requests.Response = requests.get(url, auth=auth, params=params, timeout=5)
-    if resp.status_code == 200:
-        return resp.json()
-    elif resp.status_code == 429:
-        # We're rate-limited
-        limit_expires = int(resp.headers['x-rate-limit-reset'])
-        time.sleep(max(limit_expires - time.time(), 10))
-        return twitter_api_request(endpoint, params)
-    elif resp.status_code == 404:
-        raise ObjectDoesNotExist
-    elif resp.status_code == 401:
-        # Return empty list for protected accounts
-        return []
+    match resp.status_code:
+        case 200:
+            return resp.json()
+        case 429:
+            # We're rate-limited
+            limit_expires = int(resp.headers['x-rate-limit-reset'])
+            time.sleep(max(limit_expires - time.time(), 10))
+            return twitter_api_request(endpoint, params)
+        case 404:
+            raise ObjectDoesNotExist
+        case 401:
+            # Return empty list for protected accounts
+            return []
 
     resp.raise_for_status()
     return None

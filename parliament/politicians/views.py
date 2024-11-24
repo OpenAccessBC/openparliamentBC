@@ -38,8 +38,8 @@ class CurrentMPView(ModelListView):
         def inner(qs, *args, **kwargs):
             if qs.model == Politician:
                 return APIFilters.dbfield(field_name)(qs, *args, **kwargs)
-            else:
-                return APIFilters.dbfield('politician__' + field_name)(qs, *args, **kwargs)
+
+            return APIFilters.dbfield('politician__' + field_name)(qs, *args, **kwargs)
         inner.help = help
         return inner
 
@@ -69,8 +69,8 @@ class CurrentMPView(ModelListView):
                 current_riding={"province": obj.riding.province, "name": {"en": obj.riding.dashed_name}},
                 image=obj.politician.headshot.url if obj.politician.headshot else None,
             )
-        else:
-            return super(CurrentMPView, self).object_to_dict(obj)
+
+        return super(CurrentMPView, self).object_to_dict(obj)
 
     def get_html(self, request):
         t = loader.get_template('politicians/electedmember_list.html')
@@ -123,8 +123,8 @@ class PoliticianView(ModelDetailView):
     def get_object(self, request, pol_id=None, pol_slug=None):
         if pol_slug:
             return get_object_or_404(Politician, slug=pol_slug)
-        else:
-            return get_object_or_404(Politician, pk=pol_id)
+
+        return get_object_or_404(Politician, pk=pol_id)
 
     def get_related_resources(self, request, obj, result):
         pol_query = '?' + urlencode({'politician': obj.identifier})
@@ -310,9 +310,9 @@ class PoliticianActivityFeed(Feed):
         match = r_link.search(item.payload)
         if match:
             return match.group(1)
-        else:
-            # FIXME include links in activity model?
-            return ''
+
+        # FIXME include links in activity model?
+        return ''
 
     def item_guid(self, activity):
         return activity.guid

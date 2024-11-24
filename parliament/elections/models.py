@@ -19,8 +19,8 @@ class Election (models.Model):
     def __str__(self):
         if self.byelection:
             return "Byelection of %s" % self.date
-        else:
-            return "General election of %s" % self.date
+
+        return "General election of %s" % self.date
 
     def calculate_vote_percentages(self):
         candidacies = self.candidacy_set.all()

@@ -23,11 +23,11 @@ def time_to_datetime(hour, minute, date):
     """
     if hour < 24:
         return datetime.datetime.combine(date, datetime.time(hour=hour, minute=minute))
-    else:
-        return datetime.datetime.combine(
-            date + datetime.timedelta(days=hour // 24),
-            datetime.time(hour=hour % 24, minute=minute)
-        )
+
+    return datetime.datetime.combine(
+        date + datetime.timedelta(days=hour // 24),
+        datetime.time(hour=hour % 24, minute=minute)
+    )
 
 
 def removeAccents(s: str) -> str:
@@ -79,14 +79,10 @@ def normalizeName(s):
 
 
 def munge_date(date):
-    if date.count('0000') > 0:
+    if date.count('0000') > 0 or date == '' or date == '&nbsp':
         return None
-    elif date == '':
-        return None
-    elif date == '&nbsp;':
-        return None
-    else:
-        return date
+
+    return date
 
 
 def munge_decimal(num):
@@ -100,16 +96,16 @@ def munge_int(num):
     num = re.sub(r'\D', '', num)
     if num == '':
         return None
-    else:
-        return int(num)
+
+    return int(num)
 
 
 def munge_time(time):
     match = re.search(r'(\d\d:\d\d:\d\d)', time)
     if match:
         return match.group(1)
-    else:
-        return None
+
+    return None
 
 
 def munge_postcode(code):

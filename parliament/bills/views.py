@@ -351,12 +351,12 @@ class BillFeed(Feed):
     def item_title(self, item):
         if isinstance(item, VoteQuestion):
             return "Vote #%s (%s)" % (item.number, item.get_result_display())
-        else:
-            return "%(name)s (%(party)s%(date)s)" % {
-                'name': item.name_info['display_name'],
-                'party': item.member.party.short_name + '; ' if item.member else '',
-                'date': format_date(item.time, "F jS"),
-            }
+
+        return "%(name)s (%(party)s%(date)s)" % {
+            'name': item.name_info['display_name'],
+            'party': item.member.party.short_name + '; ' if item.member else '',
+            'date': format_date(item.time, "F jS"),
+        }
 
     def item_link(self, item):
         return item.get_absolute_url()
@@ -364,8 +364,8 @@ class BillFeed(Feed):
     def item_description(self, item):
         if isinstance(item, Statement):
             return item.text_html()
-        else:
-            return item.description
+
+        return item.description
 
     def item_pubdate(self, item):
         return datetime.datetime(item.date.year, item.date.month, item.date.day)

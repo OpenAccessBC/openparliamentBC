@@ -749,15 +749,16 @@ class ElectedMemberManager(models.Manager):
     def get_by_pol(self, politician, date=None, session=None):
         if not date and not session:
             raise Exception("Provide either a date or a session to get_by_pol.")
+
         if date:
             return self.on_date(date).get(politician=politician)
-        else:
-            # In the case of floor crossers, there may be more than one ElectedMember
-            # We haven't been given a date, so just return the first EM
-            qs = self.get_queryset().filter(politician=politician, sessions=session).order_by('-start_date')
-            if len(qs) == 0:
-                raise ElectedMember.DoesNotExist("No elected member for %s, session %s" % (politician, session))
-            return qs[0]
+
+        # In the case of floor crossers, there may be more than one ElectedMember
+        # We haven't been given a date, so just return the first EM
+        qs = self.get_queryset().filter(politician=politician, sessions=session).order_by('-start_date')
+        if len(qs) == 0:
+            raise ElectedMember.DoesNotExist("No elected member for %s, session %s" % (politician, session))
+        return qs[0]
 
 
 class ElectedMember(models.Model):
@@ -775,9 +776,9 @@ class ElectedMember(models.Model):
         if self.end_date:
             return ("%s (%s) was the member from %s from %s to %s"
                     % (self.politician, self.party, self.riding, self.start_date, self.end_date))
-        else:
-            return ("%s (%s) is the member from %s (since %s)"
-                    % (self.politician, self.party, self.riding, self.start_date))
+
+        return ("%s (%s) is the member from %s (since %s)"
+                % (self.politician, self.party, self.riding, self.start_date))
 
     def to_api_dict(self, representation, include_politician=True):
         d = dict(

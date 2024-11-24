@@ -27,9 +27,9 @@ def haiku(request, haiku_id=None):
             json.dumps([[haiku.line1, haiku.line2, haiku.line3, haiku.attribution_url, haiku.attribution, haiku.id]
                         for haiku in haikus]),
             content_type="application/json")
-    else:
-        t = loader.get_template("haiku/haiku.html")
-        c = {
-            'haiku': haikus[0]
-        }
-        return HttpResponse(t.render(c, request))
+
+    t = loader.get_template("haiku/haiku.html")
+    c = {
+        'haiku': haikus[0]
+    }
+    return HttpResponse(t.render(c, request))

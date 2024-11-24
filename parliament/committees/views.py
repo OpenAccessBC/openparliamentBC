@@ -188,11 +188,11 @@ class CommitteeMeetingView(ModelDetailView):
         document = meeting.evidence
         if document:
             return document_view(request, document, meeting=meeting, slug=slug)
-        else:
-            return render(request, "committees/meeting.html", {
-                'meeting': meeting,
-                'committee': meeting.committee
-            })
+
+        return render(request, "committees/meeting.html", {
+            'meeting': meeting,
+            'committee': meeting.committee
+        })
 
 
 committee_meeting = CommitteeMeetingView.as_view()

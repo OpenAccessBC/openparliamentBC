@@ -102,10 +102,11 @@ def _get_housemet_time(number, ampm):
     else:
         hour = number
         minute = '00'
+
     if ampm:
         return datetime.datetime.strptime("%s:%s %s" % (hour, minute, ampm), "%I:%M %p").time()
-    else:
-        return datetime.time(hour=int(hour), minute=int(minute))
+
+    return datetime.time(hour=int(hour), minute=int(minute))
 
 
 def _time_to_datetime(hour, minute, date):
@@ -115,11 +116,11 @@ def _time_to_datetime(hour, minute, date):
     """
     if hour < 24:
         return datetime.datetime.combine(date, datetime.time(hour=hour, minute=minute))
-    else:
-        return datetime.datetime.combine(
-            date + datetime.timedelta(days=hour // 24),
-            datetime.time(hour=hour % 24, minute=minute)
-        )
+
+    return datetime.datetime.combine(
+        date + datetime.timedelta(days=hour // 24),
+        datetime.time(hour=hour % 24, minute=minute)
+    )
 
 
 def _strip_person_name(n):
@@ -362,8 +363,8 @@ class ParseHandler():
         """Do we know who's speaking the current text?"""
         if self.current_statement:
             return bool(self.current_statement.meta.get('person_attribution'))
-        else:
-            return bool(self.one_time_attributes.get('person_attribution'))
+
+        return bool(self.one_time_attributes.get('person_attribution'))
 
     def handle_ParaText(self, el, openclose, procedural=None):
         if openclose == TAG_OPEN:

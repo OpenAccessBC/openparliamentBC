@@ -158,26 +158,27 @@ class SpeechesView(ModelListView):
         u = val.strip('/').split('/')
         if len(u) < 4:
             raise BadRequest("Invalid document URL")
+
         if u[-4] == 'debates':
             # /debates/2013/2/15/
             try:
                 date = datetime.date(int(u[-3]), int(u[-2]), int(u[-1]))
             except ValueError:
                 raise BadRequest("Invalid document URL")
-            return qs.filter(
-                document__document_type='D',
-                document__date=date
-            ).order_by('sequence')
-        elif u[-4] == 'committees':
+
+            return qs.filter(document__document_type='D', document__date=date).order_by('sequence')
+
+        if u[-4] == 'committees':
             # /commmittees/national-defence/41-1/63/
             try:
                 meeting = CommitteeMeeting.objects.get(
                     committee__slug=u[-3], session=u[-2], number=u[-1])
             except (ValueError, CommitteeMeeting.DoesNotExist):
                 raise BadRequest("Invalid meeting URL")
+
             return qs.filter(document=meeting.evidence_id).order_by('sequence')
-        else:
-            raise BadRequest("Invalid document URL")
+
+        raise BadRequest("Invalid document URL")
 
     document_filter.help = "the URL of the debate or committee meeting"
 

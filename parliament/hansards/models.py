@@ -83,19 +83,21 @@ class Document(models.Model):
     def __str__(self):
         if self.document_type == self.DEBATE:
             return "Hansard #%s for %s (#%s/#%s)" % (self.number, self.date, self.id, self.source_id)
-        else:
-            return "%s evidence for %s (#%s/#%s)" % (
-                self.committeemeeting.committee.short_name, self.date, self.id, self.source_id)
+
+        return "%s evidence for %s (#%s/#%s)" % (
+            self.committeemeeting.committee.short_name, self.date, self.id, self.source_id)
 
     @memoize_property
     def get_absolute_url(self):
-        if self.document_type == self.DEBATE:
-            return reverse('debate', kwargs={
-                'year': self.date.year, 'month': self.date.month, 'day': self.date.day
-            })
-        elif self.document_type == self.EVIDENCE:
-            return self.committeemeeting.get_absolute_url()
-        return None
+        match self.document_type:
+            case self.DEBATE:
+                return reverse('debate', kwargs={
+                    'year': self.date.year, 'month': self.date.month, 'day': self.date.day
+                })
+            case self.EVIDENCE:
+                return self.committeemeeting.get_absolute_url()
+            case _:
+                return None
 
     def get_text_analysis_url(self):
         # Let's violate DRY!
@@ -127,15 +129,17 @@ class Document(models.Model):
     @property
     @memoize_property
     def source_url(self):
-        if self.document_type == self.DEBATE:
-            return "https://www.ourcommons.ca/DocumentViewer/%(lang)s/%(sessid)s/house/sitting-%(sitting)s/hansard" % {
-                'lang': 'en',
-                'sessid': self.session_id,
-                'sitting': self.number
-            }
-        elif self.document_type == self.EVIDENCE:
-            return self.committeemeeting.evidence_url
-        return None
+        match self.document_type:
+            case self.DEBATE:
+                return "https://www.ourcommons.ca/DocumentViewer/%(lang)s/%(sessid)s/house/sitting-%(sitting)s/hansard" % {
+                    'lang': 'en',
+                    'sessid': self.session_id,
+                    'sitting': self.number
+                }
+            case self.EVIDENCE:
+                return self.committeemeeting.evidence_url
+            case _:
+                return None
 
     def _topics(self, lst):
         topics = []
@@ -261,8 +265,8 @@ class Document(models.Model):
         filename = self.get_filename(language)
         if hasattr(settings, 'HANSARD_CACHE_DIR'):
             return os.path.join(settings.HANSARD_CACHE_DIR, filename)
-        else:
-            return os.path.join(settings.MEDIA_ROOT, 'document_cache', filename)
+
+        return os.path.join(settings.MEDIA_ROOT, 'document_cache', filename)
 
     def _save_file(self, path, content):
         out = open(path, 'wb')

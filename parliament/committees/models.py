@@ -81,8 +81,8 @@ class Committee(models.Model):
     def title(self):
         if 'committee' in self.name_en.lower():
             return self.name
-        else:
-            return self.name + ' Committee'
+
+        return self.name + ' Committee'
 
     def to_api_dict(self, representation):
         d = dict(
