@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Optional
+from typing import Any, Optional
 
 import requests
 from django.db import transaction
@@ -122,7 +122,7 @@ def import_bill_by_id(legisinfo_id):
     return _import_bill(bd, session)
 
 
-def _update(obj, field, value):
+def _update(obj: Bill, field: str, value: Any):
     if value is None:
         return
     if not isinstance(value, datetime.date):

@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
             name='LoginToken',
             fields=[
                 ('token', models.CharField(
+                    # pylint: disable=protected-access
                     default=parliament.accounts.models._random_token,
                     max_length=40,
                     serialize=False,

@@ -9,6 +9,7 @@ import logging
 import re
 import sys
 from difflib import SequenceMatcher
+from typing import AnyStr, List
 from xml.sax.saxutils import quoteattr
 
 import requests
@@ -63,7 +64,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
     document.number = pdoc_en.meta['document_number']
     document.public = True
 
-    statements = []
+    statements: List[Statement] = []
 
     for pstate in pdoc_en.statements:
         s = Statement(
@@ -259,7 +260,7 @@ def _align_sequences(new_statements, old_statements):
     return mappings
 
 
-def _process_related_links(content, statement):
+def _process_related_links(content: AnyStr, statement: Statement):
     return re.sub(
         r'<a class="related_link (\w+)" ([^>]+)>(.*?)</a>',
         lambda m: _process_related_link(m, statement),

@@ -66,7 +66,13 @@ class SearchQuery(BaseSearchQuery):
     DATE_FILTER_RE = re.compile(
         r'^(?P<fy>\d{4})-(?P<fm>\d\d?)(?:-(?P<fd>\d\d?))?(?: to (?P<ty>\d{4})-(?P<tm>\d\d?)(?:-(?P<td>\d\d?))?)?')
 
-    def __init__(self, query, start=0, limit=15, user_params={}, facet=False, full_text=False, solr_params={}):
+    def __init__(self, query, start=0, limit=15, user_params=None, facet=False, full_text=False, solr_params=None):
+        if user_params is None:
+            user_params = {}
+
+        if solr_params is None:
+            solr_params = {}
+
         super(SearchQuery, self).__init__(query)
         self.start = start  # What offset to start from
         self.limit = limit  # How many results to return

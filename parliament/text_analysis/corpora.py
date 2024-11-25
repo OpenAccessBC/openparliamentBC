@@ -19,7 +19,10 @@ def load_background_model(corpus_name, n):
         return pickle.load(f)
 
 
-def generate_background_models(corpus_name, statements, ngram_lengths=[1, 2, 3]):
+def generate_background_models(corpus_name, statements, ngram_lengths=None):
+    if ngram_lengths is None:
+        ngram_lengths = [1, 2, 3]
+
     for n in ngram_lengths:
         bg = FrequencyModel.from_statement_qs(statements, ngram=n, min_count=5 if n < 3 else 3)
         with open(_get_background_model_path(corpus_name, n), 'wb') as f:

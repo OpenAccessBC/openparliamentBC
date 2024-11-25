@@ -169,8 +169,12 @@ class APIFilters():
     numeric_filters = ['exact', 'gt', 'gte', 'lt', 'lte', 'isnull', 'range']
 
     @staticmethod
-    def dbfield(field_name=None, filter_types=['exact'], help_txt=None):
+    def dbfield(field_name=None, filter_types=None, help_txt=None):
         """Returns a filter function for a standard database query."""
+
+        if filter_types is None:
+            filter_types = ["exact"]
+
         def inner(qs, view, filter_name, filter_extra, val):
             if not filter_extra:
                 filter_extra = 'exact'
