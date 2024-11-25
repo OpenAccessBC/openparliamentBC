@@ -236,13 +236,13 @@ class Document(models.Model):
                         topics[statement.topic][2] = statement.get_absolute_url()
                 else:
                     topics[statement.topic] = [statement.slug, statement.text_plain(), statement.get_absolute_url()]
-            for topic in topics:
+            for topic, topic_info in topics.items():
                 if self.document_type == Document.DEBATE:
                     activity.save_activity({
                         'topic': topic,
-                        'url': topics[topic][2],
-                        'text': topics[topic][1],
-                    }, politician=pol, date=self.date, guid='statement_%s' % topics[topic][2], variety='statement')
+                        'url': topic_info[2],
+                        'text': topic_info[1],
+                    }, politician=pol, date=self.date, guid='statement_%s' % topic_info[2], variety='statement')
                 elif self.document_type == Document.EVIDENCE:
                     assert len(topics) == 1
                     if wordcount < 80:

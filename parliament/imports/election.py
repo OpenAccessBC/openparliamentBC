@@ -34,7 +34,8 @@ def import_ec_results(election, url="http://enr.elections.ca/DownloadResults.asp
     if len(validated_results) > len(preliminary_results):
         raise Exception("Huh?")
 
-    for edid in preliminary_results:
+    # FIXME: should this iterate all edids, not just those that are prelim?
+    for edid in list(preliminary_results.keys()):
         if edid in validated_results:
             lines = validated_results[edid]
         elif allow_preliminary:

@@ -163,8 +163,8 @@ class SearchQuery(BaseSearchQuery):
     @memoize_property
     def validated_user_params(self):
         p = {}
-        for opt in self.ALLOWABLE_OPTIONS:
-            if opt in self.user_params and self.user_params[opt] in self.ALLOWABLE_OPTIONS[opt]:
+        for opt, choices in self.ALLOWABLE_OPTIONS.items():
+            if opt in self.user_params and self.user_params[opt] in choices:
                 p[opt] = self.user_params[opt]
         return p
 
