@@ -111,8 +111,8 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
 
     _r_paragraphs = re.compile(r'<p[^>]* data-HoCid=.+?</p>')
     _r_paragraph_id = re.compile(r'<p[^>]* data-HoCid="(?P<id>\d+)"')
-    fr_paragraphs = dict()
-    fr_statements = dict()
+    fr_paragraphs = {}
+    fr_statements = {}
     missing_id_count = 0
 
     def _get_paragraph_id(p) -> int:

@@ -61,15 +61,15 @@ def search(request):
             user_params=request.GET,
             facet=True)
 
-        ctx = dict(
-            query=query,
-            pagenum=pagenum,
-            discontinuity=query_obj.discontinuity,
-            chart_years=[c[0] for c in query_obj.date_counts],
-            chart_values=[c[1] for c in query_obj.date_counts],
-            facet_fields=query_obj.facet_fields,
-            page=SearchPaginator(query_obj.documents, query_obj.hits, pagenum, PER_PAGE)
-        )
+        ctx = {
+            "query": query,
+            "pagenum": pagenum,
+            "discontinuity": query_obj.discontinuity,
+            "chart_years": [c[0] for c in query_obj.date_counts],
+            "chart_values": [c[1] for c in query_obj.date_counts],
+            "facet_fields": query_obj.facet_fields,
+            "page": SearchPaginator(query_obj.documents, query_obj.hits, pagenum, PER_PAGE)
+        }
 
         ctx.update(query_obj.validated_user_params)
 

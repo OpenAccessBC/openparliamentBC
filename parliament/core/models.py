@@ -325,9 +325,8 @@ class Politician(Person):
     objects = PoliticianManager()
 
     def to_api_dict(self, representation):
-        d = dict(
-            name=self.name
-        )
+        d = {"name": self.name}
+
         if representation == 'detail':
             info = self.info_multivalued()
             members = list(self.electedmember_set.all().select_related('party', 'riding').order_by('-end_date'))
@@ -783,21 +782,21 @@ class ElectedMember(models.Model):
                 % (self.politician, self.party, self.riding, self.start_date))
 
     def to_api_dict(self, representation, include_politician=True):
-        d = dict(
-            url=self.get_absolute_url(),
-            start_date=str(self.start_date),
-            end_date=str(self.end_date) if self.end_date else None,
-            party={
+        d = {
+            "url": self.get_absolute_url(),
+            "start_date": str(self.start_date),
+            "end_date": str(self.end_date) if self.end_date else None,
+            "party": {
                 'name': {'en': self.party.name_en},
                 'short_name': {'en': self.party.short_name_en}
             },
-            label={'en': "%s MP for %s" % (self.party.short_name, self.riding.dashed_name)},
-            riding={
+            "label": {'en': "%s MP for %s" % (self.party.short_name, self.riding.dashed_name)},
+            "riding": {
                 'name': {'en': self.riding.dashed_name},
                 'province': self.riding.province,
                 'id': self.riding.edid,
             }
-        )
+        }
         if include_politician:
             d['politician_url'] = self.politician.get_absolute_url()
         return d

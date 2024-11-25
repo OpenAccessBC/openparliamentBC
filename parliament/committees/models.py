@@ -85,12 +85,12 @@ class Committee(models.Model):
         return self.name + ' Committee'
 
     def to_api_dict(self, representation):
-        d = dict(
-            name={'en': self.name_en, 'fr': self.name_fr},
-            short_name={'en': self.short_name_en, 'fr': self.short_name_fr},
-            slug=self.slug,
-            parent_url=self.parent.get_absolute_url() if self.parent else None,
-        )
+        d = {
+            "name": {'en': self.name_en, 'fr': self.name_fr},
+            "short_name": {'en': self.short_name_en, 'fr': self.short_name_fr},
+            "slug": self.slug,
+            "parent_url": self.parent.get_absolute_url() if self.parent else None,
+        }
         if representation == 'detail':
             d['sessions'] = [
                 {
@@ -204,13 +204,13 @@ class CommitteeMeeting(models.Model):
         return "%s on %s" % (self.committee.short_name, self.date)
 
     def to_api_dict(self, representation):
-        d: Dict[str, str | bool | None] = dict(
-            date=str(self.date),
-            number=self.number,
-            in_camera=self.in_camera,
-            has_evidence=bool(self.evidence_id),
-            committee_url=self.committee.get_absolute_url(),
-        )
+        d: Dict[str, str | bool | None] = {
+            "date": str(self.date),
+            "number": self.number,
+            "in_camera": self.in_camera,
+            "has_evidence": bool(self.evidence_id),
+            "committee_url": self.committee.get_absolute_url(),
+        }
         if representation == 'detail':
             d.update(
                 start_time=str(self.start_time),

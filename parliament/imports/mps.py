@@ -248,7 +248,7 @@ def _scrape_ourcommons_row(row):
         address = address.text_content().strip().splitlines()
         address = [a.strip() for a in address]
 
-        o = dict(postal='\n'.join(address), type='constituency')
+        o = {"postal": '\n'.join(address), "type": 'constituency'}
 
         phone_and_fax_el = constituency_office_el.xpath(
             './p[contains(., "Telephone")]|./p[contains(., "Téléphone")]')

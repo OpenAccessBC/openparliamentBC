@@ -148,15 +148,15 @@ class APIView(View):
             (f, getattr(self.filters[f], 'help', ''))
             for f in sorted(getattr(self, 'filters', {}).keys())
         ]
-        ctx = dict(
-            json=content,
-            title=title,
-            filters=filters,
-            resource_name=resource_name,
-            resource_type=self.resource_type,
-            raw_json_url='?' + params.urlencode(),
-            notes=getattr(self, 'api_notes', None)
-        )
+        ctx = {
+            "json": content,
+            "title": title,
+            "filters": filters,
+            "resource_name": resource_name,
+            "resource_type": self.resource_type,
+            "raw_json_url": '?' + params.urlencode(),
+            "notes": getattr(self, 'api_notes', None)
+        }
         if hasattr(self, 'get_html'):
             ctx['main_site_url'] = settings.SITE_URL + request.path
         return render(request, 'api/browser.html', ctx)
@@ -276,10 +276,10 @@ class ModelListView(APIView):
 
         paginator = APIPaginator(request, qs, limit=self.default_limit)
         (objects, page_data) = paginator.page()
-        result = dict(
-            objects=[self.object_to_dict(obj) for obj in objects],
-            pagination=page_data
-        )
+        result = {
+            "objects": [self.object_to_dict(obj) for obj in objects],
+            "pagination": page_data
+        }
         related: Dict[str, str] | None = self.get_related_resources(request, qs, result)
         if related:
             result['related'] = related

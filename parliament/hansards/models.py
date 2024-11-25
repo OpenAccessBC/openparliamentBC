@@ -108,11 +108,11 @@ class Document(models.Model):
         return base_url + 'text-analysis/'
 
     def to_api_dict(self, representation):
-        d = dict(
-            date=str(self.date) if self.date else None,
-            number=self.number,
-            most_frequent_word={'en': self.most_frequent_word},
-        )
+        d = {
+            "date": str(self.date) if self.date else None,
+            "number": self.number,
+            "most_frequent_word": {'en': self.most_frequent_word},
+        }
         if representation == 'detail':
             d.update(
                 source_id=self.source_id,
@@ -503,18 +503,18 @@ class Statement(models.Model):
         return self.h2
 
     def to_api_dict(self, representation):
-        d: Dict[str, str | Dict[str, str] | None] = dict(
-            time=str(self.time) if self.time else None,
-            attribution={'en': self.who_en, 'fr': self.who_fr},
-            content={'en': self.content_en, 'fr': self.content_fr},
-            url=self.get_absolute_url(),
-            politician_url=self.politician.get_absolute_url() if self.politician else None,
-            politician_membership_url=reverse(
+        d: Dict[str, str | Dict[str, str] | None] = {
+            "time": str(self.time) if self.time else None,
+            "attribution": {'en': self.who_en, 'fr': self.who_fr},
+            "content": {'en': self.content_en, 'fr': self.content_fr},
+            "url": self.get_absolute_url(),
+            "politician_url": self.politician.get_absolute_url() if self.politician else None,
+            "politician_membership_url": reverse(
                 'politician_membership',
                 kwargs={'member_id': self.member_id}) if self.member_id else None,
-            procedural=self.procedural,
-            source_id=self.source_id
-        )
+            "procedural": self.procedural,
+            "source_id": self.source_id
+        }
         for h in ('h1', 'h2', 'h3'):
             if getattr(self, h):
                 d[h] = {'en': getattr(self, h + '_en'), 'fr': getattr(self, h + '_fr')}

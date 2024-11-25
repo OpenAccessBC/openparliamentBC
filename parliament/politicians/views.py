@@ -62,13 +62,13 @@ class CurrentMPView(ModelListView):
 
     def object_to_dict(self, obj):
         if isinstance(obj, ElectedMember):
-            return dict(
-                name=obj.politician.name,
-                url=obj.politician.get_absolute_url(),
-                current_party={"short_name": {"en": obj.party.short_name}},
-                current_riding={"province": obj.riding.province, "name": {"en": obj.riding.dashed_name}},
-                image=obj.politician.headshot.url if obj.politician.headshot else None,
-            )
+            return {
+                "name": obj.politician.name,
+                "url": obj.politician.get_absolute_url(),
+                "current_party": {"short_name": {"en": obj.party.short_name}},
+                "current_riding": {"province": obj.riding.province, "name": {"en": obj.riding.dashed_name}},
+                "image": obj.politician.headshot.url if obj.politician.headshot else None,
+            }
 
         return super(CurrentMPView, self).object_to_dict(obj)
 

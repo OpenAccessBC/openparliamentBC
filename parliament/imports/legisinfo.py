@@ -80,7 +80,7 @@ class BillData():
 
 
 def get_bill_list(session):
-    url = LEGISINFO_JSON_LIST_URL % dict(sessid=session.id)
+    url = LEGISINFO_JSON_LIST_URL % {"sessid": session.id}
     resp = requests.get(url, timeout=10)
     resp.raise_for_status()
     jd = resp.json()

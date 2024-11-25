@@ -181,14 +181,14 @@ class Subscription(models.Model):
             ctx['person_name'] = documents[0]['politician']
             t = loader.get_template('alerts/mp_hansard_alert.txt')
             text = t.render(ctx)
-            return dict(text=text)
+            return {"text": text}
 
         ctx.update(
             topic=self.topic
         )
         t = loader.get_template('alerts/search_alert.txt')
         text = t.render(ctx)
-        return dict(text=text)
+        return {"text": text}
 
     def get_subject_line(self, documents):
         if self.topic.politician_hansard_alert:
