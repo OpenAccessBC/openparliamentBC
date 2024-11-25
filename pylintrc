@@ -478,7 +478,6 @@ disable=raw-checker-failed,
         bad-string-format-type,
         too-many-return-statements,
         abstract-method,
-        import-error,
         deprecated-module,
         cyclic-import
 
