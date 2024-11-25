@@ -19,7 +19,7 @@ class TextAnalysisView(View):
         try:
             analysis = self.get_analysis(request, **kwargs)
         except IOError:
-            raise Http404
+            raise Http404 from None
         return HttpResponse(analysis.probability_data_json, content_type='application/json')
 
     def get_key(self, request, **kwargs):

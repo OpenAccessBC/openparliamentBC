@@ -242,7 +242,7 @@ class PoliticianManager(models.Manager):
             pol, x_mp_id = self._get_pol_from_ourcommons_profile_url(
                 POL_PERSON_ID_LOOKUP_URL % parlid, session, riding_name)
             if str(parlid) != x_mp_id:
-                raise Exception("get_by_parl_mp_id: Get for ID %s found ID %s (%s)" % (parlid, x_mp_id, pol))
+                raise Exception("get_by_parl_mp_id: Get for ID %s found ID %s (%s)" % (parlid, x_mp_id, pol)) from None
             pol.set_info('parl_mp_id', parlid, overwrite=False)
             return self.get_queryset().get(id=pol.id)
 
@@ -262,16 +262,16 @@ class PoliticianManager(models.Manager):
             root = lxml.html.fromstring(resp.text)
             profile_link = root.cssselect('.mpprofile a')
             if not profile_link:
-                raise Politician.DoesNotExist("Couldn't resolve affil ID %s" % parlid)
+                raise Politician.DoesNotExist("Couldn't resolve affil ID %s" % parlid) from None
             if len(profile_link) > 1:
-                raise Exception("Weird scrape: multiple CSS results for ID %s in get_by_parl_affil_id" % parlid)
+                raise Exception("Weird scrape: multiple CSS results for ID %s in get_by_parl_affil_id" % parlid) from None
             profile_url = urljoin(resp.url, str(profile_link[0].attrib['href']))
             pol, parl_mp_id = self._get_pol_from_ourcommons_profile_url(profile_url, session, riding_name)
             try:
                 mpid_info = PoliticianInfo.objects.get(schema='parl_mp_id', value=str(parl_mp_id))
                 if mpid_info.politician_id != pol.id:
                     raise Exception("get_by_parl_affil_id: for ID %s found %s, but mp_id %s already used for %s" % (
-                        parlid, pol, parl_mp_id, mpid_info.politician))
+                        parlid, pol, parl_mp_id, mpid_info.politician)) from None
             except PoliticianInfo.DoesNotExist:
                 pol.set_info('parl_mp_id', parl_mp_id, overwrite=False)
 
@@ -297,7 +297,7 @@ class PoliticianManager(models.Manager):
         try:
             riding = Riding.objects.get_by_name(polriding)
         except Riding.DoesNotExist:
-            raise Politician.DoesNotExist("Couldn't find riding %s" % polriding)
+            raise Politician.DoesNotExist("Couldn't find riding %s" % polriding) from None
         if riding_name and riding != Riding.objects.get_by_name(riding_name):
             raise Exception("Pol get_by_id sanity check failed: XML riding %s doesn't match provided name %s" % (
                 polriding, riding_name))

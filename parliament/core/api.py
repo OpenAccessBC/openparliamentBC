@@ -189,7 +189,7 @@ class APIFilters():
                     (field_name if field_name else filter_name) + '__' + filter_extra: val
                 })
             except (ValueError, ValidationError) as e:
-                raise BadRequest(str(e))
+                raise BadRequest(str(e)) from e
         inner.help = help_txt
         return inner
 
@@ -207,7 +207,7 @@ class APIFilters():
             try:
                 return qs.filter(**(query_func(url_bits)))
             except ValueError as e:
-                raise BadRequest(e)
+                raise BadRequest(e) from e
         inner.help = help_txt
         return inner
 
@@ -228,7 +228,7 @@ class APIFilters():
             try:
                 search_val = next(c[0] for c in choices if val in c)
             except StopIteration:
-                raise BadRequest("Invalid value for %s" % filter_name)
+                raise BadRequest("Invalid value for %s" % filter_name) from None
             return qs.filter(**{field_name: search_val})
         inner.help = ', '.join(c[1] for c in choices)
         return inner
@@ -271,7 +271,7 @@ class ModelListView(APIView):
         try:
             qs = self.get_qs(request, **kwargs)
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from None
         qs = self.filter(request, qs)
 
         paginator = APIPaginator(request, qs, limit=self.default_limit)
@@ -303,7 +303,7 @@ class ModelDetailView(APIView):
         try:
             obj = self.get_object(request, **kwargs)
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from None
         result = self.object_to_dict(obj)
         related: Dict[str, str] | None = self.get_related_resources(request, obj, result)
         if related:
@@ -392,7 +392,7 @@ class APIPaginator():
         try:
             limit = int(limit)
         except ValueError:
-            raise BadRequest("Invalid limit '%s' provided. Please provide a positive integer." % limit)
+            raise BadRequest("Invalid limit '%s' provided. Please provide a positive integer." % limit) from None
 
         if limit == 0:
             if self.limit:
@@ -425,7 +425,7 @@ class APIPaginator():
         try:
             offset = int(offset)
         except ValueError:
-            raise BadRequest("Invalid offset '%s' provided. Please provide an integer." % offset)
+            raise BadRequest("Invalid offset '%s' provided. Please provide an integer." % offset) from None
 
         if offset < 0:
             raise BadRequest("Invalid offset '%s' provided. Please provide a positive integer >= 0." % offset)

@@ -131,7 +131,7 @@ def try_postcode_first(request):
             wrong about your riding or MP, please send an <a class='maillink'>e-mail</a>.)"""
                       % Riding.objects.get(current=True, edid=edid).dashed_name))
     except ElectedMember.MultipleObjectsReturned:
-        raise Exception("Too many MPs for postcode %s" % postcode)
+        raise Exception("Too many MPs for postcode %s" % postcode) from None
 
 
 def postcode_to_edid_represent(postcode):

@@ -20,7 +20,7 @@ class CommitteeManager(models.Manager):
         try:
             return CommitteeInSession.objects.get(acronym=acronym, session=session).committee
         except CommitteeInSession.DoesNotExist:
-            raise Committee.DoesNotExist()
+            raise Committee.DoesNotExist() from None
 
 
 class Committee(models.Model):

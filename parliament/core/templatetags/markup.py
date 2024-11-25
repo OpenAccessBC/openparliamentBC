@@ -12,7 +12,6 @@ def markdown(value):
         import markdown
     except ImportError:
         if settings.DEBUG:
-            raise template.TemplateSyntaxError(
-                "Error in 'markdown' filter: The Python markdown library isn't installed.")
+            raise template.TemplateSyntaxError("Error in 'markdown' filter: The Python markdown library isn't installed.") from None
         return force_str(value)
     return mark_safe(markdown.markdown(force_str(value)))

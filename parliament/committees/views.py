@@ -143,7 +143,7 @@ def _get_meeting(committee_slug, session_id, number):
         return CommitteeMeeting.objects.select_related('evidence', 'committee').get(
             committee__slug=committee_slug, session=session_id, number=number)
     except CommitteeMeeting.DoesNotExist:
-        raise Http404
+        raise Http404 from None
 
 
 class CommitteeMeetingListView(ModelListView):
@@ -267,7 +267,7 @@ def evidence_permalink(request, committee_slug, session_id, number, slug):
         meeting = CommitteeMeeting.objects.select_related('evidence', 'committee').get(
             committee__slug=committee_slug, session=session_id, number=number)
     except CommitteeMeeting.DoesNotExist:
-        raise Http404
+        raise Http404 from None
 
     doc = meeting.evidence
     statement = get_object_or_404(Statement, document=doc, slug=slug)

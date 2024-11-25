@@ -74,7 +74,7 @@ class LoginToken(models.Model):
         except cls.DoesNotExist:
             raise TokenError(
                 "That login code couldn't be found. Try cutting and pasting it directly "
-                "from your email to your browser's address bar.")
+                "from your email to your browser's address bar.") from None
 
         if lt.used:
             raise TokenError(

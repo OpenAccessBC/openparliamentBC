@@ -199,7 +199,7 @@ def import_committee_meetings(committee, session):
             try:
                 meeting.date = _parse_date(date_string.partition(', ')[2])  # partition is to split off day of week
             except ValueError:
-                raise Exception("Unrecognized date string %s for meeting %r" % (date_string, meeting))
+                raise Exception("Unrecognized date string %s for meeting %r" % (date_string, meeting)) from None
 
         timestring = mtg_row.cssselect('.the-time')[0].text_content()
         match = re.search(
@@ -262,7 +262,7 @@ def _get_xml_url_from_documentviewer_url(url):
     try:
         xml_button = root.cssselect('a.btn-export-xml')[0]
     except IndexError:
-        raise NoXMLError
+        raise NoXMLError from None
     return urljoin(url, xml_button.get('href'))
 
 

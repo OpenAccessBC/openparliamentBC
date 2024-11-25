@@ -39,7 +39,7 @@ def politician_hansard_signup(request):
         politician_id = int(
             re.sub(r'\D', '', (request.POST if request.method == 'POST' else request.GET).get('politician', '')))
     except ValueError:
-        raise Http404
+        raise Http404 from None
 
     pol = get_object_or_404(Politician, pk=politician_id)
     success = False
@@ -138,7 +138,7 @@ class CreateAlertView(JSONView):
             Subscription.objects.get_or_create_by_query(query, user)
             return True
         except ValueError:
-            raise NotImplementedError
+            raise NotImplementedError from None
 
 
 create_alert = CreateAlertView.as_view()

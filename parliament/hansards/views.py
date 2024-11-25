@@ -21,7 +21,7 @@ def _get_hansard(year, month, day):
     try:
         return get_object_or_404(Document.debates, date=datetime.date(int(year), int(month), int(day)))
     except ValueError:
-        raise Http404
+        raise Http404 from None
 
 
 class HansardView(ModelDetailView):
@@ -74,7 +74,7 @@ def document_redirect(request, document_id, slug=None):
             'committeemeeting', 'committeemeeting__committee').get(
             pk=document_id)
     except Document.DoesNotExist:
-        raise Http404
+        raise Http404 from None
     url = document.get_absolute_url()
     if slug:
         url += "%s/" % slug
@@ -115,7 +115,7 @@ def document_view(request, document, meeting=None, slug=None):
         try:
             highlight_statement = [s for s in statements.object_list if s.sequence == highlight_statement][0]
         except IndexError:
-            raise Http404
+            raise Http404 from None
 
     ctx = {
         'document': document,
@@ -164,7 +164,7 @@ class SpeechesView(ModelListView):
             try:
                 date = datetime.date(int(u[-3]), int(u[-2]), int(u[-1]))
             except ValueError:
-                raise BadRequest("Invalid document URL")
+                raise BadRequest("Invalid document URL") from None
 
             return qs.filter(document__document_type='D', document__date=date).order_by('sequence')
 
@@ -174,7 +174,7 @@ class SpeechesView(ModelListView):
                 meeting = CommitteeMeeting.objects.get(
                     committee__slug=u[-3], session=u[-2], number=u[-1])
             except (ValueError, CommitteeMeeting.DoesNotExist):
-                raise BadRequest("Invalid meeting URL")
+                raise BadRequest("Invalid meeting URL") from None
 
             return qs.filter(document=meeting.evidence_id).order_by('sequence')
 
