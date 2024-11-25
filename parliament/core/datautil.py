@@ -26,22 +26,30 @@ from parliament.hansards.models import Statement
 def load_pol_pic(pol):
     print("#%d: %s" % (pol.id, pol))
     print(pol.parlpage)
-    soup = BeautifulSoup(urllib.request.urlopen(pol.parlpage))
-    img = soup.find('img', id='MasterPage_MasterPage_BodyContent_PageContent_Content_TombstoneContent_TombstoneContent_ucHeaderMP_imgPhoto')
+
+    img = None
+    with urllib.request.urlopen(pol.parlpage) as soup_data:
+        soup = BeautifulSoup(soup_data)
+        img = soup.find(
+            'img', id='MasterPage_MasterPage_BodyContent_PageContent_Content_TombstoneContent_TombstoneContent_ucHeaderMP_imgPhoto')
+
     if not img:
         raise Exception("Didn't work for %s" % pol.parlpage)
+
     imgurl = img['src']
     if '?' not in imgurl:  # no query string
         imgurl = urllib.parse.quote(imgurl.encode('utf8'))  # but there might be accents!
     if 'BlankMPPhoto' in imgurl:
         print("Blank photo")
         return
+
     imgurl_joined = urllib.parse.urljoin(pol.parlpage, imgurl)
     # test = urllib.request.urlopen(imgurl)
     content = urllib.request.urlretrieve(imgurl_joined)
     # filename = urlparse.urlparse(imgurl).path.split('/')[-1]
-    pol.headshot.save(str(pol.id) + ".jpg", File(open(content[0], encoding="utf-8")), save=True)
-    pol.save()
+    with open(content[0], encoding="utf-8") as headshot_file:
+        pol.headshot.save(str(pol.id) + ".jpg", File(headshot_file), save=True)
+        pol.save()
 
 
 def delete_invalid_pol_pics():
@@ -60,8 +68,8 @@ def delete_invalid_pol_urls():
     for pol in Politician.objects.filter(politicianinfo__schema='web_site').distinct():
         site = pol.info()['web_site']
         try:
-            urllib.request.urlopen(site)
-            print("Success for %s" % site)
+            with urllib.request.urlopen(site):
+                print("Success for %s" % site)
         except urllib.error.URLError as e:
             print("REMOVING %s " % site)
             print(e)
@@ -329,15 +337,16 @@ def fix_mac():
 def check_for_feeds(urls):
     for url in urls:
         try:
-            response = urllib.request.urlopen(url)
+            with urllib.request.urlopen(url) as response:
+                soup = BeautifulSoup(response.read())
+                for feed in soup.findAll('link', type='application/rss+xml'):
+                    print("FEED ON %s" % url)
+                    print(feed)
+
         except Exception as e:
             print("ERROR on %s" % url)
             print(e)
             continue
-        soup = BeautifulSoup(response.read())
-        for feed in soup.findAll('link', type='application/rss+xml'):
-            print("FEED ON %s" % url)
-            print(feed)
 
 
 def twitter_from_csv(infile):

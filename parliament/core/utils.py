@@ -61,9 +61,9 @@ def get_twitter_share_url(url, description, add_plug=True):
     longurl = settings.SITE_URL + url
 
     try:
-        shorten_resp_raw = urllib.request.urlopen(settings.BITLY_API_URL + urllib.parse.urlencode({'longurl': longurl}))
-        shorten_resp = json.load(shorten_resp_raw)
-        shorturl = shorten_resp['data']['url']
+        with urllib.request.urlopen(settings.BITLY_API_URL + urllib.parse.urlencode({'longurl': longurl})) as shorten_resp_raw:
+            shorten_resp = json.load(shorten_resp_raw)
+            shorturl = shorten_resp['data']['url']
     except Exception:
         # FIXME logging
         shorturl = longurl

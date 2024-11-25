@@ -269,9 +269,8 @@ class Document(models.Model):
         return os.path.join(settings.MEDIA_ROOT, 'document_cache', filename)
 
     def _save_file(self, path, content):
-        out = open(path, 'wb')
-        out.write(content)
-        out.close()
+        with open(path, 'wb') as out:
+            out.write(content)
 
     def get_cached_xml(self, language):
         if not self.downloaded:
