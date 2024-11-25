@@ -465,13 +465,10 @@ disable=raw-checker-failed,
         cell-var-from-loop,
         too-many-instance-attributes,
         not-callable,
-        unexpected-keyword-arg,
-        undefined-variable,
         too-many-public-methods,
         bad-string-format-type,
         too-many-return-statements,
         abstract-method,
-        deprecated-module,
         cyclic-import
 
 # Enable the message, report, category or checker with the given id(s). You can

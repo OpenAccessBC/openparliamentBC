@@ -115,8 +115,8 @@ def spark_index(bucketsize, bigrams=False):
         bucketcount += len(tokens)
         if bucketcount >= bucketsize:
             # save
-            for entry in index.items():
-                SparkIndex(token=entry[0], count=entry[1], bucket=bucketidx).save()
+            # for entry in index.items():
+            #     SparkIndex(token=entry[0], count=entry[1], bucket=bucketidx).save()
             index = defaultdict(int)
             bucketcount = 0
             bucketidx += 1
