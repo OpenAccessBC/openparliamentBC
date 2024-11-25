@@ -183,18 +183,18 @@ class SpeechesView(ModelListView):
     document_filter.help = "the URL of the debate or committee meeting"
 
     filters = {
-        'procedural': APIFilters.dbfield(help="is this a short, routine procedural speech? True or False"),
+        'procedural': APIFilters.dbfield(help_txt="is this a short, routine procedural speech? True or False"),
         'document': document_filter,
         'politician': APIFilters.politician(),
         'politician_membership': APIFilters.fkey(lambda u: {'member': u[-1]}),
         'time': APIFilters.dbfield(
             filter_types=APIFilters.numeric_filters,
-            help="e.g. time__range=2012-10-19 10:00,2012-10-19 11:00"),
+            help_txt="e.g. time__range=2012-10-19 10:00,2012-10-19 11:00"),
         'mentioned_politician': APIFilters.politician('mentioned_politicians'),
         'mentioned_bill': APIFilters.fkey(lambda u: {
             'bills__billinsession__session': u[-2],
             'bills__number': u[-1]
-        }, help="e.g. /bills/41-1/C-14/")
+        }, help_txt="e.g. /bills/41-1/C-14/")
     }
 
     resource_name = 'Speeches'
@@ -281,11 +281,11 @@ class APIArchiveView(ModelListView):
     resource_name = 'House debates'
 
     filters = {
-        'session': APIFilters.dbfield(help='e.g. 41-1'),
+        'session': APIFilters.dbfield(help_txt='e.g. 41-1'),
         'date': APIFilters.dbfield(
             filter_types=APIFilters.numeric_filters,
-            help='e.g. date__range=2010-01-01,2010-09-01'),
-        'number': APIFilters.dbfield(help='each Hansard in a session is given a sequential #'),
+            help_txt='e.g. date__range=2010-01-01,2010-09-01'),
+        'number': APIFilters.dbfield(help_txt='each Hansard in a session is given a sequential #'),
     }
 
     def get_html(self, request, **kwargs):

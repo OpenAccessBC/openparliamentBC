@@ -110,20 +110,20 @@ class BillListView(ModelListView):
     resource_name = 'Bills'
 
     filters = {
-        'session': APIFilters.dbfield(help="e.g. 41-1"),
+        'session': APIFilters.dbfield(help_txt="e.g. 41-1"),
         'introduced': APIFilters.dbfield(
             filter_types=APIFilters.numeric_filters,
-            help="date bill was introduced, e.g. introduced__gt=2010-01-01"),
-        'legisinfo_id': APIFilters.dbfield(help="integer ID assigned by Parliament's LEGISinfo"),
+            help_txt="date bill was introduced, e.g. introduced__gt=2010-01-01"),
+        'legisinfo_id': APIFilters.dbfield(help_txt="integer ID assigned by Parliament's LEGISinfo"),
         'number': APIFilters.dbfield(
             'bill__number',
-            help="a string, not an integer: e.g. C-10"),
+            help_txt="a string, not an integer: e.g. C-10"),
         'law': APIFilters.dbfield(
             'bill__law',
-            help="did it become law? True, False"),
+            help_txt="did it become law? True, False"),
         'private_member_bill': APIFilters.dbfield(
             'bill__privatemember',
-            help="is it a private member's bill? True, False"),
+            help_txt="is it a private member's bill? True, False"),
         'status_code': APIFilters.dbfield('bill__status_code'),
         'sponsor_politician': APIFilters.politician('sponsor_politician'),
         'sponsor_politician_membership': APIFilters.fkey(lambda u: {'sponsor_member': u[-1]}),
@@ -187,26 +187,26 @@ class VoteListView(ModelListView):
     """)
 
     filters = {
-        'session': APIFilters.dbfield(help="e.g. 41-1"),
+        'session': APIFilters.dbfield(help_txt="e.g. 41-1"),
         'yea_total': APIFilters.dbfield(
             filter_types=APIFilters.numeric_filters,
-            help="# votes for"),
+            help_txt="# votes for"),
         'nay_total': APIFilters.dbfield(
             filter_types=APIFilters.numeric_filters,
-            help="# votes against, e.g. nay_total__gt=10"),
+            help_txt="# votes against, e.g. nay_total__gt=10"),
         'paired_total': APIFilters.dbfield(
             filter_types=APIFilters.numeric_filters,
-            help="paired votes are an odd convention that seem to have stopped in 2011"),
+            help_txt="paired votes are an odd convention that seem to have stopped in 2011"),
         'date': APIFilters.dbfield(
             filter_types=APIFilters.numeric_filters,
-            help="date__gte=2011-01-01"),
+            help_txt="date__gte=2011-01-01"),
         'number': APIFilters.dbfield(
             filter_types=APIFilters.numeric_filters,
-            help="every vote in a session has a sequential number"),
+            help_txt="every vote in a session has a sequential number"),
         'bill': APIFilters.fkey(lambda u: {
             'bill__sessions': u[-2],
             'bill__number': u[-1]
-        }, help="e.g. /bills/41-1/C-10/"),
+        }, help_txt="e.g. /bills/41-1/C-10/"),
         'result': APIFilters.choices('result', VoteQuestion)
     }
 
@@ -285,15 +285,15 @@ class BallotListView(ModelListView):
     filters = {
         'vote': APIFilters.fkey(lambda u: {'votequestion__session': u[-2],
                                            'votequestion__number': u[-1]},
-                                help="e.g. /votes/41-1/472/"),
+                                help_txt="e.g. /votes/41-1/472/"),
         'politician': APIFilters.politician(),
         'politician_membership': APIFilters.fkey(
             lambda u: {'member': u[-1]},
-            help="e.g. /politicians/roles/326/"),
+            help_txt="e.g. /politicians/roles/326/"),
         'ballot': APIFilters.choices('vote', MemberVote),
         'dissent': APIFilters.dbfield(
             'dissent',
-            help="does this look like a vote against party line? not reliable for research. True, False")
+            help_txt="does this look like a vote against party line? not reliable for research. True, False")
     }
 
     def get_qs(self, request):

@@ -34,20 +34,20 @@ class CurrentMPView(ModelListView):
     # to internally use ElectedMembers in order to add more fields to the default response,
     # but for former politicians we use Politician objects, so... hacking.
     @staticmethod
-    def _politician_prepend_filter(field_name: str, help: str):
+    def _politician_prepend_filter(field_name: str, help_txt: str):
         def inner(qs, *args, **kwargs):
             if qs.model == Politician:
                 return APIFilters.dbfield(field_name)(qs, *args, **kwargs)
 
             return APIFilters.dbfield('politician__' + field_name)(qs, *args, **kwargs)
-        inner.help = help
+        inner.help = help_txt
         return inner
 
     filters = {
-        'name': _politician_prepend_filter('name', help='e.g. Stephen Harper'),
-        'family_name': _politician_prepend_filter('name_family', help='e.g. Harper'),
-        'given_name': _politician_prepend_filter('name_given', help='e.g. Stephen'),
-        'include': APIFilters.noop(help="'former' to show former MPs (since 94), 'all' for current and former")
+        'name': _politician_prepend_filter('name', help_txt='e.g. Stephen Harper'),
+        'family_name': _politician_prepend_filter('name_family', help_txt='e.g. Harper'),
+        'given_name': _politician_prepend_filter('name_given', help_txt='e.g. Stephen'),
+        'include': APIFilters.noop(help_txt="'former' to show former MPs (since 94), 'all' for current and former")
     }
 
     def get_qs(self, request=None):
