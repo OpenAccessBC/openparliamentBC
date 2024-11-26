@@ -64,10 +64,10 @@ class Committee(models.Model):
                 self.slug += '-' + random.choice(string.lowercase)
         super(Committee, self).save(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('committee', kwargs={'slug': self.slug})
 
-    def get_source_url(self):
+    def get_source_url(self) -> str:
         return self.committeeinsession_set.order_by('-session__start')[0].get_source_url()
 
     def get_acronym(self, session):
@@ -140,10 +140,10 @@ class CommitteeActivity(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('committee_activity', kwargs={'activity_id': self.id})
 
-    def get_source_url(self):
+    def get_source_url(self) -> str:
         return self.committeeactivityinsession_set.order_by('-session__start')[0].get_source_url()
 
     @property
@@ -235,7 +235,7 @@ class CommitteeMeeting(models.Model):
             activities = [a for a in activities if a.study]
         return english_list([a.name_en for a in activities])
 
-    def get_absolute_url(self, pretty=True):
+    def get_absolute_url(self, pretty=True) -> str:
         slug = self.committee.slug if pretty else self.committee_id
         return reverse(
             'committee_meeting',

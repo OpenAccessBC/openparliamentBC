@@ -88,7 +88,7 @@ class Document(models.Model):
             self.committeemeeting.committee.short_name, self.date, self.id, self.source_id)
 
     @memoize_property
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str | None:
         match self.document_type:
             case self.DEBATE:
                 return reverse('debate', kwargs={
@@ -370,12 +370,12 @@ class Statement(models.Model):
     def date(self):
         return datetime.date(self.time.year, self.time.month, self.time.day)
 
-    def generate_url(self):
+    def generate_url(self) -> None:
         self.urlcache = "%s%s/" % (
             self.document.get_absolute_url(),
             (self.slug if self.slug else self.sequence))
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         if not self.urlcache:
             self.generate_url()
         return self.urlcache

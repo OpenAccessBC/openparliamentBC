@@ -417,7 +417,7 @@ class Politician(Person):
         super(Politician, self).save(*args, **kwargs)
         self.add_alternate_name(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         if self.slug:
             return reverse('politician', kwargs={'pol_slug': self.slug})
         return reverse('politician', kwargs={'pol_id': self.id})
@@ -801,7 +801,7 @@ class ElectedMember(models.Model):
             d['politician_url'] = self.politician.get_absolute_url()
         return d
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('politician_membership', kwargs={'member_id': self.id})
 
     @property

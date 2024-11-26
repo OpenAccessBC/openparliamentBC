@@ -13,7 +13,7 @@ from collections import defaultdict
 from typing import Dict
 
 import text_utils
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString, Tag
 from django.core.files import File
 from django.db import models, transaction
 
@@ -27,13 +27,13 @@ def load_pol_pic(pol):
     print("#%d: %s" % (pol.id, pol))
     print(pol.parlpage)
 
-    img = None
+    img: Tag | NavigableString | None = None
     with urllib.request.urlopen(pol.parlpage) as soup_data:
         soup = BeautifulSoup(soup_data)
         img = soup.find(
             'img', id='MasterPage_MasterPage_BodyContent_PageContent_Content_TombstoneContent_TombstoneContent_ucHeaderMP_imgPhoto')
 
-    if not img:
+    if img is None:
         raise Exception("Didn't work for %s" % pol.parlpage)
 
     imgurl = img['src']

@@ -122,7 +122,7 @@ def import_bill_by_id(legisinfo_id):
     return _import_bill(bd, session)
 
 
-def _update(obj: Bill, field: str, value: Any):
+def _update(obj: Bill | BillInSession, field: str, value: Any):
     if value is None:
         return
     if not isinstance(value, datetime.date):
@@ -213,8 +213,8 @@ def _import_bill(bd: BillData, session: Session, previous_session: Optional[Sess
         bill.introduced = bis.introduced
 
     status_name = bd['StatusName']
-    status_code = Bill.STATUS_STRING_TO_STATUS_CODE.get(status_name)
-    if status_code:
+    status_code: str | None = Bill.STATUS_STRING_TO_STATUS_CODE.get(status_name)
+    if status_code is not None:
         _update(bill, 'status_code', status_code)
     else:
         logger.error("Unknown bill status %s", status_name)

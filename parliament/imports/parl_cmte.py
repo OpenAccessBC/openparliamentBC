@@ -2,6 +2,7 @@ import datetime
 import logging
 import re
 import time
+from typing import List
 from urllib.parse import urljoin
 
 import lxml.etree
@@ -9,8 +10,7 @@ import lxml.html
 import requests
 from django.db import transaction
 
-from parliament.committees.models import (Committee, CommitteeActivity, CommitteeActivityInSession, CommitteeInSession,
-                                          CommitteeMeeting)
+from parliament.committees.models import Committee, CommitteeActivity, CommitteeActivityInSession, CommitteeInSession, CommitteeMeeting
 from parliament.core.models import Session
 from parliament.hansards.models import Document
 
@@ -150,7 +150,10 @@ def import_committee_meetings(committee, session):
         assert source_id_str.startswith('meeting-item-')
         source_id = int(source_id_str.replace('meeting-item-', '').strip())
 
-        number = int(re.sub(r'\D', '', mtg_row.cssselect('.meeting-title .meeting-number')[0].text))
+        meeting_num_str = mtg_row.cssselect('.meeting-title .meeting-number')[0].text
+        assert meeting_num_str is not None
+
+        number = int(re.sub(r'\D', '', meeting_num_str))
         assert number > 0
 
         cancelled = bool(mtg_row.cssselect('.meeting-title .icon-cancel'))

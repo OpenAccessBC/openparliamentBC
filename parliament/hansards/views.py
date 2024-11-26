@@ -70,12 +70,13 @@ hansard_statement = HansardStatementView.as_view()
 
 def document_redirect(request, document_id, slug=None):
     try:
-        document = Document.objects.select_related(
-            'committeemeeting', 'committeemeeting__committee').get(
-            pk=document_id)
+        document: Document = Document.objects.select_related(
+            'committeemeeting', 'committeemeeting__committee').get(pk=document_id)
     except Document.DoesNotExist:
         raise Http404 from None
-    url = document.get_absolute_url()
+    url: str | None = document.get_absolute_url()
+    assert url is not None
+
     if slug:
         url += "%s/" % slug
     return HttpResponsePermanentRedirect(url)

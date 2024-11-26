@@ -154,10 +154,10 @@ class Bill(models.Model):
     def __str__(self):
         return "%s - %s" % (self.number, self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return self.url_for_session(self.session)
 
-    def url_for_session(self, session):
+    def url_for_session(self, session) -> str:
         return reverse('bill', kwargs={
             'session_id': session.id, 'bill_number': self.number})
 
@@ -373,7 +373,7 @@ class BillInSession(models.Model):
     def __str__(self):
         return "%s in session %s" % (self.bill, self.session_id)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return self.bill.url_for_session(self.session)
 
     def get_legisinfo_url(self, lang='en'):
@@ -562,7 +562,7 @@ class VoteQuestion(models.Model):
                 mv.dissent = True
                 mv.save()
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('vote', kwargs={
             'session_id': self.session_id, 'number': self.number})
 
