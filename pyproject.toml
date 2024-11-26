@@ -4,6 +4,27 @@ disable_error_code = "name-defined,attr-defined,import-untyped,arg-type,index,un
 exclude = ["imports/hans_old/"]
 check_untyped_defs = true
 
+# disallow_any_unimported = true
+# disallow_any_expr = true
+disallow_any_decorated = true
+disallow_any_explicit = true
+# disallow_any_generics = true
+disallow_subclassing_any = true
+# disallow_untyped_calls = true
+# untyped_calls_exclude = 
+# disallow_untyped_defs = true
+# disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+
+warn_redundant_casts = true
+warn_unused_ignores = true
+# warn_return_any = true
+# warn_unreachable = true
+# strict_concatenate = true
+# strict_equality = true
+# strict = true
+# warn_incomplete_stub = true
+
 
 [tool.pyright]
 exclude = ["**/hans_old", ".mypy_cache", ".venv", "parliament/politicians/twit.py"]
