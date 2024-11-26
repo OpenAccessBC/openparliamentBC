@@ -2,7 +2,6 @@ import datetime
 import logging
 import re
 import time
-from typing import List
 from urllib.parse import urljoin
 
 import lxml.etree

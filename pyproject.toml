@@ -1,6 +1,6 @@
 [tool.mypy]
 python_version = "3.12"
-disable_error_code = "name-defined,attr-defined,import-untyped,import-not-found,arg-type,index,union-attr,assignment,misc,override,call-overload"
+disable_error_code = "name-defined,attr-defined,import-untyped,arg-type,index,union-attr,assignment,misc,override,call-overload"
 exclude = ["imports/hans_old/"]
 check_untyped_defs = true
 
@@ -17,5 +17,4 @@ reportArgumentType = "none"
 reportAttributeAccessIssue = "none"
 reportCallIssue = "none"
 reportIndexIssue = "none"
-reportMissingImports = "none"
 reportOptionalMemberAccess = "none"

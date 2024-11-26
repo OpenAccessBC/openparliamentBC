@@ -350,8 +350,8 @@ class Statement(models.Model):
     who_context = language_property('who_context')
 
     def save(self, *args, **kwargs):
-        self.content_en: str = self.content_en.replace('\n', '').replace('</p>', '</p>\n').strip()
-        self.content_fr: str = self.content_fr.replace('\n', '').replace('</p>', '</p>\n').strip()
+        self.content_en = self.content_en.replace('\n', '').replace('</p>', '</p>\n').strip()
+        self.content_fr = self.content_fr.replace('\n', '').replace('</p>', '</p>\n').strip()
         if self.wordcount_en is None:
             self._generate_wordcounts()
         if ((not self.procedural) and self.wordcount <= 300
