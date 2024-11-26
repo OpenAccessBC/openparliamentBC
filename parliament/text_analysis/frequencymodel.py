@@ -5,6 +5,7 @@ import re
 from collections import defaultdict
 from heapq import nlargest
 from operator import itemgetter
+from typing import Dict, List
 
 STOPWORDS = frozenset(
     ["i", "me", "my", "myself", "we", "our", "ours", "ourselves",
@@ -66,8 +67,8 @@ class FrequencyModel(dict):
     # of occurences of string / # total number of items).
     """
 
-    def __init__(self, items, min_count=1):
-        counts = defaultdict(int)
+    def __init__(self, items: List[str], min_count: int = 1):
+        counts: Dict[str, int] = defaultdict(int)
         total_count = 0
         for item in items:
             if len(item) > 2 and '/' not in item:

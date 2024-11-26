@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 from decimal import Decimal
+from typing import Dict
 
 from django.db import models
 
@@ -9,7 +10,7 @@ from parliament.core.models import ElectedMember, Party, Politician, Riding
 logger = logging.getLogger(__name__)
 
 
-class Election (models.Model):
+class Election(models.Model):
     date: models.DateField = models.DateField(db_index=True)
     byelection: models.BooleanField = models.BooleanField()
 
@@ -25,7 +26,7 @@ class Election (models.Model):
     def calculate_vote_percentages(self):
         candidacies = self.candidacy_set.all()
         riding_candidacies = defaultdict(list)
-        riding_votetotals = defaultdict(Decimal)
+        riding_votetotals: Dict[int, Decimal] = defaultdict(Decimal)
         for candidacy in candidacies:
             riding_candidacies[candidacy.riding_id].append(candidacy)
             riding_votetotals[candidacy.riding_id] += candidacy.votetotal

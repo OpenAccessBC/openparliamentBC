@@ -4,7 +4,7 @@ import datetime
 import logging
 import re
 from io import BytesIO
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 from urllib.parse import urljoin
 
 import lxml.etree
@@ -455,7 +455,7 @@ class Politician(Person):
         """Returns a dictionary of PoliticianInfo attributes for this politician,
         where each key is a list of items. This allows more than one value for a
         given key."""
-        info = {}
+        info: Dict[str, List[str]] = {}
         for i in self.politicianinfo_set.all().values_list('schema', 'value'):
             info.setdefault(i[0], []).append(i[1])
         return info

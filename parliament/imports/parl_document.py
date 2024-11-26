@@ -9,7 +9,7 @@ import logging
 import re
 import sys
 from difflib import SequenceMatcher
-from typing import AnyStr, List
+from typing import Dict, List
 from xml.sax.saxutils import quoteattr
 
 import requests
@@ -197,12 +197,12 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
     return document
 
 
-def _align_sequences(new_statements, old_statements):
+def _align_sequences(new_statements: List[Statement], old_statements: List[Statement]):
     """Given two list of statements, returns a list of mappings in the form of
     (old_statement_sequence, new_statement_slug)"""
 
-    def build_speaker_dict(states):
-        d = {}
+    def build_speaker_dict(states: List[Statement]):
+        d: Dict[str, List[Statement]] = {}
         for s in states:
             d.setdefault(s.name_info['display_name'], []).append(s)
         return d

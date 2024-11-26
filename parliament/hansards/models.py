@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from collections import OrderedDict, defaultdict
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from django.conf import settings
 from django.db import models
@@ -224,7 +224,7 @@ class Document(models.Model):
         statements = self.statement_set.filter(procedural=False).select_related('member', 'politician')
         politicians = {s.politician for s in statements if s.politician}
         for pol in politicians:
-            topics = {}
+            topics: Dict[str, List[str]] = {}
             wordcount = 0
             for statement in [s for s in statements if s.politician == pol]:
                 wordcount += statement.wordcount
@@ -350,8 +350,8 @@ class Statement(models.Model):
     who_context = language_property('who_context')
 
     def save(self, *args, **kwargs):
-        self.content_en = self.content_en.replace('\n', '').replace('</p>', '</p>\n').strip()
-        self.content_fr = self.content_fr.replace('\n', '').replace('</p>', '</p>\n').strip()
+        self.content_en: str = self.content_en.replace('\n', '').replace('</p>', '</p>\n').strip()
+        self.content_fr: str = self.content_fr.replace('\n', '').replace('</p>', '</p>\n').strip()
         if self.wordcount_en is None:
             self._generate_wordcounts()
         if ((not self.procedural) and self.wordcount <= 300
@@ -464,7 +464,7 @@ class Statement(models.Model):
         return qs
 
     def _generate_wordcounts(self):
-        paragraphs = [
+        paragraphs: List[List[str]] = [
             [],  # english
             [],  # french
             []  # procedural
@@ -525,7 +525,7 @@ class Statement(models.Model):
 
     @property
     @memoize_property
-    def name_info(self):
+    def name_info(self) -> Dict[str, Any]:
         info: Dict[str, Any] = {
             'post': None,
             'named': True
@@ -558,7 +558,7 @@ class Statement(models.Model):
 
     @staticmethod
     def set_slugs(statements):
-        counter = defaultdict(int)
+        counter: Dict[str, int] = defaultdict(int)
         for statement in statements:
             slug = slugify(statement.name_info['display_name'])[:50]
             if not slug:

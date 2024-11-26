@@ -3,6 +3,7 @@ import json
 import logging
 import re
 from collections import Counter, defaultdict
+from typing import Dict
 
 from django.conf import settings
 from django.db import models
@@ -527,7 +528,7 @@ class VoteQuestion(models.Model):
     def label_party_votes(self):
         """Create PartyVote objects representing the party-line vote; label individual dissenting votes."""
         membervotes = self.membervote_set.select_related('member', 'member__party').all()
-        parties = defaultdict(lambda: defaultdict(int))
+        parties: Dict[Party, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
 
         for mv in membervotes:
             if mv.member.party.name != 'Independent':
