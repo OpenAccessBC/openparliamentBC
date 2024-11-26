@@ -4,7 +4,7 @@ import datetime
 import logging
 import re
 from io import BytesIO
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, override
 from urllib.parse import urljoin
 
 import lxml.etree
@@ -83,21 +83,23 @@ class Party(models.Model):
         super(Party, self).__init__(*args, **kwargs)
         self._saveAlternate = True
 
-    def save(self):
+    @override
+    def save(self, *args, **kwargs):
         if not self.name_fr:
             self.name_fr = self.name_en
         if not self.short_name_en:
             self.short_name_en = self.name_en
         if not self.short_name_fr:
             self.short_name_fr = self.name_fr
-        super(Party, self).save()
+        super(Party, self).save(*args, **kwargs)
         if getattr(self, '_saveAlternate', False):
             self.add_alternate_name(self.name_en)
             self.add_alternate_name(self.name_fr)
 
-    def delete(self):
+    @override
+    def delete(self, *args, **kwargs):
         InternalXref.objects.filter(schema='party_names', target_id=self.id).delete()
-        super(Party, self).delete()
+        return super(Party, self).delete(*args, **kwargs)
 
     def add_alternate_name(self, name):
         name = name.strip().lower()
@@ -109,6 +111,7 @@ class Party(models.Model):
             if x[0].target_id != self.id:
                 raise Exception("Name %s already points to a different party" % name.strip().lower())
 
+    @override
     def __str__(self):
         return self.name
 
@@ -120,6 +123,7 @@ class Person(models.Model):
     name_given: models.CharField = models.CharField("Given name", max_length=50, blank=True)
     name_family: models.CharField = models.CharField("Family name", max_length=50, blank=True)
 
+    @override
     def __str__(self):
         return self.name
 
@@ -413,6 +417,7 @@ class Politician(Person):
         except IndexError:
             return None
 
+    @override
     def save(self, *args, **kwargs):
         super(Politician, self).save(*args, **kwargs)
         self.add_alternate_name(self.name)
@@ -557,9 +562,9 @@ class Politician(Person):
 class PoliticianInfoManager(models.Manager):
     """Custom manager ensures we always pull in the politician FK."""
 
+    @override
     def get_queryset(self):
-        return super(PoliticianInfoManager, self).get_queryset()\
-            .select_related('politician')
+        return super(PoliticianInfoManager, self).get_queryset().select_related('politician')
 
 
 # Not necessarily a full list
@@ -584,6 +589,7 @@ class PoliticianInfo(models.Model):
     objects = models.Manager()
     sr_objects = PoliticianInfoManager()
 
+    @override
     def __str__(self):
         return "%s: %s" % (self.politician, self.schema)
 
@@ -628,6 +634,7 @@ class Session(models.Model):
     class Meta:
         ordering = ('-start',)
 
+    @override
     def __str__(self):
         return self.name
 
@@ -721,15 +728,17 @@ class Riding(models.Model):
     class Meta:
         ordering = ('province', 'name_en')
 
-    def save(self):
+    @override
+    def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = parsetools.slugify(self.name_en)
-        super(Riding, self).save()
+        super(Riding, self).save(*args, **kwargs)
 
     @property
     def dashed_name(self):
         return self.name.replace('--', '—')
 
+    @override
     def __str__(self):
         return "%s (%s)" % (self.dashed_name, self.get_province_display())
 
@@ -773,6 +782,7 @@ class ElectedMember(models.Model):
 
     objects = ElectedMemberManager()
 
+    @override
     def __str__(self):
         if self.end_date:
             return ("%s (%s) was the member from %s from %s to %s"

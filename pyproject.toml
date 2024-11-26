@@ -1,6 +1,6 @@
 [tool.mypy]
 python_version = "3.12"
-disable_error_code = "name-defined,attr-defined,import-untyped,arg-type,index,union-attr,misc,override,call-overload"
+disable_error_code = "name-defined,attr-defined,import-untyped,arg-type,index,union-attr,misc,call-overload"
 exclude = ["imports/hans_old/"]
 check_untyped_defs = true
 
@@ -31,7 +31,7 @@ exclude = ["**/hans_old", ".mypy_cache", ".venv", "parliament/politicians/twit.p
 
 pythonVersion = "3.12"
 
-# TODO make strict
+# TODO make basic -> standard -> strict
 typeCheckingMode = "basic"
 
 reportArgumentType = "none"

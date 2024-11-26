@@ -1,7 +1,8 @@
+from typing import override
+
 from django.contrib import admin
 
-from parliament.core.models import (ElectedMember, InternalXref, Party, Politician, PoliticianInfo, Riding, Session,
-                                    SiteNews, models)
+from parliament.core.models import ElectedMember, InternalXref, Party, Politician, PoliticianInfo, Riding, Session, SiteNews, models
 
 
 class PoliticianInfoInline(admin.TabularInline):
@@ -43,6 +44,7 @@ class PoliticianInfoOptions(admin.ModelAdmin):
     list_display = ('politician', 'schema', 'value')
     search_fields = ('politician__name', 'schema', 'value')
 
+    @override
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "politician":
             kwargs["queryset"] = Politician.objects.elected()

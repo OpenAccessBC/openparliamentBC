@@ -1,4 +1,5 @@
 import datetime
+from typing import override
 from urllib.parse import urlencode
 
 from django.contrib.syndication.views import Feed
@@ -32,6 +33,7 @@ class BillDetailView(ModelDetailView):
         return BillInSession.objects.select_related(
             'bill', 'sponsor_politician').get(session=session_id, bill__number=bill_number)
 
+    @override
     def get_related_resources(self, request, obj, result):
         return {
             'bills_url': reverse('bills')
@@ -129,7 +131,8 @@ class BillListView(ModelListView):
         'sponsor_politician_membership': APIFilters.fkey(lambda u: {'sponsor_member': u[-1]}),
     }
 
-    def get_qs(self, request):
+    @override
+    def get_qs(self, request, **kwargs):
         return BillInSession.objects.all().select_related('bill', 'sponsor_politician')
 
     def get_html(self, request):
@@ -156,7 +159,8 @@ index = BillListView.as_view()
 
 class BillSessionListView(ModelListView):
 
-    def get_json(self, request, session_id):
+    @override
+    def get_json(self, request, session_id=None, **kwargs):
         return HttpResponseRedirect(reverse('bills') + '?'
                                     + urlencode({'session': session_id}))
 
@@ -210,13 +214,15 @@ class VoteListView(ModelListView):
         'result': APIFilters.choices('result', VoteQuestion)
     }
 
-    def get_json(self, request, session_id=None):
+    @override
+    def get_json(self, request, session_id=None, **kwargs):
         if session_id:
             return HttpResponseRedirect(reverse('votes') + '?'
                                         + urlencode({'session': session_id}))
-        return super(VoteListView, self).get_json(request)
+        return super(VoteListView, self).get_json(request, **kwargs)
 
-    def get_qs(self, request):
+    @override
+    def get_qs(self, request, **kwargs):
         return VoteQuestion.objects.select_related('bill').order_by('-date', '-number')
 
     def get_html(self, request, session_id=None):
@@ -252,6 +258,7 @@ class VoteDetailView(ModelDetailView):
     def get_object(self, request, session_id, number):
         return get_object_or_404(VoteQuestion, session=session_id, number=number)
 
+    @override
     def get_related_resources(self, request, obj, result):
         return {
             'ballots_url': reverse('vote_ballots') + '?' + urlencode({'vote': result['url']}),
@@ -296,10 +303,12 @@ class BallotListView(ModelListView):
             help_txt="does this look like a vote against party line? not reliable for research. True, False")
     }
 
-    def get_qs(self, request):
+    @override
+    def get_qs(self, request, **kwargs):
         return MemberVote.objects.all().select_related(
             'votequestion').order_by('-votequestion__date', '-votequestion__number')
 
+    @override
     def object_to_dict(self, obj):
         return obj.to_api_dict(representation='list')
 
@@ -312,33 +321,42 @@ class BillListFeed(Feed):
     description = 'New bills introduced to the House, from openparliament.ca.'
     link = "/bills/"
 
+    @override
     def items(self):
         return Bill.objects.filter(introduced__isnull=False).order_by('-introduced', 'number_only')[:25]
 
+    @override
     def item_title(self, item):
         return "Bill %s (%s)" % (item.number, "Private member's" if item.privatemember else "Government")
 
+    @override
     def item_description(self, item):
         return item.name
 
+    @override
     def item_link(self, item):
         return item.get_absolute_url()
 
 
 class BillFeed(Feed):
 
+    @override
     def get_object(self, request, bill_id):
         return get_object_or_404(Bill, pk=bill_id)
 
+    @override
     def title(self, bill):
         return "Bill %s" % bill.number
 
+    @override
     def link(self, bill):
         return "http://openparliament.ca" + bill.get_absolute_url()
 
+    @override
     def description(self, bill):
         return "From openparliament.ca, speeches about Bill %s, %s" % (bill.number, bill.name)
 
+    @override
     def items(self, bill):
         statements = (bill.statement_set.all()
                       .order_by('-time', '-sequence')
@@ -348,6 +366,7 @@ class BillFeed(Feed):
         merged.sort(key=lambda i: i.date, reverse=True)
         return merged
 
+    @override
     def item_title(self, item):
         if isinstance(item, VoteQuestion):
             return "Vote #%s (%s)" % (item.number, item.get_result_display())
@@ -358,14 +377,17 @@ class BillFeed(Feed):
             'date': format_date(item.time, "F jS"),
         }
 
+    @override
     def item_link(self, item):
         return item.get_absolute_url()
 
+    @override
     def item_description(self, item):
         if isinstance(item, Statement):
             return item.text_html()
 
         return item.description
 
+    @override
     def item_pubdate(self, item):
         return datetime.datetime(item.date.year, item.date.month, item.date.day)

@@ -1,6 +1,7 @@
 import datetime
 import itertools
 import re
+from typing import override
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -50,7 +51,8 @@ class CurrentMPView(ModelListView):
         'include': APIFilters.noop(help_txt="'former' to show former MPs (since 94), 'all' for current and former")
     }
 
-    def get_qs(self, request=None):
+    @override
+    def get_qs(self, request=None, **kwargs):
         if request and request.GET.get('include') == 'former':
             qs = Politician.objects.elected_but_not_current().order_by('name_family')
         elif request and request.GET.get('include') == 'all':
@@ -60,6 +62,7 @@ class CurrentMPView(ModelListView):
                 'riding__province', 'politician__name_family').select_related('politician', 'riding', 'party')
         return qs
 
+    @override
     def object_to_dict(self, obj):
         if isinstance(obj, ElectedMember):
             return {
@@ -88,7 +91,8 @@ class FormerMPView(ModelListView):
 
     resource_name = 'Politicians'
 
-    def get_json(self, request):
+    @override
+    def get_json(self, request, **kwargs):
         return HttpResponsePermanentRedirect(reverse('politicians') + '?include=former')
 
     def get_html(self, request):
@@ -126,6 +130,7 @@ class PoliticianView(ModelDetailView):
 
         return get_object_or_404(Politician, pk=pol_id)
 
+    @override
     def get_related_resources(self, request, obj, result):
         pol_query = '?' + urlencode({'politician': obj.identifier})
         return {
@@ -242,38 +247,47 @@ class PoliticianMembershipListView(ModelListView):
 
     resource_name = 'Politician memberships'
 
-    def get_qs(self, request):
+    @override
+    def get_qs(self, request, **kwargs):
         return ElectedMember.objects.all().select_related('party', 'riding', 'politician')
 
 
 class PoliticianStatementFeed(Feed):
-
+    @override
     def get_object(self, request, pol_id):
         self.language = request.GET.get('language', settings.LANGUAGE_CODE)
         return get_object_or_404(Politician, pk=pol_id)
 
+    @override
     def title(self, pol):
         return "%s in the House of Commons" % pol.name
 
+    @override
     def link(self, pol):
         return "http://openparliament.ca" + pol.get_absolute_url()
 
+    @override
     def description(self, pol):
         return "Statements by %s in the House of Commons, from openparliament.ca." % pol.name
 
+    @override
     def items(self, pol):
         return Statement.objects.filter(
             member__politician=pol, document__document_type=Document.DEBATE).order_by('-time')[:12]
 
+    @override
     def item_title(self, item):
         return item.topic
 
+    @override
     def item_link(self, item):
         return item.get_absolute_url()
 
+    @override
     def item_description(self, item):
         return item.text_html(language=self.language)
 
+    @override
     def item_pubdate(self, item):
         return item.time
 
@@ -287,25 +301,32 @@ r_excerpt = re.compile(r'<span class="excerpt">')
 
 class PoliticianActivityFeed(Feed):
 
+    @override
     def get_object(self, request, pol_id):
         return get_object_or_404(Politician, pk=pol_id)
 
+    @override
     def title(self, pol):
         return pol.name
 
+    @override
     def link(self, pol):
         return "http://openparliament.ca" + pol.get_absolute_url()
 
+    @override
     def description(self, pol):
         return "Recent news about %s, from openparliament.ca." % pol.name
 
+    @override
     def items(self, pol):
         return activity.iter_recent(Activity.objects.filter(politician=pol))
 
+    @override
     def item_title(self, item):
         # FIXME wrap in try
         return r_title.search(item.payload).group(1)
 
+    @override
     def item_link(self, item):
         match = r_link.search(item.payload)
         if match:
@@ -314,9 +335,11 @@ class PoliticianActivityFeed(Feed):
         # FIXME include links in activity model?
         return ''
 
+    @override
     def item_guid(self, activity):
         return activity.guid
 
+    @override
     def item_description(self, item):
         payload = r_excerpt.sub(
             ('<br><span style="display: block; border-left: 1px dotted #AAAAAA; margin-left: 2em; '
@@ -324,6 +347,7 @@ class PoliticianActivityFeed(Feed):
         payload = r_title.sub('', payload)
         return payload
 
+    @override
     def item_pubdate(self, item):
         return datetime.datetime(item.date.year, item.date.month, item.date.day)
 
@@ -332,7 +356,8 @@ class PoliticianTextAnalysisView(TextAnalysisView):
 
     expiry_days = 14
 
-    def get_qs(self, request, pol_id=None, pol_slug=None):
+    @override
+    def get_qs(self, request, pol_id=None, pol_slug=None, **kwargs):
         if pol_slug:
             pol = get_object_or_404(Politician, slug=pol_slug)
         else:
@@ -340,6 +365,7 @@ class PoliticianTextAnalysisView(TextAnalysisView):
         request.pol = pol
         return pol.get_text_analysis_qs()
 
+    @override
     def get_analysis(self, request, **kwargs):
         analysis = super(PoliticianTextAnalysisView, self).get_analysis(request, **kwargs)
         word = analysis.top_word

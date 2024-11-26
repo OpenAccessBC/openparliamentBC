@@ -1,4 +1,5 @@
 import datetime
+from typing import override
 
 from django.conf import settings
 from django.contrib.syndication.views import Feed
@@ -71,17 +72,22 @@ class SiteNewsFeed(Feed):
     link = "http://openparliament.ca/"
     description = "Announcements about the openparliament.ca site"
 
+    @override
     def items(self):
         return SiteNews.public.all()[:6]
 
+    @override
     def item_title(self, item):
         return item.title
 
+    @override
     def item_description(self, item):
         return markdown(item.text)
 
-    def item_link(self):
+    @override
+    def item_link(self, item):
         return 'http://openparliament.ca/'
 
+    @override
     def item_guid(self, item):
         return str(item.id)

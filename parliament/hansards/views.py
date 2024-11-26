@@ -1,4 +1,5 @@
 import datetime
+from typing import override
 from urllib.parse import urlencode
 
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
@@ -34,6 +35,7 @@ class HansardView(ModelDetailView):
     def get_html(self, request, **kwargs):
         return document_view(request, _get_hansard(**kwargs))
 
+    @override
     def get_related_resources(self, request, obj, result):
         return {
             'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']}),
@@ -56,6 +58,7 @@ class HansardStatementView(ModelDetailView):
             slug=slug
         )
 
+    @override
     def get_related_resources(self, request, obj, result):
         return {
             'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
@@ -200,7 +203,8 @@ class SpeechesView(ModelListView):
 
     resource_name = 'Speeches'
 
-    def get_qs(self, request):
+    @override
+    def get_qs(self, request, **kwargs):
         qs = Statement.objects.all().prefetch_related('politician')
         if 'document' not in request.GET:
             qs = qs.order_by('-time')
@@ -220,6 +224,7 @@ class DebatePermalinkView(ModelDetailView):
             statement = get_object_or_404(Statement, document=doc, slug=slug)
         return doc, statement
 
+    @override
     def get_json(self, request, **kwargs):
         url = self._get_objs(request, **kwargs)[1].get_absolute_url()
         return HttpResponseRedirect(url + '?' + request.GET.urlencode())
@@ -292,6 +297,7 @@ class APIArchiveView(ModelListView):
     def get_html(self, request, **kwargs):
         return self.get(request, **kwargs)
 
+    @override
     def get_qs(self, request, **kwargs):
         return self.get_dated_items()[1]
 
@@ -335,12 +341,14 @@ by_month = DebateMonthArchive.as_view()
 
 class HansardAnalysisView(TextAnalysisView):
 
-    def get_corpus_name(self, request, year, **kwargs):
+    @override
+    def get_corpus_name(self, request, year=None, **kwargs):
         # Use a special corpus for old debates
         if int(year) < (datetime.date.today().year - 1):
             return 'debates-%s' % year
         return 'debates'
 
+    @override
     def get_qs(self, request, **kwargs):
         h = _get_hansard(**kwargs)
         request.hansard = h
@@ -349,6 +357,7 @@ class HansardAnalysisView(TextAnalysisView):
         #     qs = qs.filter(member__party__slug=request.GET['party'])
         return qs
 
+    @override
     def get_analysis(self, request, **kwargs):
         analysis = super(HansardAnalysisView, self).get_analysis(request, **kwargs)
         word = analysis.top_word

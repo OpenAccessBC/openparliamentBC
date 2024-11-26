@@ -1,4 +1,5 @@
 import datetime
+from typing import override
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -24,7 +25,8 @@ class CommitteeListView(ModelListView):
         'session': APIFilters.dbfield('sessions')
     }
 
-    def get_qs(self, request):
+    @override
+    def get_qs(self, request, **kwargs):
         qs = Committee.objects.filter(
             parent__isnull=True, display=True).order_by('name_' + settings.LANGUAGE_CODE)
         if 'session' not in request.GET:
@@ -61,6 +63,7 @@ class CommitteeView(ModelDetailView):
     def get_object(self, request, slug):
         return get_object_or_404(Committee, slug=slug)
 
+    @override
     def get_related_resources(self, request, obj, result):
         return {
             'meetings_url': reverse('committee_meetings') + '?' + urlencode({'committee': self.kwargs['slug']}),
@@ -164,7 +167,8 @@ class CommitteeMeetingListView(ModelListView):
             help_txt="e.g. /committees/aboriginal-affairs")
     }
 
-    def get_qs(self, request):
+    @override
+    def get_qs(self, request, **kwargs):
         return CommitteeMeeting.objects.all().order_by('-date')
 
 
@@ -175,6 +179,7 @@ class CommitteeMeetingView(ModelDetailView):
     def get_object(self, request, committee_slug, session_id, number):
         return _get_meeting(committee_slug, session_id, number)
 
+    @override
     def get_related_resources(self, request, obj, result):
         if obj.evidence_id:
             return {
@@ -200,6 +205,7 @@ committee_meeting = CommitteeMeetingView.as_view()
 
 class EvidenceAnalysisView(TextAnalysisView):
 
+    @override
     def get_qs(self, request, **kwargs):
         m = _get_meeting(**kwargs)
         if not m.evidence:
@@ -210,9 +216,11 @@ class EvidenceAnalysisView(TextAnalysisView):
         #     qs = qs.filter(member__party__slug=request.GET['party'])
         return qs
 
-    def get_corpus_name(self, request, committee_slug, **kwargs):
+    @override
+    def get_corpus_name(self, request, committee_slug: str = "", **kwargs):
         return committee_slug
 
+    @override
     def get_analysis(self, request, **kwargs):
         analysis = super(EvidenceAnalysisView, self).get_analysis(request, **kwargs)
         word = analysis.top_word
@@ -228,10 +236,12 @@ class CommitteeAnalysisView(TextAnalysisView):
 
     expiry_days = 7
 
-    def get_corpus_name(self, request, committee_slug):
+    @override
+    def get_corpus_name(self, request, committee_slug: str = "", **kwargs):
         return committee_slug
 
-    def get_qs(self, request, committee_slug):
+    @override
+    def get_qs(self, request, committee_slug=None, **kwargs):
         cmte = get_object_or_404(Committee, slug=committee_slug)
         qs = Statement.objects.filter(
             document__document_type='E',
@@ -249,6 +259,7 @@ class CommitteeMeetingStatementView(ModelDetailView):
         meeting = _get_meeting(committee_slug, session_id, number)
         return meeting.evidence.statement_set.get(slug=slug)
 
+    @override
     def get_related_resources(self, request, obj, result):
         return {
             'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
