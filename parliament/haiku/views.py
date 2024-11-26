@@ -17,9 +17,9 @@ def haiku(request, haiku_id=None):
         haikus = [get_object_or_404(Haiku, pk=haiku_id)]
     else:
         if is_ajax(request):
-            haikus = Haiku.objects.filter(worthy=True).order_by('?')[:10]
+            haikus = list(Haiku.objects.filter(worthy=True).order_by('?')[:10])
         else:
-            haikus = Haiku.objects.filter(worthy=True).order_by('?')[:1]
+            haikus = list(Haiku.objects.filter(worthy=True).order_by('?')[:1])
 
     if is_ajax(request):
         # time.sleep(2)

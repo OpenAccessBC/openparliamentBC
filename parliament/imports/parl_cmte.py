@@ -82,15 +82,15 @@ def import_committee_list(session=None):
         for sub, sub_fr in zip(sub_names, sub_names_fr):
             match = re.search(r'^(.+) \(([A-Z0-9]{3,5})\)$', sub.text_content())
             assert match is not None
-            (name_en, acronym) = match.groups()
+            (name_en, name_acronym) = match.groups()
             if sub_fr:
                 match = re.search(r'^(.+) \(([A-Z0-9]{3,5})\)$', sub_fr)
                 assert match is not None
                 (name_fr, acronym_fr) = match.groups()
-                assert acronym == acronym_fr
+                assert name_acronym == acronym_fr
             else:
                 name_fr = ''
-            make_committee(name_en.strip(), name_fr.strip(), acronym, parent=com)
+            make_committee(name_en.strip(), name_fr.strip(), name_acronym, parent=com)
 
     if not found:
         logger.error("No committees in list")
