@@ -13,12 +13,12 @@ def import_ec_results(election, url="http://enr.elections.ca/DownloadResults.asp
     """Import an election from the text format used on enr.elections.ca
     (after the 2011 general election)"""
 
-    preliminary_results: Dict[int, List[List[str]]] = {}
-    validated_results: Dict[int, List[List[str]]] = {}
+    preliminary_results: Dict[str, List[List[str]]] = {}
+    validated_results: Dict[str, List[List[str]]] = {}
 
     for line in requests.get(url, timeout=10).content.split(b'\n'):
         line = line.decode('utf-8').split('\t')
-        edid = line[0]
+        edid: str = line[0]
         if not edid.isdigit():
             continue
         result_type = line[3]
