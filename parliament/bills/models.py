@@ -3,7 +3,7 @@ import json
 import logging
 import re
 from collections import Counter, defaultdict
-from typing import Dict
+from typing import Dict, override
 
 from django.conf import settings
 from django.db import models
@@ -152,7 +152,8 @@ class Bill(models.Model):
     class Meta:
         ordering = ('privatemember', 'institution', 'number_only')
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s - %s" % (self.number, self.name)
 
     def get_absolute_url(self) -> str:
@@ -202,7 +203,8 @@ class Bill(models.Model):
     def latest_date(self):
         return self.status_date if self.status_date else self.introduced
 
-    def save(self, *args, **kwargs):
+    @override
+    def save(self, *args, **kwargs) -> None:
         if not self.number_only:
             self.number_only = int(re.sub(r'\D', '', self.number))
         if getattr(self, 'privatemember', None) is None:
@@ -371,7 +373,8 @@ class BillInSession(models.Model):
 
     objects = BillInSessionManager()
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s in session %s" % (self.bill, self.session_id)
 
     def get_absolute_url(self) -> str:
@@ -434,7 +437,8 @@ class BillEvent(models.Model):
 
     status = language_property('status')
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s: %s, %s" % (self.status, self.bis.bill.number, self.date)
 
     @property
@@ -455,7 +459,8 @@ class BillText(models.Model):
 
     text = language_property('text')
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "Document #%d for %s" % (self.docid, self.bill)
 
     @property
@@ -489,7 +494,8 @@ class VoteQuestion(models.Model):
 
     description = language_property('description')
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "Vote #%s on %s" % (self.number, self.date)
 
     class Meta:
@@ -584,7 +590,8 @@ class MemberVote(models.Model):
     vote: models.CharField = models.CharField(max_length=1, choices=VOTE_CHOICES)
     dissent: models.BooleanField = models.BooleanField(default=False, db_index=True)
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return '%s voted %s on %s' % (self.politician, self.get_vote_display(), self.votequestion)
 
     def save_activity(self):
@@ -614,5 +621,6 @@ class PartyVote(models.Model):
     class Meta:
         unique_together = ('votequestion', 'party')
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return '%s voted %s on %s' % (self.party, self.get_vote_display(), self.votequestion)

@@ -43,7 +43,8 @@ class InternalXref(models.Model):
     # edid_postcode -- the EDID -- which points to a riding, but is NOT the primary  key -- for a postcode
     schema: models.CharField = models.CharField(max_length=15, db_index=True)
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s: %s %s for %s" % (self.schema, self.text_value, self.int_value, self.target_id)
 
 
@@ -84,7 +85,7 @@ class Party(models.Model):
         self._saveAlternate = True
 
     @override
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         if not self.name_fr:
             self.name_fr = self.name_en
         if not self.short_name_en:
@@ -112,7 +113,7 @@ class Party(models.Model):
                 raise Exception("Name %s already points to a different party" % name.strip().lower())
 
     @override
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -124,7 +125,7 @@ class Person(models.Model):
     name_family: models.CharField = models.CharField("Family name", max_length=50, blank=True)
 
     @override
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     class Meta:
@@ -418,7 +419,7 @@ class Politician(Person):
             return None
 
     @override
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         super(Politician, self).save(*args, **kwargs)
         self.add_alternate_name(self.name)
 
@@ -590,7 +591,7 @@ class PoliticianInfo(models.Model):
     sr_objects = PoliticianInfoManager()
 
     @override
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s: %s" % (self.politician, self.schema)
 
     @property
@@ -635,7 +636,7 @@ class Session(models.Model):
         ordering = ('-start',)
 
     @override
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     def has_votes(self):
@@ -729,7 +730,7 @@ class Riding(models.Model):
         ordering = ('province', 'name_en')
 
     @override
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         if not self.slug:
             self.slug = parsetools.slugify(self.name_en)
         super(Riding, self).save(*args, **kwargs)
@@ -739,7 +740,7 @@ class Riding(models.Model):
         return self.name.replace('--', '—')
 
     @override
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s (%s)" % (self.dashed_name, self.get_province_display())
 
 
@@ -783,7 +784,7 @@ class ElectedMember(models.Model):
     objects = ElectedMemberManager()
 
     @override
-    def __str__(self):
+    def __str__(self) -> str:
         if self.end_date:
             return ("%s (%s) was the member from %s from %s to %s"
                     % (self.politician, self.party, self.riding, self.start_date, self.end_date))

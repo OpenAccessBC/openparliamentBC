@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Any, Optional
+from typing import Any, Optional, override
 
 import requests
 from django.db import transaction
@@ -45,11 +45,13 @@ class BillData():
             return _parse_date(v) if v else v
         return v
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "<BillData %s (%s-%s)>" % (
             self['NumberCode'], self['ParliamentNumber'], self['SessionNumber'])
 
-    def __repr__(self):
+    @override
+    def __repr__(self) -> str:
         return str(self)
 
     def get(self, key, default=None):

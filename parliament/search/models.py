@@ -1,4 +1,5 @@
 import datetime
+from typing import override
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -16,5 +17,6 @@ class IndexingTask(models.Model):
     object_id: models.CharField = models.CharField(max_length=20, blank=True)
     content_object: GenericForeignKey = GenericForeignKey('content_type', 'object_id')
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return '%s %s' % (self.action, self.identifier)

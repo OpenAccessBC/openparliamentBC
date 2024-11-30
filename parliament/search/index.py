@@ -1,4 +1,5 @@
 import itertools
+from typing import Set
 
 from django.conf import settings
 from django.db.models import signals
@@ -6,10 +7,10 @@ from django.db.models import signals
 from parliament.search.models import IndexingTask
 from parliament.search.solr import get_pysolr_instance
 
-_search_model_registry = set()
+_search_model_registry: Set[type] = set()
 
 
-def register_search_model(cls):
+def register_search_model[T: type](cls: T) -> T:
     """
     Register a model for indexing with the search engine.
 

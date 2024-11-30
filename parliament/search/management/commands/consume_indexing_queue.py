@@ -1,4 +1,5 @@
 import logging
+from typing import override
 
 from django.core.management.base import BaseCommand
 
@@ -11,7 +12,8 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     help = "Runs any queued-up search indexing tasks."
 
-    def handle(self, **options):
+    @override
+    def handle(self, **options) -> None:
 
         from parliament.search.models import IndexingTask
 

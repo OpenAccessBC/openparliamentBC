@@ -1,7 +1,7 @@
 import datetime
 import random
 import string
-from typing import Dict
+from typing import Dict, override
 
 from django.conf import settings
 from django.db import models
@@ -47,10 +47,12 @@ class Committee(models.Model):
     class Meta:
         ordering = ['name_en']
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return self.name
 
-    def save(self, *args, **kwargs):
+    @override
+    def save(self, *args, **kwargs) -> None:
         if not self.short_name_en:
             self.short_name_en = self.name_en
         if not self.short_name_fr:
@@ -113,7 +115,8 @@ class CommitteeInSession(models.Model):
             ('session', 'acronym'),
         ]
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s (%s) in %s" % (self.committee, self.acronym, self.session_id)
 
     def get_source_url(self):
@@ -137,7 +140,8 @@ class CommitteeActivity(models.Model):
 
     name = language_property('name')
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return self.name
 
     def get_absolute_url(self) -> str:
@@ -200,7 +204,8 @@ class CommitteeMeeting(models.Model):
             ('session', 'committee', 'number')
         ]
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s on %s" % (self.committee.short_name, self.date)
 
     def to_api_dict(self, representation):
@@ -294,5 +299,6 @@ class CommitteeReport(models.Model):
 
     name = language_property('name')
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s report #%s" % (self.committee, self.number)

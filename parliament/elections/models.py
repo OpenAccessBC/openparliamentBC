@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 from decimal import Decimal
-from typing import Dict
+from typing import Dict, override
 
 from django.db import models
 
@@ -17,7 +17,8 @@ class Election(models.Model):
     class Meta:
         ordering = ('-date',)
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         if self.byelection:
             return "Byelection of %s" % self.date
 
@@ -146,5 +147,6 @@ class Candidacy (models.Model):
             self.candidate.add_slug()
         return member
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s (%s) was a candidate in %s in the %s" % (self.candidate, self.party, self.riding, self.election)

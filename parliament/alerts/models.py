@@ -3,6 +3,7 @@ import datetime
 import hashlib
 import logging
 import re
+from typing import override
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -40,12 +41,14 @@ class Topic(models.Model):
 
     objects = TopicManager()
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         if self.politician_hansard_alert:
             return '%s in House debates' % self.person_name
         return self.query
 
-    def save(self, *args, **kwargs):
+    @override
+    def save(self, *args, **kwargs) -> None:
         super(Topic, self).save(*args, **kwargs)
         self.initialize_if_necessary()
 
@@ -129,7 +132,8 @@ class SeenItem(models.Model):
             ('topic', 'item_id')
         ]
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return '%s seen for %s' % (self.item_id, self.topic)
 
 
@@ -157,10 +161,12 @@ class Subscription(models.Model):
         ]
         ordering = ['-created']
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return '%s: %s' % (self.user, self.topic)
 
-    def save(self, *args, **kwargs):
+    @override
+    def save(self, *args, **kwargs) -> None:
         new = not self.id
         super(Subscription, self).save(*args, **kwargs)
         if new:
@@ -244,6 +250,7 @@ class PoliticianAlert(models.Model):
         h.update(settings.SECRET_KEY)
         return base64.urlsafe_b64encode(h.digest()).replace(b'=', b'')
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s for %s (%s)" % \
             (self.email, self.politician.name, 'active' if self.active else 'inactive')

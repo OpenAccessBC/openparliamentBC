@@ -1,3 +1,5 @@
+from typing import override
+
 from django.db import models
 
 from parliament.core.models import Politician
@@ -23,6 +25,7 @@ class Activity(models.Model):
     def payload_wrapped(self):
         return '<p class="activity_item" data-id="%s">%s</p>' % (self.pk, self.payload)
 
-    def save(self, *args, **kwargs):
+    @override
+    def save(self, *args, **kwargs) -> None:
         self.full_clean()
         super(Activity, self).save(*args, **kwargs)

@@ -253,8 +253,7 @@ def _scrape_ourcommons_row(row):
         phone_and_fax_el = constituency_office_el.xpath(
             './p[contains(., "Telephone")]|./p[contains(., "Téléphone")]')
         if len(phone_and_fax_el):
-            phone_and_fax = phone_and_fax_el[0].text_content(
-            ).strip().splitlines()
+            phone_and_fax = phone_and_fax_el[0].text_content().strip().splitlines()
             # Note that https://www.ourcommons.ca/Members/en/michael-barrett(102275)#contact
             # has a empty value - "Telephone:". So the search / replace cannot include space.
             voice = phone_and_fax[0].replace(

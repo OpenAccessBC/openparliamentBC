@@ -1,6 +1,7 @@
 import datetime
 import os
 from base64 import urlsafe_b64encode
+from typing import override
 
 from django.core.mail import send_mail
 from django.db import models
@@ -21,7 +22,8 @@ class User(models.Model):
 
     data: models.JSONField = models.JSONField(blank=True, default=dict)
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return self.email
 
     def log_in(self, request):
@@ -51,7 +53,8 @@ class LoginToken(models.Model):
 
     MAX_TOKEN_AGE: datetime.timedelta = datetime.timedelta(seconds=60 * 60 * 8)
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s for %s" % (self.token, self.email)
 
     @classmethod

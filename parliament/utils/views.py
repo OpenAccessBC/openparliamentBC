@@ -1,6 +1,7 @@
 import json
 import re
 from http import HTTPStatus
+from typing import override
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View
@@ -18,6 +19,7 @@ class JSONView(View):
         super(JSONView, self).__init__()
         self.content_type = 'application/json'
 
+    @override
     def dispatch(self, request, *args, **kwargs):
         result = super(JSONView, self).dispatch(request, *args, **kwargs)
         indent_response = 4 if request.GET.get('indent') else None

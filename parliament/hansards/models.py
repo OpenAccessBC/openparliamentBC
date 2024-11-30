@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from collections import OrderedDict, defaultdict
-from typing import Any, Dict, List
+from typing import Any, Dict, List, override
 
 from django.conf import settings
 from django.db import models
@@ -25,12 +25,14 @@ logger = logging.getLogger(__name__)
 
 class DebateManager(models.Manager):
 
+    @override
     def get_queryset(self):
         return super(DebateManager, self).get_queryset().filter(document_type=Document.DEBATE)
 
 
 class EvidenceManager(models.Manager):
 
+    @override
     def get_queryset(self):
         return super(EvidenceManager, self).get_queryset().filter(document_type=Document.EVIDENCE)
 
@@ -38,6 +40,7 @@ class EvidenceManager(models.Manager):
 class NoStatementManager(models.Manager):
     """Manager restricts to Documents that haven't had statements parsed."""
 
+    @override
     def get_queryset(self):
         return super(NoStatementManager, self).get_queryset()\
             .annotate(scount=models.Count('statement'))\
@@ -80,7 +83,8 @@ class Document(models.Model):
     class Meta:
         ordering = ('-date',)
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         if self.document_type == self.DEBATE:
             return "Hansard #%s for %s (#%s/#%s)" % (self.number, self.date, self.id, self.source_id)
 
@@ -349,7 +353,8 @@ class Statement(models.Model):
     who = language_property('who')
     who_context = language_property('who_context')
 
-    def save(self, *args, **kwargs):
+    @override
+    def save(self, *args, **kwargs) -> None:
         self.content_en = self.content_en.replace('\n', '').replace('</p>', '</p>\n').strip()
         self.content_fr = self.content_fr.replace('\n', '').replace('</p>', '</p>\n').strip()
         if self.wordcount_en is None:
@@ -380,7 +385,8 @@ class Statement(models.Model):
             self.generate_url()
         return self.urlcache
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s speaking about %s around %s" % (self.who, self.topic, self.time)
 
     def content_floor(self):
@@ -589,5 +595,6 @@ class OldSequenceMapping(models.Model):
             ('document', 'sequence')
         )
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s -> %s" % (self.sequence, self.slug)

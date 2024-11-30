@@ -1,4 +1,5 @@
 import re
+from typing import override
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -45,7 +46,8 @@ class Haiku(models.Model):
         a += ' in ' + defaultfilters.date(statement.time, "F Y")
         self.attribution = a
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return '%s / %s / %s' % (self.line1, self.line2, self.line3)
 
     class Meta:

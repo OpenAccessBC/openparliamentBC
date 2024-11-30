@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 from heapq import nlargest
 from operator import itemgetter
-from typing import Dict, List
+from typing import Dict, List, override
 
 STOPWORDS = frozenset(
     ["i", "me", "my", "myself", "we", "our", "ours", "ourselves",
@@ -128,7 +128,8 @@ class WordCounter(dict):
     def __missing__(self, key):
         return 0
 
-    def __setitem__(self, key, value):
+    @override
+    def __setitem__(self, key, value) -> None:
         if key not in self.stopwords:
             super(WordCounter, self).__setitem__(key, value)
 

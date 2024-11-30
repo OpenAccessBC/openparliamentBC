@@ -1,6 +1,7 @@
 import datetime
 import json
 from operator import itemgetter
+from typing import override
 
 from django.conf import settings
 from django.core.cache import cache
@@ -66,7 +67,8 @@ class TextAnalysis(models.Model):
         unique_together = [('key', 'lang')]
         verbose_name_plural = 'Text analyses'
 
-    def __str__(self):
+    @override
+    def __str__(self) -> str:
         return "%s (%s)" % (self.key, self.lang)
 
     @property

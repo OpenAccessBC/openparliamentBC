@@ -161,8 +161,7 @@ class BillSessionListView(ModelListView):
 
     @override
     def get_json(self, request, session_id=None, **kwargs):
-        return HttpResponseRedirect(reverse('bills') + '?'
-                                    + urlencode({'session': session_id}))
+        return HttpResponseRedirect(reverse('bills') + '?' + urlencode({'session': session_id}))
 
     def get_html(self, request, session_id):
         session = get_object_or_404(Session, pk=session_id)
@@ -217,8 +216,7 @@ class VoteListView(ModelListView):
     @override
     def get_json(self, request, session_id=None, **kwargs):
         if session_id:
-            return HttpResponseRedirect(reverse('votes') + '?'
-                                        + urlencode({'session': session_id}))
+            return HttpResponseRedirect(reverse('votes') + '?' + urlencode({'session': session_id}))
         return super(VoteListView, self).get_json(request, **kwargs)
 
     @override

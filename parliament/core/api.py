@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Dict
+from typing import Dict, override
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -63,6 +63,7 @@ class APIView(View):
         )
         return self._mimetype_lookup[mimetype] if mimetype else None
 
+    @override
     def dispatch(self, request, **kwargs):
         self.request = request
         self.kwargs = kwargs
@@ -336,6 +337,7 @@ class FetchFromCacheMiddleware(DjangoFetchFromCacheMiddleware):
     # formats, it's not a good fit with the full-site cache middleware.
     # So we'll just disable it for the API.
 
+    @override
     def process_request(self, request):
         if request.get_host().lower().startswith(settings.PARLIAMENT_API_HOST):
             request._cache_update_cache = False
