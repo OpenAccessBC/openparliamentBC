@@ -1,6 +1,8 @@
-from typing import override
+from typing import Any, override
 
 from django.contrib import admin
+from django.db.models import ForeignKey
+from django.http import HttpRequest
 
 from parliament.core.models import ElectedMember, InternalXref, Party, Politician, PoliticianInfo, Riding, Session, SiteNews, models
 
@@ -45,7 +47,7 @@ class PoliticianInfoOptions(admin.ModelAdmin):
     search_fields = ('politician__name', 'schema', 'value')
 
     @override
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    def formfield_for_foreignkey(self, db_field: ForeignKey, request: HttpRequest, **kwargs: Any):
         if db_field.name == "politician":
             kwargs["queryset"] = Politician.objects.elected()
             return db_field.formfield(**kwargs)

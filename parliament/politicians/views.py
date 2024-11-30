@@ -41,7 +41,8 @@ class CurrentMPView(ModelListView):
                 return APIFilters.dbfield(field_name)(qs, *args, **kwargs)
 
             return APIFilters.dbfield('politician__' + field_name)(qs, *args, **kwargs)
-        inner.help = help_txt
+
+        setattr(inner, "help", help_txt)
         return inner
 
     filters = {

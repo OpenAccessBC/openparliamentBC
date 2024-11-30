@@ -195,7 +195,8 @@ class APIFilters():
                 })
             except (ValueError, ValidationError) as e:
                 raise BadRequest(str(e)) from e
-        inner.help = help_txt
+
+        setattr(inner, "help", help_txt)
         return inner
 
     @staticmethod
@@ -213,7 +214,8 @@ class APIFilters():
                 return qs.filter(**(query_func(url_bits)))
             except ValueError as e:
                 raise BadRequest(e) from e
-        inner.help = help_txt
+
+        setattr(inner, "help", help_txt)
         return inner
 
     @staticmethod
@@ -235,7 +237,8 @@ class APIFilters():
             except StopIteration:
                 raise BadRequest("Invalid value for %s" % filter_name) from None
             return qs.filter(**{field_name: search_val})
-        inner.help = ', '.join(c[1] for c in choices)
+
+        setattr(inner, "help", ', '.join(c[1] for c in choices))
         return inner
 
     @staticmethod
@@ -245,7 +248,8 @@ class APIFilters():
         e.g. by subclassing the main filter() method."""
         def inner(qs, view, filter_name, filter_extra, val):
             return qs
-        inner.help = help_txt
+
+        setattr(inner, "help", help_txt)
         return inner
 
 

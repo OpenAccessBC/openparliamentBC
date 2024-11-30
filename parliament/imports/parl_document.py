@@ -168,7 +168,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
                 st.h2_fr = fr_data.meta.get('h2', '')
                 st.h3_fr = fr_data.meta.get('h3', '')
                 if st.h1_fr and not st.h2_fr:
-                    st.h2_fr = s.h3_fr
+                    st.h2_fr = st.h3_fr
                     st.h3_fr = ''
                 st.who_fr = fr_data.meta.get('person_attribution', '')[:300]
                 st.who_context_fr = fr_data.meta.get('person_context', '')[:300]

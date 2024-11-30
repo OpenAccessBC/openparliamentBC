@@ -184,7 +184,7 @@ class SpeechesView(ModelListView):
 
         raise BadRequest("Invalid document URL")
 
-    document_filter.help = "the URL of the debate or committee meeting"
+    setattr(document_filter, "help", "the URL of the debate or committee meeting")
 
     filters = {
         'procedural': APIFilters.dbfield(help_txt="is this a short, routine procedural speech? True or False"),
