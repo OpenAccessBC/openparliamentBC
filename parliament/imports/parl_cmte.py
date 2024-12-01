@@ -53,13 +53,13 @@ def import_committee_list(session=None):
 
     found = False
     for cmte_div in root.cssselect('.committees-list .accordion-item'):
-        acronym = cmte_div.cssselect('.accordion-bar-title .committee-acronym-cell')
-        assert len(acronym) == 1
-        acronym = acronym[0].text_content().strip()
+        acronym_html = cmte_div.cssselect('.accordion-bar-title .committee-acronym-cell')
+        assert len(acronym_html) == 1
+        acronym = acronym_html[0].text_content().strip()
 
-        name = cmte_div.cssselect('.accordion-bar-title .committee-name')
-        assert len(name) == 1
-        name = name[0].text_content().strip()
+        name_html = cmte_div.cssselect('.accordion-bar-title .committee-name')
+        assert len(name_html) == 1
+        name = name_html[0].text_content().strip()
         name_fr = root_fr.xpath(
             '//span[@class="committee-acronym-cell"][text()="%s"]/following-sibling::span/text()'
             % acronym.upper()

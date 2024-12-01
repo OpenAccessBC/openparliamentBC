@@ -291,7 +291,7 @@ class Bill(models.Model):
                 h1_en='Government Orders').values_list('h2_en', flat=True)
             if not speech_headings:
                 return Statement.objects.none()
-            h2 = Counter(speech_headings).most_common(1)[0][0]
+            h2: models.TextField = Counter(speech_headings).most_common(1)[0][0]
             qs = qs.filter(h2_en=h2)
         return qs
 

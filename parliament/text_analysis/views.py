@@ -28,7 +28,7 @@ class TextAnalysisView(View):
     def get_qs(self, request, **kwargs):
         raise NotImplementedError
 
-    def get_corpus_name(self, request, **kwargs):
+    def get_corpus_name(self, request, **kwargs) -> str:
         return self.corpus_name
 
     def get_analysis(self, request, **kwargs):

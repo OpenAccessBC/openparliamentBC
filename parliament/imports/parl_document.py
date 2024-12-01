@@ -9,7 +9,7 @@ import logging
 import re
 import sys
 from difflib import SequenceMatcher
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from xml.sax.saxutils import quoteattr
 
 import requests
@@ -116,10 +116,10 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
     fr_statements = {}
     missing_id_count = 0
 
-    def _get_paragraph_id(p) -> int:
+    def _get_paragraph_id(p: str) -> int:
         return int(_r_paragraph_id.match(p).group('id'))
 
-    def _get_paragraphs_and_ids(content):
+    def _get_paragraphs_and_ids(content: str) -> List[Tuple[str, int]]:
         return [(p, _get_paragraph_id(p)) for p in _r_paragraphs.findall(content)]
 
     for st in pdoc_fr.statements:
@@ -149,8 +149,8 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
         document.multilingual = True
         for st in statements:
             fr_data = fr_statements.get(st.source_id)
-            pids_en = [pid for p, pid in _get_paragraphs_and_ids(st.content_en)]
-            pids_fr = [pid for p, pid in _get_paragraphs_and_ids(fr_data.content)] if fr_data else None
+            pids_en: List[int] = [pid for p, pid in _get_paragraphs_and_ids(st.content_en)]
+            pids_fr: List[int] | None = [pid for p, pid in _get_paragraphs_and_ids(fr_data.content)] if fr_data else None
             if fr_data and pids_en == pids_fr:
                 # Match by statement
                 st.content_fr = _process_related_links(fr_data.content, st)
