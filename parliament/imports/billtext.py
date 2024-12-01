@@ -26,7 +26,7 @@ def get_bill_text_xml(bill_or_url):
 def get_plain_bill_text(bill_or_url) -> Tuple[str, str]:
     bill_el = get_bill_text_xml(bill_or_url)
     body = bill_el.xpath('//Body')[0]
-    return get_bill_summary(bill_el), ' '.join(map(str, body.itertext()))
+    return get_bill_summary(bill_el), ' '.join(body.itertext())
 
 
 def get_bill_summary(bill_el) -> str:

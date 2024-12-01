@@ -15,6 +15,7 @@ types-requests
 types-webob
 types-beautifulsoup4
 types-requests-oauthlib
+types-lxml
 
 # Debugging
 pudb
