@@ -36,6 +36,5 @@ typeCheckingMode = "basic"
 
 reportArgumentType = "none"
 reportAttributeAccessIssue = "none"
-reportCallIssue = "none"
 reportIndexIssue = "none"
 reportOptionalMemberAccess = "none"

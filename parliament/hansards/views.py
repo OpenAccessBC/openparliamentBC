@@ -1,5 +1,5 @@
 import datetime
-from typing import override
+from typing import Dict, override
 from urllib.parse import urlencode
 
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
@@ -18,7 +18,7 @@ from parliament.text_analysis.models import TextAnalysis
 from parliament.text_analysis.views import TextAnalysisView
 
 
-def _get_hansard(year, month, day):
+def _get_hansard(year: str, month: str, day: str) -> Document:
     try:
         return get_object_or_404(Document.debates, date=datetime.date(int(year), int(month), int(day)))
     except ValueError:
@@ -29,14 +29,14 @@ class HansardView(ModelDetailView):
 
     resource_name = 'House debate'
 
-    def get_object(self, request, **kwargs):
+    def get_object(self, request, **kwargs) -> Document:
         return _get_hansard(**kwargs)
 
     def get_html(self, request, **kwargs):
         return document_view(request, _get_hansard(**kwargs))
 
     @override
-    def get_related_resources(self, request, obj, result):
+    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
         return {
             'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']}),
             'debates_url': reverse('debates')
@@ -50,7 +50,7 @@ class HansardStatementView(ModelDetailView):
 
     resource_name = 'Speech (House debate)'
 
-    def get_object(self, request, year, month, day, slug):
+    def get_object(self, request, year: str, month: str, day: str, slug: str) -> Statement:
         date = datetime.date(int(year), int(month), int(day))
         return Statement.objects.get(
             document__document_type='D',
@@ -59,7 +59,7 @@ class HansardStatementView(ModelDetailView):
         )
 
     @override
-    def get_related_resources(self, request, obj, result):
+    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
         return {
             'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
         }

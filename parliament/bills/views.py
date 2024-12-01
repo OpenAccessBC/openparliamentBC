@@ -1,5 +1,5 @@
 import datetime
-from typing import override
+from typing import Dict, override
 from urllib.parse import urlencode
 
 from django.contrib.syndication.views import Feed
@@ -29,12 +29,12 @@ class BillDetailView(ModelDetailView):
 
     resource_name = 'Bill'
 
-    def get_object(self, request, session_id, bill_number):
+    def get_object(self, request, session_id, bill_number) -> BillInSession:
         return BillInSession.objects.select_related(
             'bill', 'sponsor_politician').get(session=session_id, bill__number=bill_number)
 
     @override
-    def get_related_resources(self, request, obj, result):
+    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
         return {
             'bills_url': reverse('bills')
         }
@@ -253,11 +253,11 @@ class VoteDetailView(ModelDetailView):
 
     api_notes = VoteListView.api_notes
 
-    def get_object(self, request, session_id, number):
+    def get_object(self, request, session_id, number) -> VoteQuestion:
         return get_object_or_404(VoteQuestion, session=session_id, number=number)
 
     @override
-    def get_related_resources(self, request, obj, result):
+    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
         return {
             'ballots_url': reverse('vote_ballots') + '?' + urlencode({'vote': result['url']}),
             'votes_url': reverse('votes')
@@ -324,34 +324,34 @@ class BillListFeed(Feed):
         return Bill.objects.filter(introduced__isnull=False).order_by('-introduced', 'number_only')[:25]
 
     @override
-    def item_title(self, item):
+    def item_title(self, item) -> str:
         return "Bill %s (%s)" % (item.number, "Private member's" if item.privatemember else "Government")
 
     @override
-    def item_description(self, item):
+    def item_description(self, item) -> str:
         return item.name
 
     @override
-    def item_link(self, item):
+    def item_link(self, item) -> str:
         return item.get_absolute_url()
 
 
 class BillFeed(Feed):
 
     @override
-    def get_object(self, request, bill_id):
+    def get_object(self, request, bill_id) -> Bill:
         return get_object_or_404(Bill, pk=bill_id)
 
     @override
-    def title(self, bill):
+    def title(self, bill: Bill) -> str:
         return "Bill %s" % bill.number
 
     @override
-    def link(self, bill):
+    def link(self, bill: Bill) -> str:
         return "http://openparliament.ca" + bill.get_absolute_url()
 
     @override
-    def description(self, bill):
+    def description(self, bill: Bill) -> str:
         return "From openparliament.ca, speeches about Bill %s, %s" % (bill.number, bill.name)
 
     @override
@@ -365,7 +365,7 @@ class BillFeed(Feed):
         return merged
 
     @override
-    def item_title(self, item):
+    def item_title(self, item) -> str:
         if isinstance(item, VoteQuestion):
             return "Vote #%s (%s)" % (item.number, item.get_result_display())
 
@@ -376,11 +376,11 @@ class BillFeed(Feed):
         }
 
     @override
-    def item_link(self, item):
+    def item_link(self, item) -> str:
         return item.get_absolute_url()
 
     @override
-    def item_description(self, item):
+    def item_description(self, item) -> str:
         if isinstance(item, Statement):
             return item.text_html()
 

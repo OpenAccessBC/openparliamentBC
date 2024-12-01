@@ -1,7 +1,7 @@
 import datetime
 import itertools
 import re
-from typing import override
+from typing import Dict, List, override
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -125,14 +125,14 @@ class PoliticianView(ModelDetailView):
     api_notes = """The other_info field is a direct copy of an internal catchall key-value store;
         beware that its structure may change frequently."""
 
-    def get_object(self, request, pol_id=None, pol_slug=None):
+    def get_object(self, request, pol_id=None, pol_slug=None) -> Politician:
         if pol_slug:
             return get_object_or_404(Politician, slug=pol_slug)
 
         return get_object_or_404(Politician, pk=pol_id)
 
     @override
-    def get_related_resources(self, request, obj, result):
+    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
         pol_query = '?' + urlencode({'politician': obj.identifier})
         return {
             'speeches_url': reverse('speeches') + pol_query,
@@ -142,7 +142,7 @@ class PoliticianView(ModelDetailView):
         }
 
     def get_html(self, request, pol_id=None, pol_slug=None):
-        pol = self.get_object(request, pol_id, pol_slug)
+        pol: Politician = self.get_object(request, pol_id, pol_slug)
         if pol.slug and not pol_slug:
             return HttpResponsePermanentRedirect(pol.get_absolute_url())
 
@@ -222,7 +222,7 @@ class PoliticianAutocompleteView(JSONView):
         q = request.GET.get('q', '').lower()
 
         if not hasattr(self, 'politician_list'):
-            self.politician_list = list(Politician.objects.elected().values(
+            self.politician_list: List[Politician] = list(Politician.objects.elected().values(
                 'name', 'name_family', 'slug', 'id').order_by('name_family'))
 
         results = (
@@ -240,7 +240,7 @@ class PoliticianMembershipView(ModelDetailView):
 
     resource_name = 'Politician membership'
 
-    def get_object(self, request, member_id):
+    def get_object(self, request, member_id) -> ElectedMember:
         return ElectedMember.objects.select_related('party', 'riding', 'politician').get(id=member_id)
 
 
@@ -255,37 +255,37 @@ class PoliticianMembershipListView(ModelListView):
 
 class PoliticianStatementFeed(Feed):
     @override
-    def get_object(self, request, pol_id):
+    def get_object(self, request, pol_id) -> Politician:
         self.language = request.GET.get('language', settings.LANGUAGE_CODE)
         return get_object_or_404(Politician, pk=pol_id)
 
     @override
-    def title(self, pol):
+    def title(self, pol: Politician) -> str:
         return "%s in the House of Commons" % pol.name
 
     @override
-    def link(self, pol):
+    def link(self, pol: Politician) -> str:
         return "http://openparliament.ca" + pol.get_absolute_url()
 
     @override
-    def description(self, pol):
+    def description(self, pol: Politician) -> str:
         return "Statements by %s in the House of Commons, from openparliament.ca." % pol.name
 
     @override
-    def items(self, pol):
+    def items(self, pol: Politician):
         return Statement.objects.filter(
             member__politician=pol, document__document_type=Document.DEBATE).order_by('-time')[:12]
 
     @override
-    def item_title(self, item):
+    def item_title(self, item) -> str:
         return item.topic
 
     @override
-    def item_link(self, item):
+    def item_link(self, item) -> str:
         return item.get_absolute_url()
 
     @override
-    def item_description(self, item):
+    def item_description(self, item) -> str:
         return item.text_html(language=self.language)
 
     @override
@@ -303,32 +303,32 @@ r_excerpt = re.compile(r'<span class="excerpt">')
 class PoliticianActivityFeed(Feed):
 
     @override
-    def get_object(self, request, pol_id):
+    def get_object(self, request, pol_id) -> Politician:
         return get_object_or_404(Politician, pk=pol_id)
 
     @override
-    def title(self, pol):
+    def title(self, pol: Politician) -> str:
         return pol.name
 
     @override
-    def link(self, pol):
+    def link(self, pol: Politician) -> str:
         return "http://openparliament.ca" + pol.get_absolute_url()
 
     @override
-    def description(self, pol):
+    def description(self, pol: Politician) -> str:
         return "Recent news about %s, from openparliament.ca." % pol.name
 
     @override
-    def items(self, pol):
+    def items(self, pol: Politician):
         return activity.iter_recent(Activity.objects.filter(politician=pol))
 
     @override
-    def item_title(self, item):
+    def item_title(self, item) -> str:
         # FIXME wrap in try
         return r_title.search(item.payload).group(1)
 
     @override
-    def item_link(self, item):
+    def item_link(self, item) -> str:
         match = r_link.search(item.payload)
         if match:
             return match.group(1)
@@ -337,11 +337,11 @@ class PoliticianActivityFeed(Feed):
         return ''
 
     @override
-    def item_guid(self, activity):
+    def item_guid(self, activity) -> str:
         return activity.guid
 
     @override
-    def item_description(self, item):
+    def item_description(self, item) -> str:
         payload = r_excerpt.sub(
             ('<br><span style="display: block; border-left: 1px dotted #AAAAAA; margin-left: 2em; '
              'padding-left: 1em; font-style: italic; margin-top: 5px;">'), item.payload_wrapped())

@@ -1,5 +1,5 @@
 import datetime
-from typing import override
+from typing import Dict, override
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -60,11 +60,11 @@ class CommitteeView(ModelDetailView):
 
     resource_name = 'Committee'
 
-    def get_object(self, request, slug):
+    def get_object(self, request, slug) -> Committee:
         return get_object_or_404(Committee, slug=slug)
 
     @override
-    def get_related_resources(self, request, obj, result):
+    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
         return {
             'meetings_url': reverse('committee_meetings') + '?' + urlencode({'committee': self.kwargs['slug']}),
             'committees_url': reverse('committee_list')
@@ -141,7 +141,7 @@ def committee_activity(request, activity_id):
     })
 
 
-def _get_meeting(committee_slug, session_id, number):
+def _get_meeting(committee_slug, session_id, number) -> CommitteeMeeting:
     try:
         return CommitteeMeeting.objects.select_related('evidence', 'committee').get(
             committee__slug=committee_slug, session=session_id, number=number)
@@ -176,11 +176,11 @@ class CommitteeMeetingView(ModelDetailView):
 
     resource_name = 'Committee meeting'
 
-    def get_object(self, request, committee_slug, session_id, number):
+    def get_object(self, request, committee_slug, session_id, number) -> CommitteeMeeting:
         return _get_meeting(committee_slug, session_id, number)
 
     @override
-    def get_related_resources(self, request, obj, result):
+    def get_related_resources(self, request, obj, result) -> Dict[str, str] | None:
         if obj.evidence_id:
             return {
                 'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']})
@@ -256,11 +256,11 @@ class CommitteeMeetingStatementView(ModelDetailView):
     resource_name = 'Speech (committee meeting)'
 
     def get_object(self, request, committee_slug, session_id, number, slug):
-        meeting = _get_meeting(committee_slug, session_id, number)
+        meeting: CommitteeMeeting = _get_meeting(committee_slug, session_id, number)
         return meeting.evidence.statement_set.get(slug=slug)
 
     @override
-    def get_related_resources(self, request, obj, result):
+    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
         return {
             'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
         }

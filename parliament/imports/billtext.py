@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from urllib.parse import urljoin
 
 import lxml.etree
@@ -22,13 +23,13 @@ def get_bill_text_xml(bill_or_url):
     return lxml.etree.fromstring(resp2.content)
 
 
-def get_plain_bill_text(bill_or_url):
+def get_plain_bill_text(bill_or_url) -> Tuple[str, str]:
     bill_el = get_bill_text_xml(bill_or_url)
     body = bill_el.xpath('//Body')[0]
-    return get_bill_summary(bill_el), ' '.join(body.itertext())
+    return get_bill_summary(bill_el), ' '.join(map(str, body.itertext()))
 
 
-def get_bill_summary(bill_el):
+def get_bill_summary(bill_el) -> str:
     summary = bill_el.xpath('//Summary')[0]
     texts = []
 

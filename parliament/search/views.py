@@ -188,27 +188,27 @@ class SearchFeed(Feed):
             raise Http404
         return request.GET['q']
 
-    def title(self, query):
+    def title(self, query) -> str:
         return '"%s" | openparliament.ca' % query
 
-    def link(self, query):
-        return ("https://openparliament.ca/search/?"
-                + urllib.parse.urlencode({'q': query.encode('utf8'), 'sort': 'date desc'}))
+    def link(self, query) -> str:
+        urlext = urllib.parse.urlencode({'q': query.encode('utf8'), 'sort': 'date desc'})
+        return f"https://openparliament.ca/search/?{urlext}"
 
-    def description(self, query):
+    def description(self, query) -> str:
         return "From openparliament.ca, search results for '%s'" % query
 
     def items(self, query):
         query_obj = SearchQuery(query, user_params={'sort': 'date desc'})
         return [item for item in query_obj.documents if item['django_ct'] == 'hansards.statement']
 
-    def item_title(self, item):
+    def item_title(self, item) -> str:
         return "%s / %s" % (item.get('topic', ''), item.get('politician', ''))
 
-    def item_link(self, item):
+    def item_link(self, item) -> str:
         return item['url']
 
-    def item_description(self, item):
+    def item_description(self, item) -> str:
         return item['text']
 
     def item_pubdate(self, item):
