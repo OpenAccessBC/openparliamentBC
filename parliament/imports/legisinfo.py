@@ -38,7 +38,7 @@ class BillData():
     def __init__(self, jsondata):
         self._d = jsondata
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         v = self._d[key]
         if key.endswith('DateTime') or key.endswith('Date'):
             # for now we're only providing dates, not datetimes

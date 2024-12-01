@@ -226,9 +226,9 @@ class PoliticianAutocompleteView(JSONView):
                 'name', 'name_family', 'slug', 'id').order_by('name_family'))
 
         results = (
-            {'value': p['slug'] if p['slug'] else str(p['id']), 'label': p['name']}
+            {'value': p.slug if p.slug else str(p.id), 'label': p.name}
             for p in self.politician_list
-            if p['name'].lower().startswith(q) or p['name_family'].lower().startswith(q)
+            if p.name.lower().startswith(q) or p.name_family.lower().startswith(q)
         )
         return list(itertools.islice(results, 15))
 
