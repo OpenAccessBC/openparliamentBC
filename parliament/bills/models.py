@@ -173,7 +173,7 @@ class Bill(models.Model):
 
     legisinfo_url = property(get_legisinfo_url)
 
-    def get_billtext_url(self, lang='en'):
+    def get_billtext_url(self, lang: str = 'en') -> str | None:
         if not self.text_docid:
             return None
         url = PARLIAMENT_DOCVIEWER_URL % {

@@ -1,4 +1,4 @@
-from typing import override
+from typing import Any, override
 
 from django.db import models
 
@@ -26,6 +26,6 @@ class Activity(models.Model):
         return '<p class="activity_item" data-id="%s">%s</p>' % (self.pk, self.payload)
 
     @override
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         self.full_clean()
         super(Activity, self).save(*args, **kwargs)

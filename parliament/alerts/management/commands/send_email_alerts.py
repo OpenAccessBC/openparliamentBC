@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Dict, List, override
+from typing import Any, Dict, List, override
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -14,7 +14,7 @@ class Command(BaseCommand):
     help = "Searches for new items & sends applicable email alerts."
 
     @override
-    def handle(self, **options) -> None:
+    def handle(self, **options: Any) -> None:
 
         if getattr(settings, 'PARLIAMENT_SEARCH_CLOSED', False):
             logger.error("Not sending alerts because of PARLIAMENT_SEARCH_CLOSED")

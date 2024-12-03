@@ -1,9 +1,9 @@
 import datetime
-from typing import Dict, override
+from typing import Any, Dict, override
 from urllib.parse import urlencode
 
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
-from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.urls import reverse
@@ -29,14 +29,14 @@ class HansardView(ModelDetailView):
 
     resource_name = 'House debate'
 
-    def get_object(self, request, **kwargs) -> Document:
+    def get_object(self, request: HttpRequest, **kwargs: Any) -> Document:
         return _get_hansard(**kwargs)
 
-    def get_html(self, request, **kwargs):
+    def get_html(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         return document_view(request, _get_hansard(**kwargs))
 
     @override
-    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: Document, result: Dict[str, str]) -> Dict[str, str]:
         return {
             'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']}),
             'debates_url': reverse('debates')
@@ -50,7 +50,7 @@ class HansardStatementView(ModelDetailView):
 
     resource_name = 'Speech (House debate)'
 
-    def get_object(self, request, year: str, month: str, day: str, slug: str) -> Statement:
+    def get_object(self, request: HttpRequest, year: str, month: str, day: str, slug: str) -> Statement:
         date = datetime.date(int(year), int(month), int(day))
         return Statement.objects.get(
             document__document_type='D',
@@ -59,19 +59,19 @@ class HansardStatementView(ModelDetailView):
         )
 
     @override
-    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: Statement, result: Dict[str, str]) -> Dict[str, str]:
         return {
             'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
         }
 
-    def get_html(self, request, year, month, day, slug):
+    def get_html(self, request: HttpRequest, year: str, month: str, day: str, slug: str) -> HttpResponse:
         return document_view(request, _get_hansard(year, month, day), slug=slug)
 
 
 hansard_statement = HansardStatementView.as_view()
 
 
-def document_redirect(request, document_id, slug=None):
+def document_redirect(request: HttpRequest, document_id: str, slug: str | None = None) -> HttpResponse:
     try:
         document: Document = Document.objects.select_related(
             'committeemeeting', 'committeemeeting__committee').get(pk=document_id)
@@ -86,7 +86,7 @@ def document_redirect(request, document_id, slug=None):
 
 
 @vary_on_headers('X-Requested-With')
-def document_view(request, document, meeting=None, slug=None):
+def document_view(request: HttpRequest, document: Document, meeting: str | None = None, slug: str | None = None) -> HttpResponse:
 
     per_page: int = 25
     if 'singlepage' in request.GET:
@@ -225,11 +225,11 @@ class DebatePermalinkView(ModelDetailView):
         return doc, statement
 
     @override
-    def get_json(self, request, **kwargs):
+    def get_json(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         url = self._get_objs(request, **kwargs)[1].get_absolute_url()
         return HttpResponseRedirect(url + '?' + request.GET.urlencode())
 
-    def get_html(self, request, **kwargs):
+    def get_html(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         doc, statement = self._get_objs(request, **kwargs)
         return statement_permalink(request, doc, statement, "hansards/statement_permalink.html", hansard=doc)
 
@@ -266,7 +266,7 @@ def statement_permalink(request, doc, statement, template, **kwargs):
     return HttpResponse(t.render(ctx, request))
 
 
-def document_cache(request, document_id, language):
+def document_cache(request: HttpRequest, document_id: str, language: str) -> HttpResponse:
     document = get_object_or_404(Document, pk=document_id)
     xmlfile = document.get_cached_xml(language)
     resp = HttpResponse(xmlfile.read(), content_type="text/xml")
@@ -294,7 +294,7 @@ class APIArchiveView(ModelListView):
         'number': APIFilters.dbfield(help_txt='each Hansard in a session is given a sequential #'),
     }
 
-    def get_html(self, request, **kwargs):
+    def get_html(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         return self.get(request, **kwargs)
 
     @override

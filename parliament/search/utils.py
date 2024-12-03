@@ -44,7 +44,7 @@ class BaseSearchQuery():
         self.raw_query = query
         self.filters: Dict[str, str] = {}
 
-        def extract_filter(match: Match):
+        def extract_filter(match: Match) -> str:
             self.filters[match.group(1)] = match.group(2)
             return ''
 

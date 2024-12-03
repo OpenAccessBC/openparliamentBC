@@ -151,7 +151,7 @@ def update_ridings_from_represent(boundary_set='federal-electoral-districts'):
 # contact information or photo URLs.
 
 
-def _scrape_url(url) -> lxml.etree._Element:
+def _scrape_url(url: str) -> lxml.etree._Element:
     resp = requests.get(url, timeout=5)
     resp.raise_for_status()
     return lxml.html.fromstring(resp.content)

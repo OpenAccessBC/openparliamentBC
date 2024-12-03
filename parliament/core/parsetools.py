@@ -77,7 +77,7 @@ def slugify(s, allow_numbers=False):
     return re.sub(r'--+', '-', s)
 
 
-def normalizeName(s):
+def normalizeName(s: str) -> str:
     return tameWhitespace(removeAccents(stripHonorific(s).lower())).strip().replace("\u2019", "'")
 
 

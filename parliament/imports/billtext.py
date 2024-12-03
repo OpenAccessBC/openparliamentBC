@@ -1,18 +1,22 @@
-from typing import List, Tuple
+from typing import Tuple
 from urllib.parse import urljoin
 
 import lxml.etree
 import lxml.html
 import requests
 
+from parliament.bills.models import Bill
 
-def get_bill_text_xml(bill_or_url):
+
+def get_bill_text_xml(bill_or_url: Bill | str) -> lxml.etree._Element:
     """Given a Bill object or URL to a full-text page on ourcommons.ca,
     returns an lxml Element object for the container div of the full
     bill text."""
 
-    if hasattr(bill_or_url, 'get_billtext_url'):
-        bill_or_url = bill_or_url.get_billtext_url()
+    if isinstance(bill_or_url, Bill):
+        bill_url_str = bill_or_url.get_billtext_url()
+        assert bill_url_str is not None
+        bill_or_url = bill_url_str
 
     resp = requests.get(bill_or_url, timeout=10)
     html_root = lxml.html.fromstring(resp.content)
@@ -23,13 +27,13 @@ def get_bill_text_xml(bill_or_url):
     return lxml.etree.fromstring(resp2.content)
 
 
-def get_plain_bill_text(bill_or_url) -> Tuple[str, str]:
+def get_plain_bill_text(bill_or_url: Bill | str) -> Tuple[str, str]:
     bill_el = get_bill_text_xml(bill_or_url)
     body = bill_el.xpath('//Body')[0]
     return get_bill_summary(bill_el), ' '.join(body.itertext())
 
 
-def get_bill_summary(bill_el) -> str:
+def get_bill_summary(bill_el: lxml.etree._Element) -> str:
     summary = bill_el.xpath('//Summary')[0]
     texts = []
 

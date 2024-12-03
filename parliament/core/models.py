@@ -4,7 +4,7 @@ import datetime
 import logging
 import re
 from io import BytesIO
-from typing import Dict, List, Optional, override
+from typing import Any, Dict, List, Optional, override
 from urllib.parse import urljoin
 
 import lxml.etree
@@ -13,6 +13,7 @@ import requests
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
+from django.db.models import QuerySet
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -85,7 +86,7 @@ class Party(models.Model):
         self._saveAlternate = True
 
     @override
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.name_fr:
             self.name_fr = self.name_en
         if not self.short_name_en:
@@ -135,34 +136,33 @@ class Person(models.Model):
 
 class PoliticianManager(models.Manager):
 
-    def elected(self):
+    def elected(self) -> QuerySet["Politician"]:
         """Returns a QuerySet of all politicians that were once elected to office."""
         return self.get_queryset().annotate(
             electedcount=models.Count('electedmember')).filter(electedcount__gte=1)
 
-    def never_elected(self):
+    def never_elected(self) -> QuerySet["Politician"]:
         """Returns a QuerySet of all politicians that were never elected as MPs.
 
         (at least during the time period covered by our database)"""
         return self.get_queryset().filter(electedmember__isnull=True)
 
-    def current(self):
+    def current(self) -> QuerySet["Politician"]:
         """Returns a QuerySet of all current MPs."""
         return self.get_queryset().filter(
             electedmember__end_date__isnull=True,
             electedmember__start_date__isnull=False).distinct()
 
-    def elected_but_not_current(self):
+    def elected_but_not_current(self) -> QuerySet["Politician"]:
         """Returns a QuerySet of former MPs."""
         return self.get_queryset().exclude(electedmember__end_date__isnull=True)
 
-    def filter_by_name(self, name):
+    def filter_by_name(self, name: str) -> List["Politician"]:
         """Returns a list of politicians matching a given name."""
         return [i.politician for i in (
             PoliticianInfo.sr_objects.filter(schema='alternate_name', value=parsetools.normalizeName(name)))]
 
-    def get_by_name(
-            self, name, session=None, riding=None, election=None, party=None, saveAlternate=True, strictMatch=False):
+    def get_by_name(self, name, session=None, riding=None, election=None, party=None, saveAlternate=True, strictMatch=False):
         """ Return a Politician by name. Uses a bunch of methods to try and deal with variations in names.
         If given any of a session, riding, election, or party, returns only politicians who match.
         If given session and optinally riding, tries to match the name more laxly.
@@ -419,7 +419,7 @@ class Politician(Person):
             return None
 
     @override
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         super(Politician, self).save(*args, **kwargs)
         self.add_alternate_name(self.name)
 
@@ -730,7 +730,7 @@ class Riding(models.Model):
         ordering = ('province', 'name_en')
 
     @override
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.slug:
             self.slug = parsetools.slugify(self.name_en)
         super(Riding, self).save(*args, **kwargs)

@@ -129,7 +129,7 @@ class WordCounter(dict):
         return 0
 
     @override
-    def __setitem__(self, key, value) -> None:
+    def __setitem__(self, key: str, value: int) -> None:
         if key not in self.stopwords:
             super(WordCounter, self).__setitem__(key, value)
 

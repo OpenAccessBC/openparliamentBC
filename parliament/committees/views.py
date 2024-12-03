@@ -1,9 +1,9 @@
 import datetime
-from typing import Dict, override
+from typing import Any, Dict, override
 from urllib.parse import urlencode
 
 from django.conf import settings
-from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBase, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template import loader
 from django.urls import reverse
@@ -34,7 +34,7 @@ class CommitteeListView(ModelListView):
             qs = qs.filter(sessions=session)
         return qs
 
-    def get_html(self, request):
+    def get_html(self, request: HttpRequest) -> HttpResponse:
         committees = self.get_qs(request)
         recent_meetings = CommitteeMeeting.objects.order_by('-date')[:50]
         recent_studies = CommitteeActivity.objects.filter(
@@ -51,7 +51,7 @@ class CommitteeListView(ModelListView):
 committee_list = CommitteeListView.as_view()
 
 
-def committee_id_redirect(request, committee_id):
+def committee_id_redirect(request: HttpRequest, committee_id: str) -> HttpResponse:
     committee = get_object_or_404(Committee, pk=committee_id)
     return HttpResponsePermanentRedirect(request.path.replace(committee_id, committee.slug, 1))
 
@@ -60,17 +60,17 @@ class CommitteeView(ModelDetailView):
 
     resource_name = 'Committee'
 
-    def get_object(self, request, slug) -> Committee:
+    def get_object(self, request: HttpRequest, slug: str) -> Committee:
         return get_object_or_404(Committee, slug=slug)
 
     @override
-    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: Committee, result: Dict[str, str]) -> Dict[str, str]:
         return {
             'meetings_url': reverse('committee_meetings') + '?' + urlencode({'committee': self.kwargs['slug']}),
             'committees_url': reverse('committee_list')
         }
 
-    def get_html(self, request, slug):
+    def get_html(self, request: HttpRequest, slug: str) -> HttpResponse:
         cmte = self.get_object(request, slug)
         recent_meetings = list(CommitteeMeeting.objects.filter(committee=cmte).order_by('-date')[:20])
         recent_studies = CommitteeActivity.objects.filter(
@@ -109,12 +109,12 @@ class CommitteeView(ModelDetailView):
 committee = CommitteeView.as_view()
 
 
-def committee_year_archive(request, slug, year):
+def committee_year_archive(request: HttpRequest, slug: str, year: str) -> HttpResponse:
     cmte = get_object_or_404(Committee, slug=slug)
-    year = int(year)
+    year_int = int(year)
 
     meetings = list(
-        CommitteeMeeting.objects.filter(committee=cmte, date__year=year).order_by('date')
+        CommitteeMeeting.objects.filter(committee=cmte, date__year=year_int).order_by('date')
     )
     studies = CommitteeActivity.objects.filter(
         study=True,
@@ -122,15 +122,15 @@ def committee_year_archive(request, slug, year):
     ).distinct()
 
     return render(request, "committees/committee_year_archive.html", {
-        'title': "%s Committee in %s" % (cmte, year),
+        'title': "%s Committee in %s" % (cmte, year_int),
         'committee': cmte,
         'meetings': meetings,
         'studies': studies,
-        'year': year
+        'year': year_int
     })
 
 
-def committee_activity(request, activity_id):
+def committee_activity(request: HttpRequest, activity_id: str) -> HttpResponse:
     activity = get_object_or_404(CommitteeActivity, id=activity_id)
 
     return render(request, "committees/committee_activity.html", {
@@ -141,7 +141,7 @@ def committee_activity(request, activity_id):
     })
 
 
-def _get_meeting(committee_slug, session_id, number) -> CommitteeMeeting:
+def _get_meeting(committee_slug: str, session_id: str, number: str) -> CommitteeMeeting:
     try:
         return CommitteeMeeting.objects.select_related('evidence', 'committee').get(
             committee__slug=committee_slug, session=session_id, number=number)
@@ -176,18 +176,18 @@ class CommitteeMeetingView(ModelDetailView):
 
     resource_name = 'Committee meeting'
 
-    def get_object(self, request, committee_slug, session_id, number) -> CommitteeMeeting:
+    def get_object(self, request: HttpRequest, committee_slug: str, session_id: str, number: str) -> CommitteeMeeting:
         return _get_meeting(committee_slug, session_id, number)
 
     @override
-    def get_related_resources(self, request, obj, result) -> Dict[str, str] | None:
+    def get_related_resources(self, request: HttpRequest, obj: CommitteeMeeting, result: Dict[str, str]) -> Dict[str, str] | None:
         if obj.evidence_id:
             return {
                 'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']})
             }
         return None
 
-    def get_html(self, request, committee_slug, session_id, number, slug=None):
+    def get_html(self, request: HttpRequest, committee_slug: str, session_id: str, number: str, slug: str | None = None) -> HttpResponse:
         meeting = self.get_object(request, committee_slug, session_id, number)
 
         document = meeting.evidence
@@ -217,11 +217,11 @@ class EvidenceAnalysisView(TextAnalysisView):
         return qs
 
     @override
-    def get_corpus_name(self, request, committee_slug: str = "", **kwargs):
+    def get_corpus_name(self, request: HttpRequest, committee_slug: str = "", **kwargs: Any) -> str:
         return committee_slug
 
     @override
-    def get_analysis(self, request, **kwargs):
+    def get_analysis(self, request: HttpRequest, **kwargs: Any) -> TextAnalysis:
         analysis = super(EvidenceAnalysisView, self).get_analysis(request, **kwargs)
         word = analysis.top_word
         if word and word != request.evidence.most_frequent_word:
@@ -237,7 +237,7 @@ class CommitteeAnalysisView(TextAnalysisView):
     expiry_days = 7
 
     @override
-    def get_corpus_name(self, request, committee_slug: str = "", **kwargs):
+    def get_corpus_name(self, request: HttpRequest, committee_slug: str = "", **kwargs: Any) -> str:
         return committee_slug
 
     @override
@@ -255,24 +255,24 @@ class CommitteeMeetingStatementView(ModelDetailView):
 
     resource_name = 'Speech (committee meeting)'
 
-    def get_object(self, request, committee_slug, session_id, number, slug):
+    def get_object(self, request: HttpRequest, committee_slug: str, session_id: str, number: str, slug: str) -> Statement:
         meeting: CommitteeMeeting = _get_meeting(committee_slug, session_id, number)
         return meeting.evidence.statement_set.get(slug=slug)
 
     @override
-    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: Statement, result: Dict[str, str]) -> Dict[str, str]:
         return {
             'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
         }
 
-    def get_html(self, request, **kwargs):
+    def get_html(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         return committee_meeting(request, **kwargs)
 
 
 committee_meeting_statement = CommitteeMeetingStatementView.as_view()
 
 
-def evidence_permalink(request, committee_slug, session_id, number, slug):
+def evidence_permalink(request: HttpRequest, committee_slug: str, session_id: str, number: str, slug: str) -> HttpResponse:
 
     try:
         meeting = CommitteeMeeting.objects.select_related('evidence', 'committee').get(

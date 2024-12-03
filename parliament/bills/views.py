@@ -1,10 +1,11 @@
 import datetime
-from typing import Dict, override
+from typing import Any, Dict, List, override
 from urllib.parse import urlencode
 
 from django.contrib.syndication.views import Feed
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
-from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
+from django.db.models import QuerySet
+from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.template.defaultfilters import date as format_date
@@ -19,7 +20,7 @@ from parliament.core.utils import is_ajax
 from parliament.hansards.models import Statement
 
 
-def bill_pk_redirect(request, bill_id) -> HttpResponsePermanentRedirect:
+def bill_pk_redirect(request: HttpRequest, bill_id: int) -> HttpResponse:
     bill: Bill = get_object_or_404(Bill, pk=bill_id)
     return HttpResponsePermanentRedirect(
         reverse('bill', kwargs={'session_id': bill.get_session().id, 'bill_number': bill.number}))
@@ -29,17 +30,17 @@ class BillDetailView(ModelDetailView):
 
     resource_name = 'Bill'
 
-    def get_object(self, request, session_id, bill_number) -> BillInSession:
+    def get_object(self, request: HttpRequest, session_id: str, bill_number: str) -> BillInSession:
         return BillInSession.objects.select_related(
             'bill', 'sponsor_politician').get(session=session_id, bill__number=bill_number)
 
     @override
-    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: BillInSession, result: Dict[str, str]) -> Dict[str, str]:
         return {
             'bills_url': reverse('bills')
         }
 
-    def _render_page(self, request, qs, per_page=10):
+    def _render_page(self, request: HttpRequest, qs, per_page: int = 10):
         paginator = Paginator(qs, per_page)
 
         try:
@@ -51,7 +52,7 @@ class BillDetailView(ModelDetailView):
         except (EmptyPage, InvalidPage):
             return paginator.page(paginator.num_pages)
 
-    def get_html(self, request, session_id, bill_number):
+    def get_html(self, request: HttpRequest, session_id: str, bill_number: str) -> HttpResponse:
         bill = get_object_or_404(Bill, sessions=session_id, number=bill_number)
 
         mentions = (bill.statement_set.all()
@@ -132,10 +133,10 @@ class BillListView(ModelListView):
     }
 
     @override
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[BillInSession]:
         return BillInSession.objects.all().select_related('bill', 'sponsor_politician')
 
-    def get_html(self, request):
+    def get_html(self, request: HttpRequest) -> HttpResponse:
         sessions = Session.objects.with_bills()
         len(sessions)  # evaluate it
         bills = Bill.objects.filter(sessions=sessions[0])
@@ -160,10 +161,10 @@ index = BillListView.as_view()
 class BillSessionListView(ModelListView):
 
     @override
-    def get_json(self, request, session_id=None, **kwargs):
+    def get_json(self, request: HttpRequest, session_id: str | None = None, **kwargs: Any) -> HttpResponse:
         return HttpResponseRedirect(reverse('bills') + '?' + urlencode({'session': session_id}))
 
-    def get_html(self, request, session_id):
+    def get_html(self, request: HttpRequest, session_id: str) -> HttpResponse:
         session = get_object_or_404(Session, pk=session_id)
         bills = Bill.objects.filter(sessions=session)
         votes = VoteQuestion.objects.select_related('bill').filter(session=session)[:6]
@@ -223,7 +224,7 @@ class VoteListView(ModelListView):
     def get_qs(self, request, **kwargs):
         return VoteQuestion.objects.select_related('bill').order_by('-date', '-number')
 
-    def get_html(self, request, session_id=None):
+    def get_html(self, request: HttpRequest, session_id: str | None = None) -> HttpResponse:
         if session_id:
             session = get_object_or_404(Session, pk=session_id)
         else:
@@ -241,7 +242,7 @@ class VoteListView(ModelListView):
 votes_for_session = VoteListView.as_view()
 
 
-def vote_pk_redirect(request, vote_id):
+def vote_pk_redirect(request: HttpRequest, vote_id: str) -> HttpResponse:
     vote = get_object_or_404(VoteQuestion, pk=vote_id)
     return HttpResponsePermanentRedirect(
         reverse('vote', kwargs={'session_id': vote.session_id, 'number': vote.number}))
@@ -253,17 +254,17 @@ class VoteDetailView(ModelDetailView):
 
     api_notes = VoteListView.api_notes
 
-    def get_object(self, request, session_id, number) -> VoteQuestion:
+    def get_object(self, request: HttpRequest, session_id: str, number: str) -> VoteQuestion:
         return get_object_or_404(VoteQuestion, session=session_id, number=number)
 
     @override
-    def get_related_resources(self, request, obj, result) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: VoteQuestion, result: Dict[str, str]) -> Dict[str, str]:
         return {
             'ballots_url': reverse('vote_ballots') + '?' + urlencode({'vote': result['url']}),
             'votes_url': reverse('votes')
         }
 
-    def get_html(self, request, session_id, number):
+    def get_html(self, request: HttpRequest, session_id: str, number: str) -> HttpResponse:
         vote = self.get_object(request, session_id, number)
         membervotes = MemberVote.objects.filter(votequestion=vote)\
             .order_by('member__party', 'member__politician__name_family')\
@@ -320,26 +321,26 @@ class BillListFeed(Feed):
     link = "/bills/"
 
     @override
-    def items(self):
+    def items(self) -> QuerySet[Bill]:
         return Bill.objects.filter(introduced__isnull=False).order_by('-introduced', 'number_only')[:25]
 
     @override
-    def item_title(self, item) -> str:
+    def item_title(self, item: Bill) -> str:
         return "Bill %s (%s)" % (item.number, "Private member's" if item.privatemember else "Government")
 
     @override
-    def item_description(self, item) -> str:
+    def item_description(self, item: Bill) -> str:
         return item.name
 
     @override
-    def item_link(self, item) -> str:
+    def item_link(self, item: Bill) -> str:
         return item.get_absolute_url()
 
 
 class BillFeed(Feed):
 
     @override
-    def get_object(self, request, bill_id) -> Bill:
+    def get_object(self, request: HttpRequest, bill_id: str) -> Bill:
         return get_object_or_404(Bill, pk=bill_id)
 
     @override
@@ -355,7 +356,7 @@ class BillFeed(Feed):
         return "From openparliament.ca, speeches about Bill %s, %s" % (bill.number, bill.name)
 
     @override
-    def items(self, bill):
+    def items(self, bill: Bill) -> List[Statement | VoteQuestion]:
         statements = (bill.statement_set.all()
                       .order_by('-time', '-sequence')
                       .select_related('member', 'member__politician', 'member__riding', 'member__party')[:10])
@@ -365,7 +366,7 @@ class BillFeed(Feed):
         return merged
 
     @override
-    def item_title(self, item) -> str:
+    def item_title(self, item: Statement | VoteQuestion) -> str:
         if isinstance(item, VoteQuestion):
             return "Vote #%s (%s)" % (item.number, item.get_result_display())
 
@@ -376,16 +377,16 @@ class BillFeed(Feed):
         }
 
     @override
-    def item_link(self, item) -> str:
+    def item_link(self, item: Statement | VoteQuestion) -> str:
         return item.get_absolute_url()
 
     @override
-    def item_description(self, item) -> str:
+    def item_description(self, item: Statement | VoteQuestion) -> str:
         if isinstance(item, Statement):
             return item.text_html()
 
         return item.description
 
     @override
-    def item_pubdate(self, item):
+    def item_pubdate(self, item: Statement | VoteQuestion) -> datetime.datetime:
         return datetime.datetime(item.date.year, item.date.month, item.date.day)

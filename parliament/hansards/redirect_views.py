@@ -1,12 +1,18 @@
 import datetime
 
-from django.http import Http404, HttpResponsePermanentRedirect
+from django.http import HttpRequest, HttpResponse, Http404, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
 
 from parliament.hansards.models import Document, OldSequenceMapping
 
 
-def hansard_redirect(request, hansard_id=None, hansard_date=None, sequence=None, only=False):
+def hansard_redirect(
+        request: HttpRequest,
+        hansard_id: str | None = None,
+        hansard_date: str | None = None,
+        sequence: str | None = None,
+        only: str | None = None) -> HttpResponse:
+
     if not (hansard_id or hansard_date):
         raise Http404
 

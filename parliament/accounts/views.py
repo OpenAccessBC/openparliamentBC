@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.views.decorators.cache import never_cache
 
 from parliament.accounts.models import LoginToken, TokenError, User
@@ -56,7 +56,7 @@ create_token = disable_on_readonly_db(LoginTokenCreateView.as_view())
 
 @never_cache
 @disable_on_readonly_db
-def token_login(request, token):
+def token_login(request: HttpRequest, token: str) -> HttpResponse:
     if request.method != 'GET':
         # Some email systems make HEAD requests to all URLs
         return HttpResponseNotAllowed(['GET'])

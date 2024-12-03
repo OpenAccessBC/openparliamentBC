@@ -698,7 +698,7 @@ TAG_OPEN = 1
 TAG_CLOSE = 2
 
 
-def parse_tree(tree):
+def parse_tree(tree: etree._Element) -> Document:
     document = Document()
 
     # Start by getting metadata
@@ -746,7 +746,7 @@ def parse_tree(tree):
     return document
 
 
-def parse_string(s: str):
+def parse_string(s: str) -> Document:
     s = s.replace('<B />', '').replace('<ParaText />', '')  # Some empty tags can gum up the works
     s = s.replace('&ccedil;', '&#231;').replace('&eacute;', '&#233;')  # Fix invalid entities
     return parse_tree(etree.fromstring(s))

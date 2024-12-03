@@ -197,20 +197,20 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
     return document
 
 
-def _align_sequences(new_statements: List[Statement], old_statements: List[Statement]):
+def _align_sequences(new_statements: List[Statement], old_statements: List[Statement]) -> List[Tuple[int, str]]:
     """Given two list of statements, returns a list of mappings in the form of
     (old_statement_sequence, new_statement_slug)"""
 
-    def build_speaker_dict(states: List[Statement]):
+    def build_speaker_dict(states: List[Statement]) -> Dict[str, List[Statement]]:
         d: Dict[str, List[Statement]] = {}
         for s in states:
             d.setdefault(s.name_info['display_name'], []).append(s)
         return d
 
-    def get_comparison_sequence(text):
+    def get_comparison_sequence(text: str) -> List[str]:
         return re.split(r'\s+', text)
 
-    def calculate_similarity(old, new):
+    def calculate_similarity(old: Statement, new: Statement) -> float:
         """Given two statements, return a score between 0 and 1 expressing their similarity"""
         score = 0.8 if old.time == new.time else 0.0
         oldtext, newtext = old.text_plain(), new.text_plain()
@@ -260,7 +260,7 @@ def _align_sequences(new_statements: List[Statement], old_statements: List[State
     return mappings
 
 
-def _process_related_links(content: str, statement: Statement):
+def _process_related_links(content: str, statement: Statement) -> str:
     return re.sub(
         r'<a class="related_link (\w+)" ([^>]+)>(.*?)</a>',
         lambda m: _process_related_link(m, statement),

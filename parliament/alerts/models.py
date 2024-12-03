@@ -3,7 +3,7 @@ import datetime
 import hashlib
 import logging
 import re
-from typing import override
+from typing import Any, override
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -48,7 +48,7 @@ class Topic(models.Model):
         return self.query
 
     @override
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         super(Topic, self).save(*args, **kwargs)
         self.initialize_if_necessary()
 
@@ -166,7 +166,7 @@ class Subscription(models.Model):
         return '%s: %s' % (self.user, self.topic)
 
     @override
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         new = not self.id
         super(Subscription, self).save(*args, **kwargs)
         if new:
@@ -174,7 +174,7 @@ class Subscription(models.Model):
 
     def get_unsubscribe_url(self, full=False):
         key = Signer(salt='alerts_unsubscribe').sign(str(self.id))
-        return (settings.SITE_URL if full else '') + reverse(
+        return (str(settings.SITE_URL) if full else '') + reverse(
             'alerts_unsubscribe', kwargs={'key': key})
 
     def render_message(self, documents):

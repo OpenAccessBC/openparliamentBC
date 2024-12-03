@@ -1,7 +1,7 @@
 import datetime
 import json
 from operator import itemgetter
-from typing import override
+from typing import List, override
 
 from django.conf import settings
 from django.core.cache import cache
@@ -10,13 +10,20 @@ from django.db import models
 from django.template.defaultfilters import escapejs
 from django.utils.safestring import mark_safe
 
+from parliament.hansards.models import Statement
 from parliament.text_analysis.analyze import analyze_statements
 
 
 class TextAnalysisManager(models.Manager):
 
     def get_or_create_from_statements(
-            self, key, qs, corpus_name, lang=settings.LANGUAGE_CODE, always_update=False, expiry_days=None):
+            self,
+            key: str,
+            qs: List[Statement],
+            corpus_name: str,
+            lang: str = settings.LANGUAGE_CODE,
+            always_update: bool = False,
+            expiry_days: int | None = None) -> "TextAnalysis":
         try:
             analysis = self.get(key=key, lang=lang)
             if analysis.expired:

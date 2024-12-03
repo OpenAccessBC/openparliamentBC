@@ -3,7 +3,8 @@ from typing import override
 
 from django.conf import settings
 from django.contrib.syndication.views import Feed
-from django.http import HttpResponse
+from django.db.models import QuerySet
+from django.http import HttpRequest, HttpResponse
 from django.template import loader
 from django.utils.html import conditional_escape
 from django.views.decorators.cache import never_cache
@@ -15,7 +16,7 @@ from parliament.hansards.models import Document
 from parliament.text_analysis.models import TextAnalysis
 
 
-def home(request):
+def home(request: HttpRequest) -> HttpResponse:
     t = loader.get_template("home.html")
     latest_hansard = Document.debates.filter(date__isnull=False, public=True)[0]
     c = {
@@ -30,7 +31,7 @@ def home(request):
 
 
 @never_cache
-def closed(request, message=None):
+def closed(request: HttpRequest, message: str | None = None) -> HttpResponse:
     if not message:
         message = "We're currently down for planned maintenance. We'll be back soon."
     resp = flatpage_response(request, 'closedparliament.ca', message)
@@ -54,7 +55,7 @@ def disable_on_readonly_db(view):
     return view
 
 
-def flatpage_response(request, title, message):
+def flatpage_response(request: HttpRequest, title: str, message: str) -> HttpResponse:
     t = loader.get_template("flatpages/default.html")
     c = {
         'flatpage': {
@@ -73,21 +74,21 @@ class SiteNewsFeed(Feed):
     description = "Announcements about the openparliament.ca site"
 
     @override
-    def items(self):
+    def items(self) -> QuerySet[SiteNews]:
         return SiteNews.public.all()[:6]
 
     @override
-    def item_title(self, item):
+    def item_title(self, item: SiteNews) -> str:
         return item.title
 
     @override
-    def item_description(self, item):
+    def item_description(self, item: SiteNews) -> str:
         return markdown(item.text)
 
     @override
-    def item_link(self, item):
+    def item_link(self, item: SiteNews) -> str:
         return 'http://openparliament.ca/'
 
     @override
-    def item_guid(self, item):
+    def item_guid(self, item: SiteNews) -> str:
         return str(item.id)

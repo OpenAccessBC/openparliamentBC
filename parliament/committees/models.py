@@ -1,7 +1,7 @@
 import datetime
 import random
 import string
-from typing import Dict, override
+from typing import Any, Dict, override
 
 from django.conf import settings
 from django.db import models
@@ -52,7 +52,7 @@ class Committee(models.Model):
         return self.name
 
     @override
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.short_name_en:
             self.short_name_en = self.name_en
         if not self.short_name_fr:
@@ -240,7 +240,7 @@ class CommitteeMeeting(models.Model):
             activities = [a for a in activities if a.study]
         return english_list([a.name_en for a in activities])
 
-    def get_absolute_url(self, pretty=True) -> str:
+    def get_absolute_url(self, pretty: bool = True) -> str:
         slug = self.committee.slug if pretty else self.committee_id
         return reverse(
             'committee_meeting',

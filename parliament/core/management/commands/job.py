@@ -1,6 +1,6 @@
 import sys
 import traceback
-from typing import override
+from typing import Any, override
 
 from django.core.mail import mail_admins
 from django.core.management.base import BaseCommand
@@ -23,7 +23,7 @@ class Command(BaseCommand):
         parser.add_argument('--pdb', action='store_true', dest='pdb', help='Launch into Python debugger on exception')
 
     @override
-    def handle(self, jobname, **options) -> None:
+    def handle(self, jobname: str, **options: Any) -> None:
         try:
             getattr(jobs, jobname)()
         except Exception as e:

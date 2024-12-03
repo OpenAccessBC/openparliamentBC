@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.mail import mail_admins, send_mail
 from django.core.signing import BadSignature, Signer, TimestampSigner
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template import loader
 from django.urls import reverse
@@ -34,7 +34,7 @@ class PoliticianAlertForm(forms.Form):
 
 
 @disable_on_readonly_db
-def politician_hansard_signup(request):
+def politician_hansard_signup(request: HttpRequest) -> HttpResponse:
     try:
         politician_id = int(
             re.sub(r'\D', '', (request.POST if request.method == 'POST' else request.GET).get('politician', '')))
@@ -95,7 +95,7 @@ def politician_hansard_signup(request):
 
 @never_cache
 @disable_on_readonly_db
-def alerts_list(request):
+def alerts_list(request: HttpRequest) -> HttpResponse:
     if not request.authenticated_email:
         return render(request, 'alerts/list_unauthenticated.html', {'title': 'Email alerts'})
 
@@ -172,7 +172,7 @@ def _generate_query_for_politician(pol):
 
 
 @disable_on_readonly_db
-def politician_hansard_subscribe(request, signed_key):
+def politician_hansard_subscribe(request: HttpRequest, signed_key: str) -> HttpResponse:
     ctx: Dict[str, bool | Politician | str] = {
         'key_error': False
     }
@@ -204,7 +204,7 @@ def politician_hansard_subscribe(request, signed_key):
 
 
 @never_cache
-def unsubscribe(request, key):
+def unsubscribe(request: HttpRequest, key: str) -> HttpResponse:
     ctx: Dict[str, Any] = {
         'title': 'Email alerts'
     }

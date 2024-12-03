@@ -1,9 +1,10 @@
-from typing import Optional
+from typing import Any, List, Optional
 
 from django.conf import settings
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.views.generic import View
 
+from parliament.hansards.models import Statement
 from parliament.text_analysis.models import TextAnalysis
 
 
@@ -13,7 +14,7 @@ class TextAnalysisView(View):
     corpus_name = 'default'
     expiry_days: Optional[int] = None
 
-    def get(self, request, **kwargs):
+    def get(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         if not settings.PARLIAMENT_GENERATE_TEXT_ANALYSIS:
             raise Http404
         try:
@@ -22,16 +23,16 @@ class TextAnalysisView(View):
             raise Http404 from None
         return HttpResponse(analysis.probability_data_json, content_type='application/json')
 
-    def get_key(self, request, **kwargs):
+    def get_key(self, request: HttpRequest, **kwargs: Any) -> str:
         return request.path
 
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> List[Statement]:
         raise NotImplementedError
 
-    def get_corpus_name(self, request, **kwargs) -> str:
+    def get_corpus_name(self, request: HttpRequest, **kwargs: Any) -> str:
         return self.corpus_name
 
-    def get_analysis(self, request, **kwargs):
+    def get_analysis(self, request: HttpRequest, **kwargs: Any) -> TextAnalysis:
         return TextAnalysis.objects.get_or_create_from_statements(
             key=self.get_key(request, **kwargs),
             qs=self.get_qs(request, **kwargs),

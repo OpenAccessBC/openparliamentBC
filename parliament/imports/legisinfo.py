@@ -124,7 +124,7 @@ def import_bill_by_id(legisinfo_id):
     return _import_bill(bd, session)
 
 
-def _update(obj: Bill | BillInSession, field: str, value: Any):
+def _update(obj: Bill | BillInSession, field: str, value: Any) -> None:
     if value is None:
         return
     if not isinstance(value, datetime.date):

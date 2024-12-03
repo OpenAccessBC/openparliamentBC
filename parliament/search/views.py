@@ -10,7 +10,7 @@ from urllib.parse import urljoin
 import requests
 from django.conf import settings
 from django.contrib.syndication.views import Feed
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.utils.safestring import mark_safe
 from django.views.decorators.vary import vary_on_headers
@@ -28,7 +28,7 @@ PER_PAGE = getattr(settings, 'SEARCH_RESULTS_PER_PAGE', 15)
 
 
 @vary_on_headers('X-Requested-With')
-def search(request):
+def search(request: HttpRequest) -> HttpResponse:
     if getattr(settings, 'PARLIAMENT_SEARCH_CLOSED', False):
         return closed(request, message=settings.PARLIAMENT_SEARCH_CLOSED)
 
@@ -183,19 +183,19 @@ def try_politician_first(request):
 
 class SearchFeed(Feed):
 
-    def get_object(self, request):
+    def get_object(self, request: HttpRequest):
         if 'q' not in request.GET:
             raise Http404
         return request.GET['q']
 
-    def title(self, query) -> str:
+    def title(self, query: str) -> str:
         return '"%s" | openparliament.ca' % query
 
-    def link(self, query) -> str:
+    def link(self, query: str) -> str:
         urlext = urllib.parse.urlencode({'q': query.encode('utf8'), 'sort': 'date desc'})
         return f"https://openparliament.ca/search/?{urlext}"
 
-    def description(self, query) -> str:
+    def description(self, query: str) -> str:
         return "From openparliament.ca, search results for '%s'" % query
 
     def items(self, query):

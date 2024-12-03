@@ -354,7 +354,7 @@ class Statement(models.Model):
     who_context = language_property('who_context')
 
     @override
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         self.content_en = self.content_en.replace('\n', '').replace('</p>', '</p>\n').strip()
         self.content_fr = self.content_fr.replace('\n', '').replace('</p>', '</p>\n').strip()
         if self.wordcount_en is None:

@@ -1,10 +1,10 @@
 import json
 import re
-from typing import Dict, override
+from typing import Any, Dict, override
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.middleware.cache import FetchFromCacheMiddleware as DjangoFetchFromCacheMiddleware
 from django.shortcuts import render
 from django.utils.html import escape
@@ -276,7 +276,7 @@ class ModelListView(APIView):
                     qs = self.filters[filter_name](qs, self, filter_name, filter_extra, val)
         return qs
 
-    def get_json(self, request, **kwargs):
+    def get_json(self, request: HttpRequest, **kwargs: Any) -> Dict[str, Any] | HttpResponse:
         try:
             qs = self.get_qs(request, **kwargs)
         except ObjectDoesNotExist:
@@ -294,7 +294,7 @@ class ModelListView(APIView):
             result['related'] = related
         return result
 
-    def get_related_resources(self, request, qs, result) -> Dict[str, str] | None:
+    def get_related_resources(self, request: HttpRequest, qs: Any, result: Dict[str, str]) -> Dict[str, str] | None:
         return None
 
 
@@ -319,11 +319,11 @@ class ModelDetailView(APIView):
             result['related'] = related
         return result
 
-    def get_related_resources(self, request, obj, result) -> Dict[str, str] | None:
+    def get_related_resources(self, request: HttpRequest, obj: Any, result: Dict[str, str]) -> Dict[str, str] | None:
         return None
 
 
-def no_robots(request):
+def no_robots(request: HttpRequest) -> HttpResponse:
     if (request.get_host().lower().startswith(settings.PARLIAMENT_API_HOST)
             or getattr(settings, 'PARLIAMENT_NO_ROBOTS', False)):
         return HttpResponse('User-agent: googlecivicsapi\nDisallow:\n\nUser-agent: *\nDisallow: /\n',
@@ -331,7 +331,7 @@ def no_robots(request):
     return HttpResponse('', content_type='text/plain')
 
 
-def docs(request):
+def docs(request: HttpRequest) -> HttpResponse:
     return render(request, 'api/doc.html', {'title': 'API'})
 
 
