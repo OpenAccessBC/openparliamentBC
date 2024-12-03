@@ -221,7 +221,7 @@ class VoteListView(ModelListView):
         return super(VoteListView, self).get_json(request, **kwargs)
 
     @override
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[VoteQuestion]:
         return VoteQuestion.objects.select_related('bill').order_by('-date', '-number')
 
     def get_html(self, request: HttpRequest, session_id: str | None = None) -> HttpResponse:
@@ -303,9 +303,8 @@ class BallotListView(ModelListView):
     }
 
     @override
-    def get_qs(self, request, **kwargs):
-        return MemberVote.objects.all().select_related(
-            'votequestion').order_by('-votequestion__date', '-votequestion__number')
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[MemberVote]:
+        return MemberVote.objects.all().select_related('votequestion').order_by('-votequestion__date', '-votequestion__number')
 
     @override
     def object_to_dict(self, obj):

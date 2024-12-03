@@ -3,6 +3,7 @@ from typing import Any, Dict, override
 from urllib.parse import urlencode
 
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
+from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
@@ -204,7 +205,7 @@ class SpeechesView(ModelListView):
     resource_name = 'Speeches'
 
     @override
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[Statement]:
         qs = Statement.objects.all().prefetch_related('politician')
         if 'document' not in request.GET:
             qs = qs.order_by('-time')
@@ -298,7 +299,7 @@ class APIArchiveView(ModelListView):
         return self.get(request, **kwargs)
 
     @override
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet:
         return self.get_dated_items()[1]
 
 
@@ -349,7 +350,7 @@ class HansardAnalysisView(TextAnalysisView):
         return 'debates'
 
     @override
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[Statement]:
         h = _get_hansard(**kwargs)
         request.hansard = h
         qs = h.statement_set.all()

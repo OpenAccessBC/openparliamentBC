@@ -22,6 +22,7 @@ from PIL import Image, ImageOps
 
 from parliament.core import parsetools
 from parliament.core.utils import ActiveManager, language_property, memoize_property
+from parliament.hansards.models import Statement
 from parliament.search.index import register_search_model
 
 logger = logging.getLogger(__name__)
@@ -489,7 +490,7 @@ class Politician(Person):
     def del_info(self, key):
         self.politicianinfo_set.filter(schema=key).delete()
 
-    def get_text_analysis_qs(self, debates_only=False):
+    def get_text_analysis_qs(self, debates_only: bool = False) -> QuerySet[Statement]:
         """Return a QuerySet of Statements to be used in text corpus analysis."""
         statements = self.statement_set.filter(procedural=False)
         if debates_only:

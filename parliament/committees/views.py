@@ -3,6 +3,7 @@ from typing import Any, Dict, override
 from urllib.parse import urlencode
 
 from django.conf import settings
+from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBase, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template import loader
@@ -26,7 +27,7 @@ class CommitteeListView(ModelListView):
     }
 
     @override
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[Committee]:
         qs = Committee.objects.filter(
             parent__isnull=True, display=True).order_by('name_' + settings.LANGUAGE_CODE)
         if 'session' not in request.GET:
@@ -168,7 +169,7 @@ class CommitteeMeetingListView(ModelListView):
     }
 
     @override
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[CommitteeMeeting]:
         return CommitteeMeeting.objects.all().order_by('-date')
 
 
@@ -206,7 +207,7 @@ committee_meeting = CommitteeMeetingView.as_view()
 class EvidenceAnalysisView(TextAnalysisView):
 
     @override
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[Statement]:
         m = _get_meeting(**kwargs)
         if not m.evidence:
             raise Http404
@@ -241,7 +242,7 @@ class CommitteeAnalysisView(TextAnalysisView):
         return committee_slug
 
     @override
-    def get_qs(self, request, committee_slug=None, **kwargs):
+    def get_qs(self, request: HttpRequest, committee_slug: str | None = None, **kwargs: Any) -> QuerySet[Statement]:
         cmte = get_object_or_404(Committee, slug=committee_slug)
         qs = Statement.objects.filter(
             document__document_type='E',

@@ -1,7 +1,7 @@
 import datetime
 import itertools
 import re
-from typing import Dict, Generator, List, override
+from typing import Any, Dict, Generator, List, override
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -54,7 +54,7 @@ class CurrentMPView(ModelListView):
     }
 
     @override
-    def get_qs(self, request=None, **kwargs):
+    def get_qs(self, request: HttpRequest | None = None, **kwargs: Any) -> QuerySet[Politician]:
         if request and request.GET.get('include') == 'former':
             qs = Politician.objects.elected_but_not_current().order_by('name_family')
         elif request and request.GET.get('include') == 'all':
@@ -250,7 +250,7 @@ class PoliticianMembershipListView(ModelListView):
     resource_name = 'Politician memberships'
 
     @override
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[ElectedMember]:
         return ElectedMember.objects.all().select_related('party', 'riding', 'politician')
 
 
@@ -359,7 +359,7 @@ class PoliticianTextAnalysisView(TextAnalysisView):
     expiry_days = 14
 
     @override
-    def get_qs(self, request, pol_id=None, pol_slug=None, **kwargs):
+    def get_qs(self, request: HttpRequest, pol_id: str | None = None, pol_slug: str | None = None, **kwargs: Any) -> QuerySet[Statement]:
         if pol_slug:
             pol = get_object_or_404(Politician, slug=pol_slug)
         else:

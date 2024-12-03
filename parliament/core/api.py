@@ -4,6 +4,7 @@ from typing import Any, Dict, override
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.middleware.cache import FetchFromCacheMiddleware as DjangoFetchFromCacheMiddleware
 from django.shortcuts import render
@@ -265,7 +266,7 @@ class ModelListView(APIView):
             d['url'] = obj.get_absolute_url()
         return d
 
-    def get_qs(self, request, **kwargs):
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet:
         return self.model._default_manager.all()
 
     def filter(self, request, qs):

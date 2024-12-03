@@ -1,6 +1,7 @@
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 from django.conf import settings
+from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse
 from django.views.generic import View
 
@@ -26,7 +27,7 @@ class TextAnalysisView(View):
     def get_key(self, request: HttpRequest, **kwargs: Any) -> str:
         return request.path
 
-    def get_qs(self, request: HttpRequest, **kwargs: Any) -> List[Statement]:
+    def get_qs(self, request: HttpRequest, **kwargs: Any) -> QuerySet[Statement]:
         raise NotImplementedError
 
     def get_corpus_name(self, request: HttpRequest, **kwargs: Any) -> str:
