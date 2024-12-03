@@ -207,7 +207,7 @@ def contact(request: HttpRequest, pol_id: str | None = None, pol_slug: str | Non
 
 
 def hide_activity(request: HttpRequest) -> HttpResponse:
-    if not request.user.is_authenticated() and request.user.is_staff:
+    if not request.user.is_authenticated and request.user.is_staff:
         raise PermissionDenied
 
     activity = Activity.objects.get(pk=request.POST['activity_id'])
