@@ -22,7 +22,7 @@ class Activity(models.Model):
         ordering = ('-date', '-id')
         verbose_name_plural = 'Activities'
 
-    def payload_wrapped(self):
+    def payload_wrapped(self) -> str:
         return '<p class="activity_item" data-id="%s">%s</p>' % (self.pk, self.payload)
 
     @override

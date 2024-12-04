@@ -1,6 +1,7 @@
 from typing import Any
 
 from django import forms
+from django.http import HttpResponse
 
 
 class Form(forms.Form):
@@ -13,7 +14,7 @@ class Form(forms.Form):
             kwargs['label_suffix'] = ''
         super(Form, self).__init__(*args, **kwargs)
 
-    def _html_output(self, *args: Any, **kwargs: Any):
+    def _html_output(self, *args: Any, **kwargs: Any) -> HttpResponse:
         for field in list(self.fields.values()):
             if field.help_text:
                 field.widget.attrs['data-helptext'] = field.help_text

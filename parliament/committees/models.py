@@ -1,7 +1,7 @@
 import datetime
 import random
 import string
-from typing import Any, Dict, override
+from typing import Any, Dict, cast, override
 
 from django.conf import settings
 from django.db import models
@@ -16,9 +16,9 @@ from parliament.hansards.models import Document
 
 class CommitteeManager(models.Manager):
 
-    def get_by_acronym(self, acronym, session):
+    def get_by_acronym(self, acronym: str, session: Session) -> "Committee":
         try:
-            return CommitteeInSession.objects.get(acronym=acronym, session=session).committee
+            return cast(Committee, CommitteeInSession.objects.get(acronym=acronym, session=session).committee)
         except CommitteeInSession.DoesNotExist:
             raise Committee.DoesNotExist() from None
 
@@ -72,15 +72,14 @@ class Committee(models.Model):
     def get_source_url(self) -> str:
         return self.committeeinsession_set.order_by('-session__start')[0].get_source_url()
 
-    def get_acronym(self, session):
-        return CommitteeInSession.objects.get(
-            committee=self, session=session).acronym
+    def get_acronym(self, session: Session) -> str:
+        return CommitteeInSession.objects.get(committee=self, session=session).acronym
 
-    def latest_session(self):
+    def latest_session(self) -> Session:
         return self.sessions.order_by('-start')[0]
 
     @property
-    def title(self):
+    def title(self) -> str:
         if 'committee' in self.name_en.lower():
             return self.name
 
@@ -151,7 +150,7 @@ class CommitteeActivity(models.Model):
         return self.committeeactivityinsession_set.order_by('-session__start')[0].get_source_url()
 
     @property
-    def type(self):
+    def type(self) -> str:
         return 'Study' if self.study else 'Activity'
 
     class Meta:
@@ -164,7 +163,7 @@ class CommitteeActivityInSession(models.Model):
     session: models.ForeignKey = models.ForeignKey(Session, on_delete=models.CASCADE)
     source_id: models.IntegerField = models.IntegerField(unique=True)
 
-    def get_source_url(self):
+    def get_source_url(self) -> str:
         return 'https://www.ourcommons.ca/Committees/%(lang)s/%(acronym)s/StudyActivity?studyActivityId=%(source_id)s' % {
             'source_id': self.source_id,
             'acronym': self.activity.committee.get_acronym(self.session),
@@ -247,36 +246,36 @@ class CommitteeMeeting(models.Model):
             kwargs={'session_id': self.session_id, 'committee_slug': slug, 'number': self.number})
 
     @property
-    def minutes_url(self):
+    def minutes_url(self) -> str | None:
         return self.get_ourcommons_doc_url('minutes') if self.minutes else None
 
     @property
-    def notice_url(self):
+    def notice_url(self) -> str | None:
         return self.get_ourcommons_doc_url('notice') if self.notice else None
 
     @property
-    def evidence_url(self):
+    def evidence_url(self) -> str | None:
         return self.get_ourcommons_doc_url('evidence') if self.evidence_id else None
 
-    def get_ourcommons_doc_url(self, document_type):
+    def get_ourcommons_doc_url(self, document_type: str) -> str:
         return 'https://www.ourcommons.ca/DocumentViewer/{}/{}/{}/meeting-{}/{}'.format(
             settings.LANGUAGE_CODE[:2], self.session.id,
             self.committee.get_acronym(self.session), self.number,
             document_type)
 
     @property
-    def webcast_url(self):
+    def webcast_url(self) -> str | None:
         if not self.webcast:
             return None
         return 'https://www.ourcommons.ca/webcast/{}/{}/{}'.format(
             self.session.id, self.committee.get_acronym(self.session), self.number)
 
     @property
-    def datetime(self):
+    def datetime(self) -> datetime.datetime:
         return datetime.datetime.combine(self.date, self.start_time)
 
     @property
-    def future(self):
+    def future(self) -> bool:
         return self.datetime > datetime.datetime.now()
 
 

@@ -16,11 +16,11 @@ logger.addHandler(logging.StreamHandler())
 __all__ = ['parse_string']
 
 
-def _n2s(o):
+def _n2s(o: str | None) -> str:
     return o if o is not None else ''
 
 
-def _build_tag(name, attrs):
+def _build_tag(name: str, attrs: Dict[str, Any]) -> str:
     return '<%s%s>' % (
         name,
         ''.join((
@@ -33,28 +33,28 @@ def _build_tag(name, attrs):
 _r_whitespace = re.compile(r'\s+', re.UNICODE)
 
 
-def _tame_whitespace(s):
+def _tame_whitespace(s: str) -> str:
     return _r_whitespace.sub(' ', _n2s(s)).strip()
 
 
-def _text_content(el, tail=False):
+def _text_content(el: etree._Element, tail: bool = False) -> str:
     return _tame_whitespace(
         _n2s(el.text)
         + ''.join([_text_content(subel, True) for subel in el])
         + (_n2s(el.tail) if tail else ''))
 
 
-def _letters_only(s):
+def _letters_only(s: str) -> str:
     return re.sub('[^a-zA-Z]', '', _n2s(s).lower())
 
 
-def _smart_title(s):
+def _smart_title(s: str) -> str:
     if s.isupper() or s.islower():
         return s.title()
     return s
 
 
-def _following_char(el):
+def _following_char(el: etree._Element) -> str:
     """Returns the next non-whitespace character after this element,
     without moving up the tree."""
     tail = _n2s(el.tail).strip()
@@ -78,7 +78,7 @@ def _only_open(target):
     return inner
 
 
-def escape(s):
+def escape(s: str) -> str:
     """Escape HTML entities in a string. A wrapper around the Python function, since we don't want
     to escape quotation marks."""
     return stdlib_escape(s, quote=False)
@@ -117,7 +117,7 @@ _r_parens = re.compile(r'\s*\(.+\)\s*')
 _r_indeterminate = re.compile(r'^(An?|Une)\s')
 
 
-def _get_housemet_time(number, ampm):
+def _get_housemet_time(number: str, ampm: str) -> datetime.time:
     ampm = _n2s(ampm).replace('.', '')
     number = number.replace('.', ':')
     match = re.search(r'(\d+):(\d+)', number)
@@ -134,7 +134,7 @@ def _get_housemet_time(number, ampm):
     return datetime.time(hour=int(hour), minute=int(minute))
 
 
-def _time_to_datetime(hour, minute, date):
+def _time_to_datetime(hour: int, minute: int, date: datetime.date) -> datetime.datetime:
     """Given hour, minute, and a datetime.date, returns a datetime.datetime.
 
     Necessary to deal with the occasional wacky 25 o'clock timestamps in Hansard.
@@ -148,8 +148,8 @@ def _time_to_datetime(hour, minute, date):
     )
 
 
-def _strip_person_name(n):
-    return _r_honorific.sub('', _r_parens.sub('', _tame_whitespace(n))).strip()
+def _strip_person_name(name: str) -> str:
+    return _r_honorific.sub('', _r_parens.sub('', _tame_whitespace(name))).strip()
 
 
 class AlpheusError(Exception):
@@ -310,7 +310,7 @@ class ParseHandler():
         if s:
             self._add_code(escape(s))
 
-    def _add_tag_text(self, el, openclose):
+    def _add_tag_text(self, el: etree._Element, openclose: int) -> None:
         """Add the text in this tag's text/tail, as appropriate, to the current statement."""
         if openclose == TAG_OPEN:
             if not el.get('alpheus_skip_text'):
@@ -330,12 +330,12 @@ class ParseHandler():
             self.statements.append(self.current_statement)
             self.current_statement = None
 
-    def get_final_statements(self):
+    def get_final_statements(self) -> List[Statement]:
         if self.current_statement and self.current_statement.content.strip():
             self.close_statement()
         return self.statements
 
-    def _new_person(self, hoc_id, description, affil_type=None):
+    def _new_person(self, hoc_id: str | None, description: str, affil_type: str | None = None) -> bool | None:
         """Someone new has started speaking; save their information."""
         description = _tame_whitespace(description)
         stripped_description = _strip_person_name(description)
@@ -384,19 +384,19 @@ class ParseHandler():
                 self.people_contexts[key] = self.one_time_attributes['person_context']
         return None
 
-    def _is_person(self):
+    def _is_person(self) -> bool:
         """Do we know who's speaking the current text?"""
         if self.current_statement:
             return bool(self.current_statement.meta.get('person_attribution'))
 
         return bool(self.one_time_attributes.get('person_attribution'))
 
-    def handle_ParaText(self, el, openclose, procedural=None):
+    def handle_ParaText(self, el: etree._Element, openclose: int, procedural: bool = False) -> int | None:
         if openclose == TAG_OPEN:
 
             mytext = _n2s(el.text).strip()
             # ParaText has a bunch of special cases
-            if _r_housemet.search(mytext) and el.getparent().tag == 'Intro':
+            if _r_housemet.search(mytext) and el.getparent().tag == 'Intro' and el.text is not None:
                 # "The House met at 10 a.m."
                 match = _r_housemet.search(el.text)
                 self.current_attributes['timestamp'] = datetime.datetime.combine(
@@ -440,7 +440,7 @@ class ParseHandler():
                 else:
                     self.one_liner = None
                 self._new_person(hoc_id, sub[0].text.replace(':', '').strip())
-                if not sub[0].text.endswith(':') and sub[0].tail[0] == ':':
+                if not sub[0].text.endswith(':') and sub[0].tail is not None and sub[0].tail[0] == ':':
                     # If the colon is on the wrong side of the B, stop it from
                     # showing up in the paragraph text
                     sub[0].tail = sub[0].tail[1:]
@@ -497,7 +497,7 @@ class ParseHandler():
             assert not _n2s(el.tail).strip()
         return None
 
-    def handle_ProceduralText(self, el, openclose):
+    def handle_ProceduralText(self, el: etree._Element, openclose: int) -> int | None:
         assert not _n2s(el.tail).strip()
         if el.get('TocType') == 'TPC':
             if openclose == TAG_OPEN:
@@ -513,33 +513,33 @@ class ParseHandler():
     handle_ThroneSpeechPara = handle_ParaText
 
     @_only_open
-    def handle_ThroneSpeech(self, el, openclose):
+    def handle_ThroneSpeech(self, el: etree._Element, openclose: int) -> None:
         self._new_person(
             None,
             "The Governor General" if self.document_language[0] == 'e'
             else "Le gouverneur général")
 
-    def handle_B(self, el, openclose):
+    def handle_B(self, el: etree._Element, openclose: int) -> None:
         # Fallout from new-speaker special case in ParaText
         if not el.get('alpheus_skip_text'):
             self._add_code('<%sstrong>' % ('/' if openclose == TAG_CLOSE else ''))
         self._add_tag_text(el, openclose)
 
-    def handle_Verse(self, el, openclose):
+    def handle_Verse(self, el: etree._Element, openclose: int) -> None:
         if openclose == TAG_OPEN:
             self._add_code('<span class="verse">')
         else:
             self._add_code('</span>')
         self._add_tag_text(el, openclose)
 
-    def handle_Line(self, el, openclose):
+    def handle_Line(self, el: etree._Element, openclose: int) -> None:
         # Appears within <Poetry> and <Verse> tags
         if openclose == TAG_CLOSE:
             self._add_code('<br>')
         self._add_tag_text(el, openclose)
 
     @_only_open
-    def handle_PersonSpeaking(self, el, openclose):
+    def handle_PersonSpeaking(self, el: etree._Element, openclose: int) -> int:
         try:
             affil = el.xpath('Affiliation')[0]
         except IndexError:
@@ -560,7 +560,7 @@ class ParseHandler():
     handle_Questioner = handle_PersonSpeaking
     handle_Responder = handle_PersonSpeaking
 
-    def handle_Intervention(self, el, openclose):
+    def handle_Intervention(self, el: etree._Element, openclose: int) -> None:
         if openclose == TAG_OPEN:
             self.one_time_attributes['intervention_type'] = el.get('Type')
             self.one_time_attributes['id'] = el.get('id')
@@ -568,7 +568,7 @@ class ParseHandler():
             self.close_statement()
 
     @_only_open
-    def handle_FloorLanguage(self, el, openclose):
+    def handle_FloorLanguage(self, el: etree._Element, openclose: int) -> int:
         lang = el.get('language', '').lower()
         if lang in ('en', 'fr'):
             self.current_attributes['language'] = lang
@@ -577,7 +577,7 @@ class ParseHandler():
         return NO_DESCEND
 
     @_only_open
-    def handle_Timestamp(self, el, openclose):
+    def handle_Timestamp(self, el: etree._Element, openclose: int) -> int:
         if el.get('Hr'):
             self.current_attributes['timestamp'] = _time_to_datetime(
                 hour=int(el.get('Hr').replace(' ', '')), minute=int(el.get('Mn', 0)), date=self.date)
@@ -587,30 +587,30 @@ class ParseHandler():
                 self.current_statement.meta['timestamp'] = self.current_attributes['timestamp']
         return NO_DESCEND
 
-    def handle_SubjectOfBusinessQualifier(self, el, openclose):
+    def handle_SubjectOfBusinessQualifier(self, el: etree._Element, openclose: int) -> int:
         self.current_attributes['h3'] = _text_content(el)
         return NO_DESCEND
 
-    def handle_SubjectOfBusinessTitle(self, el, openclose):
+    def handle_SubjectOfBusinessTitle(self, el: etree._Element, openclose: int) -> int:
         self.current_attributes['h2'] = _text_content(el)
         return NO_DESCEND
 
-    def handle_SubjectOfBusiness(self, el, openclose):
+    def handle_SubjectOfBusiness(self, el: etree._Element, openclose: int) -> None:
         if openclose == TAG_CLOSE and 'h3' in self.current_attributes:
             del self.current_attributes['h3']
 
-    def handle_OrderOfBusiness(self, el, openclose):
+    def handle_OrderOfBusiness(self, el: etree._Element, openclose: int) -> None:
         if openclose == TAG_CLOSE:
             if 'h1' in self.current_attributes:
                 del self.current_attributes['h1']
             if 'h2' in self.current_attributes:
                 del self.current_attributes['h2']
 
-    def handle_OrderOfBusinessTitle(self, el, openclose):
+    def handle_OrderOfBusinessTitle(self, el: etree._Element, openclose: int) -> int:
         self.current_attributes['h1'] = _smart_title(_text_content(el))
         return NO_DESCEND
 
-    def handle_WrittenQuestionResponse(self, el, openclose):
+    def handle_WrittenQuestionResponse(self, el: etree._Element, openclose: int) -> None:
         if openclose == TAG_OPEN:
             if el.xpath('QuestionID'):
                 qid = el.xpath('QuestionID')[0]
@@ -620,19 +620,19 @@ class ParseHandler():
             if self.current_attributes.get('h3', '').lower().startswith('question'):
                 del self.current_attributes['h3']
 
-    def handle_QuestionContent(self, el, openclose):
+    def handle_QuestionContent(self, el: etree._Element, openclose: int) -> None:
         if openclose == TAG_OPEN:
             self.one_time_attributes['written_question'] = 'question'
         else:
             self.close_statement()
 
-    def handle_ResponseContent(self, el, openclose):
+    def handle_ResponseContent(self, el: etree._Element, openclose: int) -> None:
         if openclose == TAG_OPEN:
             self.one_time_attributes['written_question'] = 'response'
         else:
             self.close_statement()
 
-    def handle_Affiliation(self, el, openclose):
+    def handle_Affiliation(self, el: etree._Element, openclose: int) -> None:
         if (not el.get('alpheus_skip_text')) and el.get('DbId'):
             if openclose == TAG_OPEN:
                 attrs = {
@@ -646,7 +646,7 @@ class ParseHandler():
                 self._add_code('</a>')
         self._add_tag_text(el, openclose)
 
-    def handle_Document(self, el, openclose):
+    def handle_Document(self, el: etree._Element, openclose: int) -> None:
         if el.get('DbId'):
             if openclose == TAG_OPEN:
                 attrs = {
@@ -660,7 +660,7 @@ class ParseHandler():
                 self._add_code('</a>')
         self._add_tag_text(el, openclose)
 
-    def handle_Division(self, el, openclose):
+    def handle_Division(self, el: etree._Element, openclose: int) -> int:
         num = el.get('DivisionNumber')
         url = 'http://www.parl.gc.ca/HouseChamberBusiness/ChamberVoteDetail.aspx?Language=%s&Mode=1&Parl=%s&Ses=%s&Vote=%s' % (
             self.document_language[0].upper(), self.parliament, self.session, num)
@@ -674,7 +674,7 @@ class ParseHandler():
             num))
         return NO_DESCEND
 
-    def _default_handler(self, el, openclose):
+    def _default_handler(self, el: etree._Element, openclose: int) -> int | None:
         if el.tag in self.EXCLUDE_TAGS:
             return NO_DESCEND
         if el.tag in self.PASSTHROUGH_TAGS:
@@ -684,10 +684,10 @@ class ParseHandler():
         if self.in_para:
             self._add_tag_text(el, openclose)
         if openclose == TAG_OPEN and el.tag not in self.IGNORE_TAGS:
-            raise AlpheusError("I don't know how to handle tag %s" % el.tag)
+            raise AlpheusError("I don't know how to handle tag %r" % el.tag)
         return None
 
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str) -> Any:
         # Route requests where we don't have a handler to the default
         if name.startswith('handle_'):
             return self._default_handler
@@ -703,8 +703,9 @@ def parse_tree(tree: etree._Element) -> Document:
     document = Document()
 
     # Start by getting metadata
-    def _get_meta(key):
+    def _get_meta(key: str) -> str:
         return str(tree.xpath('//ExtractedItem[@Name="%s"]' % key)[0].text)
+
     document.meta['date'] = datetime.date(
         year=int(_get_meta('MetaDateNumYear')),
         month=int(_get_meta('MetaDateNumMonth')),
@@ -733,7 +734,7 @@ def parse_tree(tree: etree._Element) -> Document:
     # Now we can move on to the content of the document
     handler = ParseHandler(document)
 
-    def _explore_element(el):
+    def _explore_element(el: etree._Element) -> None:
         # Recursive depth-first search of the XML tree
         el_handler = getattr(handler, 'handle_' + str(el.tag))
         if el_handler(el, TAG_OPEN) != NO_DESCEND:

@@ -13,7 +13,7 @@ from collections import defaultdict
 from typing import Dict
 
 import text_utils
-from bs4 import BeautifulSoup, NavigableString, Tag
+from bs4 import BeautifulSoup, NavigableString
 from django.core.files import File
 from django.db import models, transaction
 
@@ -23,27 +23,32 @@ from parliament.elections.models import Candidacy, Election
 from parliament.hansards.models import Statement
 
 
-def load_pol_pic(pol):
+def load_pol_pic(pol: Politician) -> None:
     print("#%d: %s" % (pol.id, pol))
     print(pol.parlpage)
 
-    img: Tag | NavigableString | None = None
+    img: NavigableString | None = None
     with urllib.request.urlopen(pol.parlpage) as soup_data:
         soup = BeautifulSoup(soup_data)
-        img = soup.find(
+        souped = soup.find(
             'img', id='MasterPage_MasterPage_BodyContent_PageContent_Content_TombstoneContent_TombstoneContent_ucHeaderMP_imgPhoto')
+
+        if isinstance(souped, NavigableString):
+            img = souped
 
     if img is None:
         raise Exception("Didn't work for %s" % pol.parlpage)
 
-    imgurl = img['src']
+    imgurl: str = img['src']
     if '?' not in imgurl:  # no query string
         imgurl = urllib.parse.quote(imgurl.encode('utf8'))  # but there might be accents!
     if 'BlankMPPhoto' in imgurl:
         print("Blank photo")
         return
 
-    imgurl_joined = urllib.parse.urljoin(pol.parlpage, imgurl)
+    parlpage = pol.parlpage
+    assert parlpage is not None
+    imgurl_joined = urllib.parse.urljoin(parlpage, imgurl)
     # test = urllib.request.urlopen(imgurl)
     content = urllib.request.urlretrieve(imgurl_joined)
     # filename = urlparse.urlparse(imgurl).path.split('/')[-1]

@@ -13,13 +13,13 @@ r_mister = re.compile(r'^(Mr|Mrs|Ms|Miss|Hon|Right Hon|M|Mme)\.?\s+')
 r_parens = re.compile(r'\s*\(.+\)\s*$')
 
 
-def time(hour, minute):
+def time(hour: int, minute: int) -> datetime.time:
     if hour >= 24:
         hour = hour % 24  # no, really. the house of commons is so badass they meet at 25 o'clock
     return datetime.time(hour=hour, minute=minute)
 
 
-def time_to_datetime(hour, minute, date):
+def time_to_datetime(hour: int, minute: int, date: datetime.date) -> datetime.datetime:
     """Given hour, minute, and a datetime.date, returns a datetime.datetime.
 
     Necessary to deal with the occasional wacky 25 o'clock timestamps in Hansard.
@@ -38,13 +38,13 @@ def removeAccents(s: str) -> str:
     return "".join([c for c in nkfd_form if not unicodedata.combining(c)])
 
 
-def stripHonorific(s):
+def stripHonorific(s: str) -> str:
     for hon in ('The Honourable ', 'The Right Honourable ', 'The Rt. ', 'The '):
         s = s.replace(hon, '')
     return re.sub(r'^[A-Z][a-z]+\. ', '', s)
 
 
-def titleIfNecessary(s):
+def titleIfNecessary(s: str) -> str:
     if not re.search(r'[a-z]', s):
         s = s.title()
     return s
@@ -60,15 +60,15 @@ def getText(tag):
 r_extraWhitespace = re.compile(r'\s\s*', re.UNICODE)
 
 
-def tameWhitespace(s):
+def tameWhitespace(s: str) -> str:
     return re.sub(r_extraWhitespace, ' ', s.replace("\n", ' '))
 
 
-def sane_quotes(s):
+def sane_quotes(s: str) -> str:
     return s.replace('``', '"').replace("''", '"')
 
 
-def slugify(s, allow_numbers=False):
+def slugify(s: str, allow_numbers: bool = False) -> str:
     if allow_numbers:
         pattern = r'[^a-zA-Z0-9]'
     else:

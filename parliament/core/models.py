@@ -4,7 +4,7 @@ import datetime
 import logging
 import re
 from io import BytesIO
-from typing import Any, Dict, List, Optional, override
+from typing import Any, Dict, List, Optional, Tuple, override
 from urllib.parse import urljoin
 
 import lxml.etree
@@ -163,7 +163,14 @@ class PoliticianManager(models.Manager):
         return [i.politician for i in (
             PoliticianInfo.sr_objects.filter(schema='alternate_name', value=parsetools.normalizeName(name)))]
 
-    def get_by_name(self, name, session=None, riding=None, election=None, party=None, saveAlternate=True, strictMatch=False):
+    def get_by_name(self,
+                    name: str,
+                    session: "Session | None" = None,
+                    riding: "Riding | None" = None,
+                    election: None = None,
+                    party: Party | None = None,
+                    saveAlternate: bool = True,
+                    strictMatch: bool = False) -> "Politician":
         """ Return a Politician by name. Uses a bunch of methods to try and deal with variations in names.
         If given any of a session, riding, election, or party, returns only politicians who match.
         If given session and optinally riding, tries to match the name more laxly.
@@ -232,7 +239,7 @@ class PoliticianManager(models.Manager):
                     return pol
         raise Politician.DoesNotExist("Could not find politician named %s" % name)
 
-    def get_by_slug_or_id(self, slug_or_id):
+    def get_by_slug_or_id(self, slug_or_id: str) -> "Politician":
         if slug_or_id.isdigit():
             return self.get(id=slug_or_id)
         return self.get(slug=slug_or_id)
@@ -284,7 +291,9 @@ class PoliticianManager(models.Manager):
             pol.set_info_multivalued('parl_affil_id', parlid)
             return self.get_queryset().get(id=pol.id)
 
-    def _get_pol_from_ourcommons_profile_url(self, profile_url, session=None, riding_name=None):
+    def _get_pol_from_ourcommons_profile_url(
+            self, profile_url: str, session: "Session | None" = None, riding_name: str | None = None) -> Tuple["Politician", str]:
+
         url_match = re.search(r'\((\d+)\)$', profile_url)
         if not url_match:
             raise Exception("Couldn't parse ID out of provided profile URL %s" % profile_url)
@@ -311,6 +320,7 @@ class PoliticianManager(models.Manager):
             pol = self.get_by_name(name=polname, session=session, riding=riding)
         else:
             pol = self.get_by_name(name=polname, riding=riding)
+
         return (pol, parl_mp_id)
 
 
@@ -366,7 +376,7 @@ class Politician(Person):
             ]
         return d
 
-    def add_alternate_name(self, name):
+    def add_alternate_name(self, name: str) -> None:
         normname = parsetools.normalizeName(name)
         if normname not in self.alternate_names():
             self.set_info_multivalued('alternate_name', normname)
@@ -375,7 +385,7 @@ class Politician(Person):
         """Returns a list of ways of writing this politician's name."""
         return self.politicianinfo_set.filter(schema='alternate_name').values_list('value', flat=True)
 
-    def add_slug(self):
+    def add_slug(self) -> bool | None:
         """Assigns a slug to this politician, unless there's a conflict."""
         if self.slug:
             return True
@@ -389,7 +399,7 @@ class Politician(Person):
 
     @property
     @memoize_property
-    def current_member(self):
+    def current_member(self) -> "ElectedMember | bool":
         """If this politician is a current MP, returns the corresponding ElectedMember object.
         Returns False if the politician is not a current MP."""
         try:
@@ -596,23 +606,23 @@ class PoliticianInfo(models.Model):
         return "%s: %s" % (self.politician, self.schema)
 
     @property
-    def int_value(self):
+    def int_value(self) -> int:
         return int(self.value)
 
 
 class SessionManager(models.Manager):
 
-    def with_bills(self):
+    def with_bills(self) -> QuerySet["Session"]:
         return self.get_queryset().filter(bill__number_only__gt=1).distinct()
 
-    def current(self):
+    def current(self) -> "Session":
         return self.get_queryset().order_by('-start')[0]
 
     def get_by_date(self, date):
         return self.filter(models.Q(end__isnull=True) | models.Q(end__gte=date))\
             .get(start__lte=date)
 
-    def get_from_string(self, string):
+    def get_from_string(self, string: str) -> "Session":
         """Given a string like '41st Parliament, 1st Session, returns the session."""
         match = re.search(r'^(\d\d)\D+(\d)\D', string)
         if not match:
@@ -737,7 +747,7 @@ class Riding(models.Model):
         super(Riding, self).save(*args, **kwargs)
 
     @property
-    def dashed_name(self):
+    def dashed_name(self) -> str:
         return self.name.replace('--', '—')
 
     @override
@@ -747,10 +757,10 @@ class Riding(models.Model):
 
 class ElectedMemberManager(models.Manager):
 
-    def current(self):
+    def current(self) -> QuerySet["ElectedMember"]:
         return self.get_queryset().filter(end_date__isnull=True)
 
-    def former(self):
+    def former(self) -> QuerySet["ElectedMember"]:
         return self.get_queryset().filter(end_date__isnull=False)
 
     def on_date(self, date):
@@ -758,7 +768,7 @@ class ElectedMemberManager(models.Manager):
             models.Q(start_date__lte=date)
             & (models.Q(end_date__isnull=True) | models.Q(end_date__gte=date)))
 
-    def get_by_pol(self, politician, date=None, session=None):
+    def get_by_pol(self, politician, date=None, session: Session | None = None) -> "ElectedMember":
         if not date and not session:
             raise Exception("Provide either a date or a session to get_by_pol.")
 
@@ -817,7 +827,7 @@ class ElectedMember(models.Model):
         return reverse('politician_membership', kwargs={'member_id': self.id})
 
     @property
-    def current(self):
+    def current(self) -> bool:
         return not bool(self.end_date)
 
 
@@ -831,7 +841,7 @@ class SiteNews(models.Model):
     objects = models.Manager()
     public = ActiveManager()
 
-    def html(self):
+    def html(self) -> str:
         return mark_safe(markdown(self.text))
 
     class Meta:

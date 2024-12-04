@@ -54,15 +54,15 @@ class CurrentMPView(ModelListView):
     }
 
     @override
-    def get_qs(self, request: HttpRequest | None = None, **kwargs: Any) -> QuerySet[Politician]:
+    def get_qs(self, request: HttpRequest | None = None, **kwargs: Any) -> QuerySet[Politician] | QuerySet[ElectedMember]:
         if request and request.GET.get('include') == 'former':
-            qs = Politician.objects.elected_but_not_current().order_by('name_family')
-        elif request and request.GET.get('include') == 'all':
-            qs = Politician.objects.elected().order_by('name_family')
-        else:
-            qs = ElectedMember.objects.current().order_by(
-                'riding__province', 'politician__name_family').select_related('politician', 'riding', 'party')
-        return qs
+            return Politician.objects.elected_but_not_current().order_by('name_family')
+
+        if request and request.GET.get('include') == 'all':
+            return Politician.objects.elected().order_by('name_family')
+
+        return ElectedMember.objects.current().order_by(
+            'riding__province', 'politician__name_family').select_related('politician', 'riding', 'party')
 
     @override
     def object_to_dict(self, obj):

@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from django.conf import settings
-from django.http.request import HttpRequest
+from django.http import HttpRequest
 from oauth2client import client, crypt
 
 from parliament.accounts.models import User

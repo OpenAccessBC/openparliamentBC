@@ -47,18 +47,18 @@ def mrms(pol: Politician) -> str:
 
 
 @register.filter(name='month_num')
-def month_num(month):
+def month_num(month: int) -> str:
     return datetime.date(2010, month, 1).strftime("%B")
 
 
 @register.filter(name='strip_act')
-def strip_act(value):
+def strip_act(value: str) -> str:
     value = re.sub(r'An Act (to )?([a-z])', lambda m: m.group(2).upper(), value)
     return re.sub(r' Act$', '', value)
 
 
 @register.filter(name='time_since')
-def time_since(value):
+def time_since(value: datetime.date) -> str:
     today = datetime.date.today()
     days_since = (today - value).days
     if value > today or days_since == 0:
@@ -103,10 +103,10 @@ def english_list(value: List[str], arg: str = ', ') -> str:
 
 
 @register.filter(name='list_prefix')
-def list_prefix(value, arg):
+def list_prefix(value: List[str], arg: str) -> List[str]:
     return ["%s%s" % (arg, i) for i in value]
 
 
 @register.filter(name='list_filter')
-def list_filter(value, arg):
+def list_filter(value: List[str], arg: str) -> List[str]:
     return [x for x in value if x != arg]

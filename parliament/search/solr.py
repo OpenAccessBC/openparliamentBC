@@ -3,7 +3,7 @@
 import datetime
 import re
 from calendar import monthrange
-from typing import Any, Dict
+from typing import Any, Dict, List, Tuple
 
 import pysolr
 from django.conf import settings
@@ -66,7 +66,14 @@ class SearchQuery(BaseSearchQuery):
     DATE_FILTER_RE = re.compile(
         r'^(?P<fy>\d{4})-(?P<fm>\d\d?)(?:-(?P<fd>\d\d?))?(?: to (?P<ty>\d{4})-(?P<tm>\d\d?)(?:-(?P<td>\d\d?))?)?')
 
-    def __init__(self, query, start=0, limit=15, user_params=None, facet=False, full_text=False, solr_params=None):
+    def __init__(self,
+                 query: str,
+                 start: int = 0,
+                 limit: int = 15,
+                 user_params: Dict[str, Any] | None = None,
+                 facet: bool = False,
+                 full_text: bool = False,
+                 solr_params: Dict[str, Any] | None = None) -> None:
         if user_params is None:
             user_params = {}
 
@@ -81,7 +88,7 @@ class SearchQuery(BaseSearchQuery):
         self.full_text = full_text
         self.extra_solr_params = solr_params
 
-    def get_solr_query(self):
+    def get_solr_query(self) -> Tuple[str, Dict[str, Any]]:
         searchparams: Dict[str, Any] = {
             'start': self.start,
             'rows': self.limit
@@ -167,7 +174,7 @@ class SearchQuery(BaseSearchQuery):
 
     @property
     @memoize_property
-    def validated_user_params(self):
+    def validated_user_params(self) -> Dict[str, str]:
         p = {}
         for opt, choices in self.ALLOWABLE_OPTIONS.items():
             if opt in self.user_params and self.user_params[opt] in choices:
@@ -182,11 +189,11 @@ class SearchQuery(BaseSearchQuery):
         return self._results
 
     @property
-    def hits(self):
+    def hits(self) -> int:
         return self.solr_results.hits
 
     @property
-    def facet_fields(self):
+    def facet_fields(self) -> Dict[str, Any]:
         return self.solr_results.facets.get('facet_fields')
 
     @property
@@ -195,7 +202,7 @@ class SearchQuery(BaseSearchQuery):
 
     @property
     @memoize_property
-    def date_counts(self):
+    def date_counts(self) -> List[Tuple[int, str]]:
         counts = []
         if self.facet and 'facet_ranges' in self.solr_results.facets:
             datefacets = self.solr_results.facets['facet_ranges']['date']['counts']
@@ -211,7 +218,7 @@ class SearchQuery(BaseSearchQuery):
         return counts
 
     @property
-    def discontinuity(self):
+    def discontinuity(self) -> int | None:
         if self.solr_results and self.committees_maybe and not self.committees_only:
             return 2006
         return None

@@ -5,20 +5,22 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.template import defaultfilters
 
+from parliament.core.models import Statement
 
-def validate_first_line(line):
+
+def validate_first_line(line: str) -> None:
     if not re.search(r'^[A-Z]', line):
         raise ValidationError("Doesn't start with cap")
 
 
-def validate_last_line(line):
+def validate_last_line(line: str) -> None:
     if re.search(r'(Mr|St|Mrs|No|Hon)\.$', line, re.I):
         raise ValidationError("Ends with non-period")
     if line.endswith(':') or line.endswith('-'):
         raise ValidationError("Colon")
 
 
-def validate_line(line):
+def validate_line(line: str) -> None:
     if re.search(r'\d', line):
         raise ValidationError("Digits")
     if '[' in line:
@@ -37,7 +39,7 @@ class Haiku(models.Model):
     worthy: models.BooleanField = models.BooleanField(blank=True, default=False, db_index=True)
     # statement = models.ForeignKey(Statement)
 
-    def set_statement(self, statement):
+    def set_statement(self, statement: Statement) -> None:
         self.attribution_url = statement.get_absolute_url()
         if statement.member:
             a = "%s MP %s" % (statement.member.party.short_name, statement.politician.name)

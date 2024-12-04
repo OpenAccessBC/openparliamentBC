@@ -46,8 +46,9 @@ class PoliticianInfoOptions(admin.ModelAdmin):
     list_display = ('politician', 'schema', 'value')
     search_fields = ('politician__name', 'schema', 'value')
 
+    # FIXME: Should return `Field | None`
     @override
-    def formfield_for_foreignkey(self, db_field: ForeignKey, request: HttpRequest, **kwargs: Any):
+    def formfield_for_foreignkey(self, db_field: ForeignKey, request: HttpRequest, **kwargs: Any) -> Any:
         if db_field.name == "politician":
             kwargs["queryset"] = Politician.objects.elected()
             return db_field.formfield(**kwargs)

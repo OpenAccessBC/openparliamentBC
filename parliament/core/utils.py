@@ -5,13 +5,15 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from functools import wraps
+from typing import Any, Dict
 
 from compressor.filters import CompilerFilter
 from compressor.storage import CompressorFileStorage
 from django.conf import settings
 from django.contrib import staticfiles
 from django.db import models
-from django.http import HttpResponsePermanentRedirect
+from django.db.models import QuerySet
+from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 from django.urls import reverse
 
 logger = logging.getLogger(__name__)
@@ -30,7 +32,7 @@ def memoize_property(target):
     return wrapped
 
 
-def language_property(fieldname: str):
+def language_property(fieldname: str) -> property:
     if settings.LANGUAGE_CODE.startswith('fr'):
         fieldname = fieldname + '_fr'
     else:
@@ -42,14 +44,13 @@ def language_property(fieldname: str):
 def redir_view(view):
     """Function factory to redirect requests to the given view."""
 
-    def wrapped(request, *args, **kwargs):
-        return HttpResponsePermanentRedirect(
-            reverse(view, args=args, kwargs=kwargs)
-        )
+    def wrapped(request, *args: Any, **kwargs: Any) -> HttpResponse:
+        return HttpResponsePermanentRedirect(reverse(view, args=args, kwargs=kwargs))
+
     return wrapped
 
 
-def get_twitter_share_url(url, description, add_plug=True):
+def get_twitter_share_url(url: str, description: str, add_plug: bool = True) -> str:
     """Returns a URL for a Twitter post page, prepopulated with a sharing message.
 
     url -- URL to the shared page -- should start with / and not include the domain
@@ -84,7 +85,7 @@ BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 
 
-def int64_encode(n):
+def int64_encode(n: int) -> str:
     """Given integer n, returns a base64-ish string representation."""
     if n < 0:
         return SIGN_CHARACTER + int64_encode(-n)
@@ -97,7 +98,7 @@ def int64_encode(n):
     return ''.join(reversed(s))
 
 
-def int64_decode(s):
+def int64_decode(s: str) -> int:
     """Turns the output of int64_encode back into an integer"""
     if s[0] == SIGN_CHARACTER:
         return -int64_decode(s[1:])
@@ -109,7 +110,7 @@ def int64_decode(s):
 
 class ActiveManager(models.Manager):
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         return super(ActiveManager, self).get_queryset().filter(active=True)
 
 
@@ -117,14 +118,15 @@ def feed_wrapper(feed_class):
     """Decorator that ensures django.contrib.syndication.Feed objects are created for
     each request, not reused over several requests. This means feed classes can safely
     store request-specific attributes on self."""
-    def call_feed(request, *args, **kwargs):
+    def call_feed(request, *args: Any, **kwargs: Any):
         feed_instance = feed_class()
         feed_instance.request = request
         return feed_instance(request, *args, **kwargs)
+
     return call_feed
 
 
-def settings_context(request):
+def settings_context(request: HttpRequest) -> Dict[str, Any]:
     """Context processor makes certain settings available to templates."""
     return {
         'fr': settings.LANGUAGE_CODE.startswith('fr'),
@@ -148,6 +150,6 @@ class ListingCompressorFinder(staticfiles.finders.BaseStorageFinder):
     storage = CompressorFileStorage
 
 
-def is_ajax(request):
+def is_ajax(request: HttpRequest) -> bool:
     # Duplicates Django's removed request.is_ajax() function
     return 'XMLHttpRequest' in request.headers.get('X-Requested_With', '')

@@ -23,7 +23,7 @@ def import_committee_list(session=None):
     if session is None:
         session = Session.objects.current()
 
-    def make_committee(name_en, name_fr, acronym, parent=None):
+    def make_committee(name_en: str, name_fr: str, acronym: str, parent=None):
         try:
             cmte = Committee.objects.get_by_acronym(acronym, session)
             if name_fr and cmte.name_fr != name_fr:

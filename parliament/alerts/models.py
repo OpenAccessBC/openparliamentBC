@@ -3,7 +3,7 @@ import datetime
 import hashlib
 import logging
 import re
-from typing import Any, override
+from typing import Any, Tuple, override
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class TopicManager(models.Manager):
 
-    def get_or_create_by_query(self, query):
+    def get_or_create_by_query(self, query: str) -> Tuple["Topic", bool]:
         query_obj = SearchQuery(query)
         if 'Date' in query_obj.filters:
             del query_obj.filters['Date']  # Date filters make no sense in alerts
@@ -243,7 +243,7 @@ class PoliticianAlert(models.Model):
     objects = models.Manager()
     public = ActiveManager()
 
-    def get_key(self):
+    def get_key(self) -> bytes:
         h = hashlib.sha1()
         h.update(str(self.id).encode('utf-8'))
         h.update(self.email)
