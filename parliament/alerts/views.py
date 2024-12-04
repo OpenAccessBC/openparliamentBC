@@ -125,7 +125,7 @@ def alerts_list(request: HttpRequest) -> HttpResponse:
 
 class CreateAlertView(JSONView):
 
-    def post(self, request):
+    def post(self, request: HttpRequest) -> HttpResponse | bool:
         query = request.POST.get('query')
         if not query:
             raise Http404
@@ -146,7 +146,7 @@ create_alert = CreateAlertView.as_view()
 
 class ModifyAlertView(JSONView):
 
-    def post(self, request, subscription_id):
+    def post(self, request: HttpRequest, subscription_id: str) -> bool:
         subscription = get_object_or_404(Subscription, id=subscription_id)
         if subscription.user.email != request.authenticated_email:
             raise PermissionDenied
@@ -167,7 +167,7 @@ class ModifyAlertView(JSONView):
 modify_alert = ModifyAlertView.as_view()
 
 
-def _generate_query_for_politician(pol):
+def _generate_query_for_politician(pol: Politician) -> str:
     return 'MP: "%s" Type: "debate"' % pol.identifier
 
 
@@ -223,7 +223,7 @@ def unsubscribe(request: HttpRequest, key: str) -> HttpResponse:
 
 
 @disable_on_readonly_db
-def bounce_webhook(request):
+def bounce_webhook(request: HttpRequest) -> HttpResponse:
     """
     Simple view to process bounce reports delivered via webhook.
 

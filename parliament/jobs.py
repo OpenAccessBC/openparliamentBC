@@ -16,22 +16,22 @@ logger = logging.getLogger(__name__)
 mps = update_mps_from_ourcommons
 
 
-def votes():
+def votes() -> None:
     parlvotes.import_votes()
 
 
-def bills():
+def bills() -> None:
     legisinfo.import_bills(Session.objects.current())
 
 
 @transaction.atomic
-def prune_activities():
+def prune_activities() -> bool:
     for pol in Politician.objects.current():
         activityutils.prune(Activity.public.filter(politician=pol))
     return True
 
 
-def committee_evidence():
+def committee_evidence() -> None:
     evidences = (Document.evidence
                  .annotate(scount=models.Count('statement'))
                  .exclude(scount__gt=0)
@@ -48,7 +48,7 @@ def committee_evidence():
             continue
 
 
-def committees(sess=None):
+def committees(sess: Session | None = None) -> None:
     if sess is None:
         sess = Session.objects.current()
         if sess.start >= datetime.date.today():
@@ -60,17 +60,17 @@ def committees(sess=None):
     parl_cmte.import_committee_documents(sess)
 
 
-def committees_full():
+def committees_full() -> None:
     committees()
     committee_evidence()
 
 
 @transaction.atomic
-def hansards_load():
+def hansards_load() -> None:
     parl_document.fetch_latest_debates()
 
 
-def hansards_parse():
+def hansards_parse() -> None:
     debates = (Document.objects
                .filter(document_type=Document.DEBATE)
                .annotate(scount=models.Count('statement'))
@@ -90,14 +90,14 @@ def hansards_parse():
             hansard.save_activity()
 
 
-def hansards():
+def hansards() -> None:
     hansards_load()
     hansards_parse()
 
 
-def corpus_for_debates():
+def corpus_for_debates() -> None:
     corpora.generate_for_debates()
 
 
-def corpus_for_committees():
+def corpus_for_committees() -> None:
     corpora.generate_for_committees()

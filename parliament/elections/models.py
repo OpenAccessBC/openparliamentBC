@@ -5,7 +5,7 @@ from typing import Dict, override
 
 from django.db import models
 
-from parliament.core.models import ElectedMember, Party, Politician, Riding
+from parliament.core.models import ElectedMember, Party, Politician, Riding, Session
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class Election(models.Model):
 
         return "General election of %s" % self.date
 
-    def calculate_vote_percentages(self):
+    def calculate_vote_percentages(self) -> None:
         candidacies = self.candidacy_set.all()
         riding_candidacies = defaultdict(list)
         riding_votetotals: Dict[int, Decimal] = defaultdict(Decimal)
@@ -36,7 +36,7 @@ class Election(models.Model):
                 candidacy.votepercent = (Decimal(candidacy.votetotal) / riding_votetotals[riding]) * 100
                 candidacy.save()
 
-    def label_winners(self):
+    def label_winners(self) -> None:
         """Sets the elected boolean on this election's Candidacies"""
         candidacies = self.candidacy_set.all()
         candidacies.update(elected=None)
@@ -50,7 +50,7 @@ class Election(models.Model):
             winner.save()
         candidacies.filter(elected=None).update(elected=False)
 
-    def create_members(self, session):
+    def create_members(self, session: Session) -> None:
         for candidacy in self.candidacy_set.filter(elected=True):
             candidacy.create_member(session)
 
@@ -58,8 +58,17 @@ class Election(models.Model):
 class CandidacyManager(models.Manager):
 
     def create_from_name(
-            self, first_name, last_name, riding, party, election,
-            votetotal, elected, votepercent=None, occupation='', interactive=True):
+            self,
+            first_name: str,
+            last_name: str,
+            riding: Riding,
+            party: Party,
+            election: Election,
+            votetotal: int,
+            elected: bool,
+            votepercent: float | None = None,
+            occupation: str = '',
+            interactive: bool = True) -> "Candidacy":
         """Create a Candidacy based on a candidate's name; checks for prior
         Politicians representing the same person.
 
@@ -109,7 +118,7 @@ class CandidacyManager(models.Manager):
         )
 
 
-class Candidacy (models.Model):
+class Candidacy(models.Model):
     candidate: models.ForeignKey = models.ForeignKey(Politician, on_delete=models.CASCADE)
     riding: models.ForeignKey = models.ForeignKey(Riding, on_delete=models.CASCADE)
     party: models.ForeignKey = models.ForeignKey(Party, on_delete=models.CASCADE)
@@ -124,10 +133,10 @@ class Candidacy (models.Model):
     class Meta:
         verbose_name_plural = 'Candidacies'
 
-    def create_member(self, session=None):
+    def create_member(self, session: Session | None = None) -> ElectedMember | None:
         """Creates an ElectedMember for a winning candidate"""
         if not self.elected:
-            return False
+            return None
         try:
             member = ElectedMember.objects\
                 .filter(models.Q(end_date__isnull=True) | models.Q(end_date=self.election.date))\

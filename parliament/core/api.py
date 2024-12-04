@@ -40,7 +40,7 @@ class APIView(View):
 
     resource_type = ''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(APIView, self).__init__(*args, **kwargs)
 
         if hasattr(self, 'get_json'):
@@ -51,7 +51,7 @@ class APIView(View):
             (f[1], f[0]) for f in self.api_formats
         )
 
-    def get_api_format(self, request):
+    def get_api_format(self, request: HttpRequest) -> str | None:
         if request.GET.get('format') in self._formats_list:
             return request.GET['format']
 
@@ -65,7 +65,7 @@ class APIView(View):
         return self._mimetype_lookup[mimetype] if mimetype else None
 
     @override
-    def dispatch(self, request, **kwargs):
+    def dispatch(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         self.request = request
         self.kwargs = kwargs
 
@@ -106,15 +106,15 @@ class APIView(View):
 
         return resp
 
-    def format_not_allowed(self, request):
+    def format_not_allowed(self, request: HttpRequest) -> HttpResponse:
         return HttpResponse(
             "This resource is not available in the requested format.",
             content_type='text/plain', status=406)
 
-    def process_default(self, result, request, **kwargs):
+    def process_default(self, result: HttpResponse, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         return result
 
-    def process_json(self, result, request, **kwargs):
+    def process_json(self, result: HttpResponse, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         if isinstance(result, HttpResponse):
             return result
 
@@ -136,7 +136,7 @@ class APIView(View):
 
         return resp
 
-    def process_apibrowser(self, result, request, **kwargs):
+    def process_apibrowser(self, result: HttpResponse, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         if isinstance(result, HttpResponse):
             return result
 
@@ -358,7 +358,7 @@ class APIPaginator():
     """
     Largely cribbed from django-tastypie.
     """
-    def __init__(self, request, objects, limit=None, offset=0, max_limit=500):
+    def __init__(self, request: HttpRequest, objects, limit: int | None = None, offset: int = 0, max_limit: int = 500) -> None:
         """
         Instantiates the ``Paginator`` and allows for some configuration.
 
@@ -391,19 +391,18 @@ class APIPaginator():
 
         Default is 20 per page.
         """
-        settings_limit = getattr(settings, 'API_LIMIT_PER_PAGE', 20)
+        settings_limit: int = getattr(settings, 'API_LIMIT_PER_PAGE', 20)
 
         if 'limit' in self.request_data:
-            limit = self.request_data['limit']
+            limit_str = self.request_data['limit']
+            try:
+                limit = int(limit_str)
+            except ValueError:
+                raise BadRequest("Invalid limit '%s' provided. Please provide a positive integer." % limit_str) from None
         elif self.limit is not None:
             limit = self.limit
         else:
             limit = settings_limit
-
-        try:
-            limit = int(limit)
-        except ValueError:
-            raise BadRequest("Invalid limit '%s' provided. Please provide a positive integer." % limit) from None
 
         if limit == 0:
             if self.limit:
@@ -412,7 +411,7 @@ class APIPaginator():
                 limit = settings_limit
 
         if limit < 0:
-            raise BadRequest("Invalid limit '%s' provided. Please provide a positive integer >= 0." % limit)
+            raise BadRequest("Invalid limit '%d' provided. Please provide a positive integer >= 0." % limit)
 
         if self.max_limit and limit > self.max_limit:
             return self.max_limit
@@ -431,19 +430,18 @@ class APIPaginator():
         offset = self.offset
 
         if 'offset' in self.request_data:
-            offset = self.request_data['offset']
-
-        try:
-            offset = int(offset)
-        except ValueError:
-            raise BadRequest("Invalid offset '%s' provided. Please provide an integer." % offset) from None
+            offset_str = self.request_data['offset']
+            try:
+                offset = int(offset_str)
+            except ValueError:
+                raise BadRequest("Invalid offset '%s' provided. Please provide an integer." % offset_str) from None
 
         if offset < 0:
-            raise BadRequest("Invalid offset '%s' provided. Please provide a positive integer >= 0." % offset)
+            raise BadRequest("Invalid offset '%d' provided. Please provide a positive integer >= 0." % offset)
 
         return offset
 
-    def _generate_uri(self, limit, offset):
+    def _generate_uri(self, limit: int, offset: int) -> str | None:
         if self.resource_uri is None:
             return None
 
@@ -453,7 +451,7 @@ class APIPaginator():
             del request_params['limit']
         if 'offset' in request_params:
             del request_params['offset']
-        request_params.update({'limit': limit, 'offset': max(offset, 0)})
+        request_params.update({'limit': str(limit), 'offset': str(max(offset, 0))})
         encoded_params = request_params.urlencode()
 
         return '%s?%s' % (

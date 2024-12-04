@@ -7,7 +7,7 @@ class SmokeTests(TestCase):
 
     fixtures = ['parties', 'ridings', 'sessions', 'politicians']
 
-    def test_pages(self):
+    def test_pages(self) -> None:
 
         self.assertContains(self.client.get('/politicians/'), 'Current MPs')
 

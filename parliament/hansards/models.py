@@ -224,7 +224,7 @@ class Document(models.Model):
             [(k, v) for k, v in list(self.speaker_summary().items()) if v['politician']]
         )
 
-    def save_activity(self):
+    def save_activity(self) -> None:
         statements = self.statement_set.filter(procedural=False).select_related('member', 'politician')
         politicians = {s.politician for s in statements if s.politician}
         for pol in politicians:
@@ -260,28 +260,28 @@ class Document(models.Model):
                         'wordcount': wordcount,
                     }, politician=pol, date=self.date, guid='cmte_%s' % url, variety='committee')
 
-    def get_filename(self, language):
+    def get_filename(self, language: str) -> str:
         assert self.source_id
         assert language in ('en', 'fr')
         return '%d-%s.xml' % (self.source_id, language)
 
-    def get_filepath(self, language):
+    def get_filepath(self, language: str) -> str:
         filename = self.get_filename(language)
         if hasattr(settings, 'HANSARD_CACHE_DIR'):
             return os.path.join(settings.HANSARD_CACHE_DIR, filename)
 
         return os.path.join(settings.MEDIA_ROOT, 'document_cache', filename)
 
-    def _save_file(self, path, content):
+    def _save_file(self, path: str, content: str) -> None:
         with open(path, 'wb') as out:
             out.write(content)
 
-    def get_cached_xml(self, language):
+    def get_cached_xml(self, language: str):
         if not self.downloaded:
             raise Exception("Not yet downloaded")
         return open(self.get_filepath(language), encoding='utf8')
 
-    def delete_downloaded(self):
+    def delete_downloaded(self) -> None:
         for lang in ('en', 'fr'):
             path = self.get_filepath(lang)
             if os.path.exists(path):
@@ -289,7 +289,7 @@ class Document(models.Model):
         self.downloaded = False
         self.save()
 
-    def save_xml(self, xml_en, xml_fr, overwrite=False):
+    def save_xml(self, xml_en: str, xml_fr: str, overwrite: bool = False) -> None:
         if not overwrite and any(
                 os.path.exists(p) for p in [self.get_filepath(lang) for lang in ['en', 'fr']]):
             raise Exception("XML files already exist")
@@ -469,7 +469,7 @@ class Statement(models.Model):
             qs = qs.exclude(content_fr='')
         return qs
 
-    def _generate_wordcounts(self):
+    def _generate_wordcounts(self) -> None:
         paragraphs: List[List[str]] = [
             [],  # english
             [],  # french

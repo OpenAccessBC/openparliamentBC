@@ -21,7 +21,7 @@ current_account = never_cache(CurrentAccountView.as_view())
 
 class LogoutView(JSONView):
 
-    def post(self, request):
+    def post(self, request: HttpRequest) -> bool:
         request.authenticated_email = None
         return True
 
@@ -29,7 +29,7 @@ class LogoutView(JSONView):
 logout = never_cache(LogoutView.as_view())
 
 
-def _get_ip(request):
+def _get_ip(request: HttpRequest) -> str:
     ip = request.META['REMOTE_ADDR']
     if ip == '127.0.0.1' and 'HTTP_X_REAL_IP' in request.META:
         ip = request.META['HTTP_X_REAL_IP']
@@ -38,7 +38,7 @@ def _get_ip(request):
 
 class LoginTokenCreateView(JSONView):
 
-    def post(self, request):
+    def post(self, request: HttpRequest) -> HttpResponse | str:
         email = request.POST.get('email').lower().strip()
         try:
             EmailValidator()(email)

@@ -119,7 +119,7 @@ class CommitteeInSession(models.Model):
     def __str__(self) -> str:
         return "%s (%s) in %s" % (self.committee, self.acronym, self.session_id)
 
-    def get_source_url(self):
+    def get_source_url(self) -> str:
         return 'https://www.%(domain)s.ca/Committees/%(lang)s/%(acronym)s?parl=%(parliamentnum)d&session=%(sessnum)d' % {
             'acronym': self.acronym,
             'lang': settings.LANGUAGE_CODE[:2],

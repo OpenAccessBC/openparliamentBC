@@ -1,9 +1,9 @@
 import json
 import re
 from http import HTTPStatus
-from typing import override
+from typing import Any, override
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.views.generic import View
 
 
@@ -15,12 +15,12 @@ class JSONView(View):
 
     wrap = True
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(JSONView, self).__init__()
         self.content_type = 'application/json'
 
     @override
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         result = super(JSONView, self).dispatch(request, *args, **kwargs)
         indent_response = 4 if request.GET.get('indent') else None
 
@@ -39,13 +39,13 @@ class JSONView(View):
 
         return resp
 
-    def redirect(self, url):
+    def redirect(self, url: str) -> HttpResponse:
         return AjaxRedirectResponse(url)
 
 
 class AjaxRedirectResponse(HttpResponse):
 
-    def __init__(self, url, status_code=HTTPStatus.FORBIDDEN):
+    def __init__(self, url: str, status_code: int = HTTPStatus.FORBIDDEN) -> None:
         super(AjaxRedirectResponse, self).__init__(
             '<script>window.location.href = "%s";</script>' % url,
             content_type='text/html'
@@ -54,7 +54,7 @@ class AjaxRedirectResponse(HttpResponse):
         self['X-OP-Redirect'] = url
 
 
-def adaptive_redirect(request, url):
+def adaptive_redirect(request: HttpRequest, url: str) -> HttpResponse:
     if 'XMLHttpRequest' in request.headers.get('X-Requested-With', ''):
         return AjaxRedirectResponse(url)
     return HttpResponseRedirect(url)

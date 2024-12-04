@@ -1,11 +1,14 @@
+from typing import Any, Dict
+
 from django.conf import settings
+from django.http.request import HttpRequest
 from oauth2client import client, crypt
 
 from parliament.accounts.models import User
 from parliament.utils.views import JSONView
 
 
-def google_info_from_token(token):
+def google_info_from_token(token: str) -> Dict[str, Any]:
     idinfo = client.verify_id_token(token, settings.GOOGLE_CLIENT_ID)
     if idinfo['aud'] != settings.GOOGLE_CLIENT_ID:
         raise crypt.AppIdentityError('aud dont match')
@@ -14,7 +17,7 @@ def google_info_from_token(token):
     return idinfo
 
 
-def get_user_from_google_token(token):
+def get_user_from_google_token(token: str) -> User:
     idinfo = google_info_from_token(token)
     assert idinfo['email']
     assert idinfo['email_verified']
@@ -27,7 +30,7 @@ def get_user_from_google_token(token):
 
 class GoogleLoginEndpointView(JSONView):
 
-    def post(self, request):
+    def post(self, request: HttpRequest) -> Dict[str, str]:
         user = get_user_from_google_token(request.POST.get('token'))
         user.log_in(request)
         return {'email': user.email}

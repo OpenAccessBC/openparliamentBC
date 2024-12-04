@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Any, Optional, override
+from typing import Any, List, Optional, override
 
 import requests
 from django.db import transaction
@@ -35,7 +35,7 @@ class BillData():
     A wrapper for JSON bill data from parl.ca.
     """
 
-    def __init__(self, jsondata):
+    def __init__(self, jsondata) -> None:
         self._d = jsondata
 
     def __getitem__(self, key: str) -> Any:
@@ -54,25 +54,25 @@ class BillData():
     def __repr__(self) -> str:
         return str(self)
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
             return default
 
     @property
-    def is_detailed(self):
+    def is_detailed(self) -> bool:
         return bool(self['Number'] or self['LatestBillEventEventTypeId'])
 
     @property
-    def detailed_json_url(self):
+    def detailed_json_url(self) -> str:
         return LEGISINFO_DETAIL_URL % {
             'parlnum': self['ParliamentNumber'],
             'sessnum': self['SessionNumber'],
             'billnumber': self['NumberCode']
         }
 
-    def get_detailed(self):
+    def get_detailed(self) -> "BillData":
         resp = requests.get(self.detailed_json_url, timeout=10)
         resp.raise_for_status()
         rj = resp.json()
@@ -81,7 +81,7 @@ class BillData():
         return self
 
 
-def get_bill_list(session):
+def get_bill_list(session: Session) -> List[BillData]:
     url = LEGISINFO_JSON_LIST_URL % {"sessid": session.id}
     resp = requests.get(url, timeout=10)
     resp.raise_for_status()
@@ -90,14 +90,14 @@ def get_bill_list(session):
 
 
 @transaction.atomic
-def import_bills(session):
+def import_bills(session: Session) -> None:
     bill_list = get_bill_list(session)
     prev_session = _get_previous_session(session)
     for bd in bill_list:
         _import_bill(bd, session, prev_session)
 
 
-def import_bill_by_id(legisinfo_id):
+def import_bill_by_id(legisinfo_id: str) -> Bill:
     """Imports a single bill based on its LEGISinfo id."""
 
     # This request should redirect from an ID to a canonical URL, which we

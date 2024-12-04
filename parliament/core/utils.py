@@ -30,7 +30,7 @@ def memoize_property(target):
     return wrapped
 
 
-def language_property(fieldname):
+def language_property(fieldname: str):
     if settings.LANGUAGE_CODE.startswith('fr'):
         fieldname = fieldname + '_fr'
     else:

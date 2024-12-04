@@ -4,18 +4,18 @@ from typing import List
 
 from django import template
 
-from parliament.core.models import PROVINCE_LOOKUP
+from parliament.core.models import PROVINCE_LOOKUP, Politician
 
 register = template.Library()
 
 
 @register.filter(name='expand_province')
-def expand_province(value):
+def expand_province(value: str) -> str | None:
     return PROVINCE_LOOKUP.get(value, None)
 
 
 @register.filter(name='heshe')
-def heshe(pol):
+def heshe(pol: Politician) -> str:
     match pol.gender:
         case 'F': return 'She'
         case 'M': return 'He'
@@ -23,7 +23,7 @@ def heshe(pol):
 
 
 @register.filter(name='hisher')
-def hisher(pol):
+def hisher(pol: Politician) -> str:
     match pol.gender:
         case 'F': return 'Her'
         case 'M': return 'His'
@@ -31,7 +31,7 @@ def hisher(pol):
 
 
 @register.filter(name='himher')
-def himher(pol):
+def himher(pol: Politician) -> str:
     match pol.gender:
         case 'F': return 'Her'
         case 'M': return 'Him'
@@ -39,7 +39,7 @@ def himher(pol):
 
 
 @register.filter(name='mrms')
-def mrms(pol):
+def mrms(pol: Politician) -> str:
     match pol.gender:
         case 'F': return 'Mr.'
         case 'M': return 'Ms.'

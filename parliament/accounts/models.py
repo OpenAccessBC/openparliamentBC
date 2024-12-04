@@ -37,7 +37,7 @@ def _random_token():
 
 class TokenError(Exception):
 
-    def __init__(self, message, email=None):
+    def __init__(self, message: str, email: str | None = None) -> None:
         super(TokenError, self).__init__(message)
         self.email = email
 

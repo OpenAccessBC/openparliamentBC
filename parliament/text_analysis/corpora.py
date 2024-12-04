@@ -2,24 +2,25 @@ import datetime
 import os.path
 import pickle
 import re
+from typing import List
 
 from django.conf import settings
 
 from parliament.text_analysis.frequencymodel import FrequencyModel
 
 
-def _get_background_model_path(corpus_name, n):
+def _get_background_model_path(corpus_name: str, n: int) -> str:
     # Sanitize corpus_name, since it might be user input
     corpus_name = re.sub(r'[^a-z0-9-]', '', corpus_name)
     return os.path.join(settings.PARLIAMENT_LANGUAGE_MODEL_PATH, '%s.%dgram' % (corpus_name, n))
 
 
-def load_background_model(corpus_name, n):
+def load_background_model(corpus_name: str, n: int):
     with open(_get_background_model_path(corpus_name, n), 'rb') as f:
         return pickle.load(f)
 
 
-def generate_background_models(corpus_name, statements, ngram_lengths=None):
+def generate_background_models(corpus_name: str, statements, ngram_lengths: List[int] | None = None) -> None:
     if ngram_lengths is None:
         ngram_lengths = [1, 2, 3]
 
@@ -29,7 +30,7 @@ def generate_background_models(corpus_name, statements, ngram_lengths=None):
             pickle.dump(bg, f, pickle.HIGHEST_PROTOCOL)
 
 
-def generate_for_debates():
+def generate_for_debates() -> None:
     from parliament.hansards.models import Statement
     since = datetime.datetime.now() - datetime.timedelta(days=365)
     qs = Statement.objects.filter(document__document_type='D', time__gte=since)
@@ -38,14 +39,14 @@ def generate_for_debates():
     generate_background_models('default', qs)
 
 
-def generate_for_old_debates():
+def generate_for_old_debates() -> None:
     from parliament.hansards.models import Statement
     for year in range(1994, datetime.date.today().year):
         qs = Statement.objects.filter(document__document_type='D', time__year=year)
         generate_background_models('debates-%d' % year, qs)
 
 
-def generate_for_committees():
+def generate_for_committees() -> None:
     from parliament.committees.models import Committee, CommitteeMeeting
     from parliament.core.models import Session
     from parliament.hansards.models import Statement
@@ -57,7 +58,7 @@ def generate_for_committees():
         generate_background_models(committee.slug, qs)
 
 
-def generate_all():
+def generate_all() -> None:
     generate_for_debates()
     generate_for_committees()
     generate_for_old_debates()

@@ -72,7 +72,7 @@ class Topic(models.Model):
 
         return query_obj
 
-    def initialize_if_necessary(self):
+    def initialize_if_necessary(self) -> None:
         if (not self.last_checked) or (
                 (datetime.datetime.now() - self.last_checked) > datetime.timedelta(hours=24)):
             self.get_new_items(limit=40)
@@ -106,12 +106,12 @@ class Topic(models.Model):
         return items
 
     @property
-    def politician_hansard_alert(self):
+    def politician_hansard_alert(self) -> bool:
         """Is this an alert for everything an MP says in the House chamber?"""
         return bool(re.search(r'^MP: \S+ Type: "debate"$', self.query))
 
     @property
-    def person_name(self):
+    def person_name(self) -> str | None:
         match = re.search(r'Person: "([^"]+)"', self.query)
         if match:
             return match.group(1)
@@ -172,7 +172,7 @@ class Subscription(models.Model):
         if new:
             self.topic.initialize_if_necessary()
 
-    def get_unsubscribe_url(self, full=False):
+    def get_unsubscribe_url(self, full: bool = False) -> str:
         key = Signer(salt='alerts_unsubscribe').sign(str(self.id))
         return (str(settings.SITE_URL) if full else '') + reverse(
             'alerts_unsubscribe', kwargs={'key': key})
@@ -210,7 +210,7 @@ class Subscription(models.Model):
             subj = 'New from openparliament.ca for %s' % self.topic.query
         return subj[:200]
 
-    def send_email(self, documents):
+    def send_email(self, documents) -> None:
         rendered = self.render_message(documents)
         msg = EmailMultiAlternatives(
             self.get_subject_line(documents),

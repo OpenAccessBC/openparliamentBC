@@ -38,7 +38,7 @@ class AuthenticatedEmailMiddleware:
     """Keep a JS-readable cookie with the user's email, and ensure it's
     synchronized with the session."""
 
-    def __init__(self, get_response):
+    def __init__(self, get_response) -> None:
         self.get_response = get_response
 
     def __call__(self, request):

@@ -88,10 +88,10 @@ def search(request: HttpRequest) -> HttpResponse:
 r_postcode = re.compile(r'^\s*([A-Z][0-9][A-Z])\s*([0-9][A-Z][0-9])\s*$')
 
 
-def try_postcode_first(request):
+def try_postcode_first(request: HttpRequest) -> HttpResponse | None:
     match = r_postcode.search(request.GET['q'].upper())
     if not match:
-        return False
+        return None
     postcode = match.group(1) + match.group(2)
     try:
         x = InternalXref.objects.filter(schema='edid_postcode', text_value=postcode)[0]
@@ -134,7 +134,7 @@ def try_postcode_first(request):
         raise Exception("Too many MPs for postcode %s" % postcode) from None
 
 
-def postcode_to_edid_represent(postcode):
+def postcode_to_edid_represent(postcode: str) -> int | None:
     url = 'https://represent.opennorth.ca/postcodes/%s/' % postcode.replace(' ', '')
     resp = requests.get(url, timeout=5)
     if resp.status_code != 200:
@@ -150,7 +150,7 @@ def postcode_to_edid_represent(postcode):
 
 class AmbiguousPostcodeException(Exception):
 
-    def __init__(self, postcode, ec_url=None):
+    def __init__(self, postcode: str, ec_url: str | None = None) -> None:
         self.postcode = postcode
         self.ec_url = ec_url
 
@@ -159,7 +159,7 @@ EC_POSTCODE_URL = 'https://www.elections.ca/Scripts/vis/FindED?L=e&QID=-1&PAGEID
 r_ec_edid = re.compile(r'&ED=(\d{5})&')
 
 
-def postcode_to_edid_ec(postcode):
+def postcode_to_edid_ec(postcode: str) -> int | None:
     resp = requests.get(EC_POSTCODE_URL % postcode.replace(' ', ''), allow_redirects=False, timeout=5)
     if resp.status_code != 302:
         return None
@@ -170,7 +170,7 @@ def postcode_to_edid_ec(postcode):
     raise AmbiguousPostcodeException(postcode=postcode, ec_url=urljoin(EC_POSTCODE_URL, redirect_url))
 
 
-def try_politician_first(request):
+def try_politician_first(request: HttpRequest) -> HttpResponse | None:
     try:
         pol = Politician.objects.get_by_name(
             request.GET['q'].strip(), session=Session.objects.current(), saveAlternate=False, strictMatch=True)

@@ -5,6 +5,7 @@ import logging
 import re
 from functools import wraps
 from html import escape as stdlib_escape
+from typing import Any, Dict, List, Tuple
 from xml.sax.saxutils import quoteattr
 
 from lxml import etree
@@ -170,7 +171,7 @@ class Document():
     </body></html>
     """
 
-    def as_html(self):
+    def as_html(self) -> str:
         if self.meta['document_type'].lower() == 'committee':
             if self.meta['language'].lower() == 'en':
                 title = self.meta['committee_name_en']
@@ -199,25 +200,25 @@ class Document():
         }
         return html
 
-    def __init__(self):
-        self.meta = {}
+    def __init__(self) -> None:
+        self.meta: Dict[str, Any] = {}
 
 
 class Statement():
 
-    def __init__(self, attributes, more_attributes):
+    def __init__(self, attributes, more_attributes) -> None:
         self.meta = dict(attributes)
         self.meta.update(more_attributes)
         self.content = ''
 
-    def clean_up_content(self):
+    def clean_up_content(self) -> None:
         self.content = _tame_whitespace(self.content)
         self.content = self.content.replace('</blockquote><blockquote>', '')
         if 'id' not in self.meta:
             self.meta['id'] = 'p' + re.search(r'data-HoCid="(\d+)"', self.content).group(1)
 
-    def as_html(self):
-        def setval(in_key, out_key):
+    def as_html(self) -> str:
+        def setval(in_key: str, out_key: str) -> None:
             if self.meta.get(in_key):
                 attrs[out_key] = str(self.meta[in_key])
 
@@ -274,29 +275,29 @@ class ParseHandler():
                    'EditorsNotes',
                    etree.ProcessingInstruction] + list(PASSTHROUGH_TAGS.keys())
 
-    def __init__(self, document):
-        self.statements = []
-        self.current_statement = None
+    def __init__(self, document: Document) -> None:
+        self.statements: List[Statement] = []
+        self.current_statement: Statement | None = None
         self.document_language = document.meta['language'].lower()
         self.current_attributes = {
             'language': self.document_language
         }
-        self.one_time_attributes = {}
+        self.one_time_attributes: Dict[str, Any] = {}
         self.in_para = False
-        self.one_liner = None
-        self.people_seen = {}
-        self.people_types_seen = {}
-        self.people_contexts = {}
+        self.one_liner: Tuple[bool, Any] | None = None
+        self.people_seen: Dict[str, Any] = {}
+        self.people_types_seen: Dict[str, Any] = {}
+        self.people_contexts: Dict[str, Any] = {}
         self.date = document.meta['date']
         self.main_statement_speaker = ['', '']
         (self.parliament, self.session) = (document.meta['parliament'], document.meta['session'])
 
-    def _initialize_statement(self):
+    def _initialize_statement(self) -> None:
         assert not self.current_statement
         self.current_statement = Statement(self.current_attributes, self.one_time_attributes)
         self.one_time_attributes = {}
 
-    def _add_code(self, s):
+    def _add_code(self, s: str) -> None:
         """Add an unescaped value, i.e. HTML, to the current statement."""
         if not s:
             return
@@ -304,7 +305,7 @@ class ParseHandler():
             self._initialize_statement()
         self.current_statement.content += s
 
-    def _add_text(self, s):
+    def _add_text(self, s: str) -> None:
         """Add text (that will be escaped) to the current statement."""
         if s:
             self._add_code(escape(s))
@@ -317,7 +318,7 @@ class ParseHandler():
         else:
             self._add_text(el.tail)
 
-    def close_statement(self):
+    def close_statement(self) -> None:
         """Whoever's currently speaking has stopped: finalize this Statement object."""
         if self.current_statement:
             # if not self.current_statement.meta.get('has_non_procedural'):
@@ -686,7 +687,7 @@ class ParseHandler():
             raise AlpheusError("I don't know how to handle tag %s" % el.tag)
         return None
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str):
         # Route requests where we don't have a handler to the default
         if name.startswith('handle_'):
             return self._default_handler

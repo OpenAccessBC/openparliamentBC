@@ -10,7 +10,7 @@ _FakePaginator = namedtuple('_FakePaginator', 'num_pages count')
 class SearchPaginator():
     """A dumb imitation of the Django Paginator."""
 
-    def __init__(self, object_list, hits, pagenum, perpage):
+    def __init__(self, object_list, hits: int, pagenum: int, perpage: int) -> None:
         self.object_list = object_list
         self.hits = hits
         self.num_pages = int(math.ceil(float(self.hits) / float(perpage)))
@@ -20,19 +20,19 @@ class SearchPaginator():
         self.end_index = min(self.end_index, self.hits)
 
     @property
-    def paginator(self):
+    def paginator(self) -> _FakePaginator:
         return _FakePaginator(self.num_pages, self.hits)
 
-    def has_previous(self):
+    def has_previous(self) -> bool:
         return self.number > 1
 
-    def has_next(self):
+    def has_next(self) -> bool:
         return self.number < self.num_pages
 
-    def previous_page_number(self):
+    def previous_page_number(self) -> int:
         return self.number - 1
 
-    def next_page_number(self):
+    def next_page_number(self) -> int:
         return self.number + 1
 
 
@@ -40,7 +40,7 @@ class BaseSearchQuery():
 
     ALLOWABLE_FILTERS: Dict[str, str] = {}
 
-    def __init__(self, query):
+    def __init__(self, query: str) -> None:
         self.raw_query = query
         self.filters: Dict[str, str] = {}
 
@@ -52,7 +52,7 @@ class BaseSearchQuery():
         self.bare_query = re.sub(r'\s\s+', ' ', self.bare_query).strip()
 
     @property
-    def normalized_query(self):
+    def normalized_query(self) -> str:
         query_sep = ' ' if self.bare_query and self.filters else ''
         query_filter = ' '.join(('%s: "%s"' % (key, self.filters[key]) for key in sorted(self.filters.keys())))
         q = self.bare_query + query_sep + query_filter

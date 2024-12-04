@@ -3,7 +3,7 @@ import json
 import logging
 import re
 from collections import Counter, defaultdict
-from typing import Dict, override
+from typing import Any, Dict, override
 
 from django.conf import settings
 from django.db import models
@@ -26,12 +26,11 @@ PARLIAMENT_DOCVIEWER_URL = 'https://www.parl.ca/DocumentViewer/%(lang)s/%(docid)
 
 class BillManager(models.Manager):
 
-    def get_by_legisinfo_id(self, legisinfo_id):
+    def get_by_legisinfo_id(self, legisinfo_id: str) -> "Bill":
         """Given a House of Commons ID (e.g. from LEGISinfo, or a Hansard link),
         return a Bill, creating it if necessary."""
-        legisinfo_id = int(legisinfo_id)
         try:
-            return self.get(billinsession__legisinfo_id=legisinfo_id)
+            return self.get(billinsession__legisinfo_id=int(legisinfo_id))
         except Bill.DoesNotExist:
             from parliament.imports import legisinfo
             return legisinfo.import_bill_by_id(legisinfo_id)
@@ -187,13 +186,13 @@ class Bill(models.Model):
             raise BillText.DoesNotExist
         return BillText.objects.get(bill=self, docid=self.text_docid)
 
-    def get_text(self, language=settings.LANGUAGE_CODE):
+    def get_text(self, language: str = settings.LANGUAGE_CODE) -> str:
         try:
             return getattr(self.get_text_object(), 'text_' + language)
         except BillText.DoesNotExist:
             return ''
 
-    def get_summary(self):
+    def get_summary(self) -> str:
         try:
             return self.get_text_object().summary_html
         except BillText.DoesNotExist:
@@ -204,7 +203,7 @@ class Bill(models.Model):
         return self.status_date if self.status_date else self.introduced
 
     @override
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.number_only:
             self.number_only = int(re.sub(r'\D', '', self.number))
         if getattr(self, 'privatemember', None) is None:
@@ -215,7 +214,7 @@ class Bill(models.Model):
             self.law = True
         super(Bill, self).save(*args, **kwargs)
 
-    def save_sponsor_activity(self):
+    def save_sponsor_activity(self) -> None:
         if self.sponsor_politician:
             activity.save_activity(
                 obj=self,
@@ -380,7 +379,7 @@ class BillInSession(models.Model):
     def get_absolute_url(self) -> str:
         return self.bill.url_for_session(self.session)
 
-    def get_legisinfo_url(self, lang='en'):
+    def get_legisinfo_url(self, lang: str = 'en') -> str:
         return LEGISINFO_BILL_ID_URL % {
             'lang': lang,
             'id': self.legisinfo_id
@@ -501,7 +500,7 @@ class VoteQuestion(models.Model):
     class Meta:
         ordering = ('-date', '-number')
 
-    def to_api_dict(self, representation):
+    def to_api_dict(self, representation: str) -> Dict[str, Any]:
         r = {
             'bill_url': self.bill.get_absolute_url() if self.bill else None,
             'session': self.session_id,
@@ -527,11 +526,11 @@ class VoteQuestion(models.Model):
             )
         return r
 
-    def label_absent_members(self):
+    def label_absent_members(self) -> None:
         for member in ElectedMember.objects.on_date(self.date).exclude(membervote__votequestion=self):
             MemberVote(votequestion=self, member=member, politician_id=member.politician_id, vote='A').save()
 
-    def label_party_votes(self):
+    def label_party_votes(self) -> None:
         """Create PartyVote objects representing the party-line vote; label individual dissenting votes."""
         membervotes = self.membervote_set.select_related('member', 'member__party').all()
         parties: Dict[Party, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
@@ -594,7 +593,7 @@ class MemberVote(models.Model):
     def __str__(self) -> str:
         return '%s voted %s on %s' % (self.politician, self.get_vote_display(), self.votequestion)
 
-    def save_activity(self):
+    def save_activity(self) -> None:
         activity.save_activity(self, politician=self.politician, date=self.votequestion.date)
 
     def to_api_dict(self, representation):

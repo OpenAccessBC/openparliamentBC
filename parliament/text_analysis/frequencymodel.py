@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 from heapq import nlargest
 from operator import itemgetter
-from typing import Dict, List, override
+from typing import Dict, FrozenSet, Generator, List, Tuple, override
 
 STOPWORDS = frozenset(
     ["i", "me", "my", "myself", "we", "our", "ours", "ourselves",
@@ -37,7 +37,7 @@ r_punctuation = re.compile(r"[^\s\w0-9'’—-]", re.UNICODE)
 r_whitespace = re.compile(r'[\s—]+')
 
 
-def text_token_iterator(text):
+def text_token_iterator(text: str) -> Generator[str]:
     text = r_punctuation.sub('', text.lower())
     yield from r_whitespace.split(text)
 
@@ -67,7 +67,7 @@ class FrequencyModel(dict):
     # of occurences of string / # total number of items).
     """
 
-    def __init__(self, items: List[str], min_count: int = 1):
+    def __init__(self, items: List[str], min_count: int = 1) -> None:
         counts: Dict[str, int] = defaultdict(int)
         total_count = 0
         for item in items:
@@ -79,10 +79,10 @@ class FrequencyModel(dict):
             (k, v / float(total_count)) for k, v in counts.items() if v >= min_count
         )
 
-    def __missing__(self, key):
+    def __missing__(self, key: str) -> float:
         return float()
 
-    def diff(self, other):
+    def diff(self, other: "FrequencyModel") -> "FrequencyDiffResult":
         """
         Given another FrequencyModel, returns a FrequencyDiffResult containing the difference
         between the probability of a given word appears in this FrequencyModel vs the other
@@ -94,10 +94,10 @@ class FrequencyModel(dict):
                 r[k] = self[k] - other[k]
         return r
 
-    def item_count(self, key):
+    def item_count(self, key: str) -> int:
         return round(self[key] * self.count)
 
-    def most_common(self, n=None):
+    def most_common(self, n: int | None = None) -> List[Tuple[str, int]]:
         if n is None:
             return sorted(iter(self.items()), key=itemgetter(1), reverse=True)
         return nlargest(n, iter(self.items()), key=itemgetter(1))
@@ -112,20 +112,20 @@ class FrequencyModel(dict):
 
 class FrequencyDiffResult(dict):
 
-    def __missing__(self, key):
+    def __missing__(self, key: str) -> float:
         return float()
 
-    def most_common(self, n=10):
+    def most_common(self, n: int = 10) -> List[Tuple[str, float]]:
         return nlargest(n, iter(self.items()), key=itemgetter(1))
 
 
 class WordCounter(dict):
 
-    def __init__(self, stopwords=STOPWORDS):
-        self.stopwords = stopwords
+    def __init__(self, stopwords: FrozenSet[str] = STOPWORDS) -> None:
+        self.stopwords: FrozenSet = stopwords
         super(WordCounter, self).__init__(self)
 
-    def __missing__(self, key):
+    def __missing__(self, key: str) -> int:
         return 0
 
     @override
@@ -133,7 +133,7 @@ class WordCounter(dict):
         if key not in self.stopwords:
             super(WordCounter, self).__setitem__(key, value)
 
-    def most_common(self, n=None):
+    def most_common(self, n: int | None = None) -> List[Tuple[str, int]]:
         if n is None:
             return sorted(iter(self.items()), key=itemgetter(1), reverse=True)
         return nlargest(n, iter(self.items()), key=itemgetter(1))
@@ -141,15 +141,15 @@ class WordCounter(dict):
 
 class WordAndAttributeCounter():
 
-    def __init__(self, stopwords=STOPWORDS):
-        self.counter = defaultdict(WordAttributeCount)
-        self.stopwords = stopwords
+    def __init__(self, stopwords: FrozenSet = STOPWORDS) -> None:
+        self.counter: Dict[str, WordAttributeCount] = defaultdict(WordAttributeCount)
+        self.stopwords: FrozenSet = stopwords
 
-    def add(self, word, attribute):
+    def add(self, word: str, attribute: str) -> None:
         if word not in self.stopwords and len(word) > 2:
             self.counter[word].add(attribute)
 
-    def most_common(self, n=None):
+    def most_common(self, n: int | None = None) -> List[Tuple[str, "WordAttributeCount"]]:
         if n is None:
             return sorted(iter(self.counter.items()), key=lambda x: x[1].count, reverse=True)
         return nlargest(n, iter(self.counter.items()), key=lambda x: x[1].count)
@@ -159,13 +159,13 @@ class WordAttributeCount():
 
     __slots__ = ('count', 'attributes')
 
-    def __init__(self):
-        self.attributes = defaultdict(int)
-        self.count = 0
+    def __init__(self) -> None:
+        self.attributes: Dict[str, int] = defaultdict(int)
+        self.count: int = 0
 
-    def add(self, attribute):
+    def add(self, attribute: str) -> None:
         self.attributes[attribute] += 1
         self.count += 1
 
-    def winning_attribute(self):
+    def winning_attribute(self) -> str:
         return nlargest(1, iter(self.attributes.items()), key=itemgetter(1))[0][0]

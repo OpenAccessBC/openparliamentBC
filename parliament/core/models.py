@@ -81,7 +81,7 @@ class Party(models.Model):
     class Meta:
         verbose_name_plural = 'Parties'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         # If we're creating a new object, set a flag to save the name to the alternate-names table.
         super(Party, self).__init__(*args, **kwargs)
         self._saveAlternate = True
@@ -430,12 +430,12 @@ class Politician(Person):
         return reverse('politician', kwargs={'pol_id': self.id})
 
     @property
-    def identifier(self):
+    def identifier(self) -> str:
         return self.slug if self.slug else self.id
 
     # temporary, hackish, for stupid api framework
     @property
-    def url(self):
+    def url(self) -> str:
         return "http://openparliament.ca" + self.get_absolute_url()
 
     @property
@@ -445,7 +445,7 @@ class Politician(Person):
             return f"https://www.ourcommons.ca/members/{settings.LANGUAGE_CODE}/{self.identifier}({parlid})"
         return None
 
-    def get_contact_url(self):
+    def get_contact_url(self) -> str:
         if self.slug:
             return reverse('politician_contact', kwargs={'pol_slug': self.slug})
         return reverse('politician_contact', kwargs={'pol_id': self.id})
@@ -484,10 +484,10 @@ class Politician(Person):
         info.value = str(value)
         info.save()
 
-    def set_info_multivalued(self, key, value):
+    def set_info_multivalued(self, key: str, value: Any) -> None:
         PoliticianInfo.objects.get_or_create(politician=self, schema=key, value=str(value))
 
-    def del_info(self, key):
+    def del_info(self, key: str) -> None:
         self.politicianinfo_set.filter(schema=key).delete()
 
     def get_text_analysis_qs(self, debates_only: bool = False) -> QuerySet[Statement]:
@@ -501,7 +501,7 @@ class Politician(Person):
             statements = statements.filter(time__gte=datetime.datetime.now() - datetime.timedelta(weeks=100))
         return statements
 
-    def download_headshot(self, url):
+    def download_headshot(self, url: str) -> None:
         resp = requests.get(url, timeout=10)
         resp.raise_for_status()
         file = ContentFile(resp.content)
@@ -517,7 +517,7 @@ class Politician(Person):
         self.save_headshot_thumbnail()
         self.save()
 
-    def save_headshot_thumbnail(self):
+    def save_headshot_thumbnail(self) -> None:
         pil_img: Image.Image = Image.open(self.headshot)
         (w, h) = pil_img.size
         if not (w == 142 and h == 230):
