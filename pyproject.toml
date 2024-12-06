@@ -32,7 +32,7 @@ exclude = ["**/hans_old", ".mypy_cache", ".venv", "parliament/politicians/twit.p
 pythonVersion = "3.12"
 
 # TODO make basic -> standard -> strict
-typeCheckingMode = "basic"
+typeCheckingMode = "standard"
 
 reportArgumentType = "none"
 reportAttributeAccessIssue = "none"
