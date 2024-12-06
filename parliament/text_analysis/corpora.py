@@ -2,10 +2,13 @@ import datetime
 import os.path
 import pickle
 import re
-from typing import List
+from typing import Any, List
 
 from django.conf import settings
+from django.db.models import QuerySet
 
+from parliament.committees.models import Committee, CommitteeMeeting
+from parliament.core.models import Session, Statement
 from parliament.text_analysis.frequencymodel import FrequencyModel
 
 
@@ -15,12 +18,12 @@ def _get_background_model_path(corpus_name: str, n: int) -> str:
     return os.path.join(settings.PARLIAMENT_LANGUAGE_MODEL_PATH, '%s.%dgram' % (corpus_name, n))
 
 
-def load_background_model(corpus_name: str, n: int):
+def load_background_model(corpus_name: str, n: int) -> Any:
     with open(_get_background_model_path(corpus_name, n), 'rb') as f:
         return pickle.load(f)
 
 
-def generate_background_models(corpus_name: str, statements, ngram_lengths: List[int] | None = None) -> None:
+def generate_background_models(corpus_name: str, statements: QuerySet[Statement], ngram_lengths: List[int] | None = None) -> None:
     if ngram_lengths is None:
         ngram_lengths = [1, 2, 3]
 
@@ -31,7 +34,6 @@ def generate_background_models(corpus_name: str, statements, ngram_lengths: List
 
 
 def generate_for_debates() -> None:
-    from parliament.hansards.models import Statement
     since = datetime.datetime.now() - datetime.timedelta(days=365)
     qs = Statement.objects.filter(document__document_type='D', time__gte=since)
     generate_background_models('debates', qs)
@@ -40,16 +42,12 @@ def generate_for_debates() -> None:
 
 
 def generate_for_old_debates() -> None:
-    from parliament.hansards.models import Statement
     for year in range(1994, datetime.date.today().year):
         qs = Statement.objects.filter(document__document_type='D', time__year=year)
         generate_background_models('debates-%d' % year, qs)
 
 
 def generate_for_committees() -> None:
-    from parliament.committees.models import Committee, CommitteeMeeting
-    from parliament.core.models import Session
-    from parliament.hansards.models import Statement
     for committee in Committee.objects.filter(sessions=Session.objects.current()):
         since = datetime.date.today() - datetime.timedelta(days=365 * 3)
         document_ids = CommitteeMeeting.objects.filter(committee=committee, date__gte=since).values_list(

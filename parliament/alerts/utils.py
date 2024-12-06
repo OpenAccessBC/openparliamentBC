@@ -1,6 +1,7 @@
 import logging
 
 from django.core.mail import send_mail
+from django.db.models import QuerySet
 from django.template import loader
 
 from parliament.alerts.models import PoliticianAlert
@@ -8,7 +9,7 @@ from parliament.alerts.models import PoliticianAlert
 logger = logging.getLogger(__name__)
 
 
-def clear_former_mp_alerts(qs=None):
+def clear_former_mp_alerts(qs: QuerySet[PoliticianAlert] | None = None) -> None:
     from parliament.core.models import ElectedMember
 
     if qs is None:

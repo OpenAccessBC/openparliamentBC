@@ -1,7 +1,7 @@
 import datetime
 import itertools
 import re
-from typing import Any, Dict, Generator, List, override
+from typing import Any, Dict, Callable, Generator, List, override
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -36,8 +36,8 @@ class CurrentMPView(ModelListView):
     # to internally use ElectedMembers in order to add more fields to the default response,
     # but for former politicians we use Politician objects, so... hacking.
     @staticmethod
-    def _politician_prepend_filter(field_name: str, help_txt: str):
-        def inner(qs, *args, **kwargs):
+    def _politician_prepend_filter(field_name: str, help_txt: str) -> Callable:
+        def inner(qs: QuerySet[Politician], *args: Any, **kwargs: Any) -> QuerySet[Politician]:
             if qs.model == Politician:
                 return APIFilters.dbfield(field_name)(qs, *args, **kwargs)
 
@@ -65,7 +65,7 @@ class CurrentMPView(ModelListView):
             'riding__province', 'politician__name_family').select_related('politician', 'riding', 'party')
 
     @override
-    def object_to_dict(self, obj):
+    def object_to_dict(self, obj: Any) -> Dict[str, Any]:
         if isinstance(obj, ElectedMember):
             return {
                 "name": obj.politician.name,
@@ -94,7 +94,7 @@ class FormerMPView(ModelListView):
     resource_name = 'Politicians'
 
     @override
-    def get_json(self, request, **kwargs):
+    def get_json(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         return HttpResponsePermanentRedirect(reverse('politicians') + '?include=former')
 
     def get_html(self, request: HttpRequest) -> HttpResponse:
@@ -218,7 +218,7 @@ def hide_activity(request: HttpRequest) -> HttpResponse:
 
 class PoliticianAutocompleteView(JSONView):
 
-    def get(self, request):
+    def get(self, request: HttpRequest) -> List[Dict[str, str]]:
 
         q = request.GET.get('q', '').lower()
 
@@ -368,7 +368,7 @@ class PoliticianTextAnalysisView(TextAnalysisView):
         return pol.get_text_analysis_qs()
 
     @override
-    def get_analysis(self, request, **kwargs):
+    def get_analysis(self, request: HttpRequest, **kwargs: Any) -> TextAnalysis:
         analysis = super(PoliticianTextAnalysisView, self).get_analysis(request, **kwargs)
         word = analysis.top_word
         if word and word != request.pol.info().get('favourite_word'):

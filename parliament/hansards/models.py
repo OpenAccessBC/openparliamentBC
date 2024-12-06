@@ -9,6 +9,7 @@ from typing import Any, Dict, List, override
 
 from django.conf import settings
 from django.db import models
+from django.db.models import QuerySet
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.html import strip_tags
@@ -111,7 +112,7 @@ class Document(models.Model):
 
         return base_url + 'text-analysis/'
 
-    def to_api_dict(self, representation):
+    def to_api_dict(self, representation: str) -> Dict[str, Any]:
         d = {
             "date": str(self.date) if self.date else None,
             "number": self.number,
@@ -127,12 +128,12 @@ class Document(models.Model):
         return d
 
     @property
-    def url(self):
+    def url(self) -> str | None:
         return self.source_url
 
     @property
     @memoize_property
-    def source_url(self):
+    def source_url(self) -> str | None:
         match self.document_type:
             case self.DEBATE:
                 return "https://www.ourcommons.ca/DocumentViewer/%(lang)s/%(sessid)s/house/sitting-%(sitting)s/hansard" % {
@@ -372,7 +373,7 @@ class Statement(models.Model):
         super(Statement, self).save(*args, **kwargs)
 
     @property
-    def date(self):
+    def date(self) -> datetime.date:
         return datetime.date(self.time.year, self.time.month, self.time.day)
 
     def generate_url(self) -> None:
@@ -389,7 +390,7 @@ class Statement(models.Model):
     def __str__(self) -> str:
         return "%s speaking about %s around %s" % (self.who, self.topic, self.time)
 
-    def content_floor(self):
+    def content_floor(self) -> str:
         if not self.content_fr:
             return self.content_en
         el, fl = self.content_en.split('\n'), self.content_fr.split('\n')
@@ -405,7 +406,7 @@ class Statement(models.Model):
                 r.append(e)
         return "\n".join(r)
 
-    def content_floor_if_necessary(self):
+    def content_floor_if_necessary(self) -> str:
         """Returns text spoken in the original language(s), but only if that would
         be different than the content in the default language."""
         if not (self.content_en and self.content_fr):
@@ -417,14 +418,14 @@ class Statement(models.Model):
 
         return ''
 
-    def text_html(self, language=settings.LANGUAGE_CODE):
+    def text_html(self, language: str = settings.LANGUAGE_CODE) -> str:
         return mark_safe(getattr(self, 'content_' + language))
 
-    def text_plain(self, language=settings.LANGUAGE_CODE):
+    def text_plain(self, language: str = settings.LANGUAGE_CODE) -> str:
         return self.html_to_text(getattr(self, 'content_' + language))
 
     @staticmethod
-    def html_to_text(text):
+    def html_to_text(text: str) -> str:
         return strip_tags(
             text
             .replace('\n', '')
@@ -456,11 +457,11 @@ class Statement(models.Model):
         d['searchtext'] = f"{name['display_name']} {name['post'] if name['post'] else ''} {d.get('party', '')} {d['topic']} {d['text']}"
         return d
 
-    def search_should_index(self):
+    def search_should_index(self) -> bool:
         return True
 
     @classmethod
-    def search_get_qs(cls):
+    def search_get_qs(cls) -> QuerySet["Statement"]:
         qs = cls.objects.all().prefetch_related(
             'member__politician', 'member__party', 'member__riding', 'document',
             'document__committeemeeting__committee'
@@ -501,14 +502,14 @@ class Statement(models.Model):
 
     # temp compatibility
     @property
-    def heading(self):
+    def heading(self) -> str:
         return self.h1
 
     @property
-    def topic(self):
+    def topic(self) -> str:
         return self.h2
 
-    def to_api_dict(self, representation):
+    def to_api_dict(self, representation: str) -> Dict[str, Any]:
         d: Dict[str, str | Dict[str, str] | None] = {
             "time": str(self.time) if self.time else None,
             "attribution": {'en': self.who_en, 'fr': self.who_fr},
@@ -563,7 +564,7 @@ class Statement(models.Model):
         return info
 
     @staticmethod
-    def set_slugs(statements):
+    def set_slugs(statements: List["Statement"]) -> None:
         counter: Dict[str, int] = defaultdict(int)
         for statement in statements:
             slug = slugify(statement.name_info['display_name'])[:50]
@@ -573,13 +574,13 @@ class Statement(models.Model):
             statement.slug = slug + '-%s' % counter[slug]
 
     @property
-    def committee_name(self):
+    def committee_name(self) -> str:
         if self.document.document_type != Document.EVIDENCE:
             return ''
         return self.document.committeemeeting.committee.short_name
 
     @property
-    def committee_slug(self):
+    def committee_slug(self) -> str:
         if self.document.document_type != Document.EVIDENCE:
             return ''
         return self.document.committeemeeting.committee.slug

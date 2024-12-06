@@ -18,14 +18,13 @@ LEGISINFO_DETAIL_URL = 'https://www.parl.ca/LegisInfo/en/bill/%(parlnum)s-%(sess
 LEGISINFO_JSON_LIST_URL = 'https://www.parl.ca/legisinfo/en/bills/json?parlsession=%(sessid)s'
 
 
-def _parse_date(d):
+def _parse_date(d: str) -> datetime.date:
     return datetime.date(*[int(x) for x in d[:10].split('-')])
 
 
-def _get_previous_session(session):
+def _get_previous_session(session: Session) -> Session | None:
     try:
-        return Session.objects.filter(start__lt=session.start)\
-            .order_by('-start')[0]
+        return Session.objects.filter(start__lt=session.start).order_by('-start')[0]
     except IndexError:
         return None
 

@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Dict, override
+from typing import Any, Dict, Tuple, override
 from urllib.parse import urlencode
 
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
@@ -217,7 +217,7 @@ speeches = SpeechesView.as_view()
 
 class DebatePermalinkView(ModelDetailView):
 
-    def _get_objs(self, request, slug, year, month, day):
+    def _get_objs(self, request: HttpRequest, slug: str, year: str, month: str, day: str) -> Tuple[Document, Statement]:
         doc = _get_hansard(year, month, day)
         if slug.isdigit():
             statement = get_object_or_404(Statement, document=doc, sequence=slug)
@@ -238,7 +238,7 @@ class DebatePermalinkView(ModelDetailView):
 debate_permalink = DebatePermalinkView.as_view()
 
 
-def statement_permalink(request, doc, statement, template, **kwargs):
+def statement_permalink(request: HttpRequest, doc: Document, statement: Statement, template: str, **kwargs: Any) -> HttpResponse:
     """A page displaying only a single statement. Used as a non-JS permalink."""
 
     if statement.politician:
@@ -277,7 +277,7 @@ def document_cache(request: HttpRequest, document_id: str, language: str) -> Htt
 
 class TitleAdder():
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super(TitleAdder, self).get_context_data(**kwargs)
         context.update(title=self.page_title)
         return context
@@ -343,7 +343,7 @@ by_month = DebateMonthArchive.as_view()
 class HansardAnalysisView(TextAnalysisView):
 
     @override
-    def get_corpus_name(self, request, year=None, **kwargs):
+    def get_corpus_name(self, request: HttpRequest, year: str | None = None, **kwargs: Any) -> str:
         # Use a special corpus for old debates
         if int(year) < (datetime.date.today().year - 1):
             return 'debates-%s' % year
@@ -359,7 +359,7 @@ class HansardAnalysisView(TextAnalysisView):
         return qs
 
     @override
-    def get_analysis(self, request, **kwargs):
+    def get_analysis(self, request: HttpRequest, **kwargs: Any) -> TextAnalysis:
         analysis = super(HansardAnalysisView, self).get_analysis(request, **kwargs)
         word = analysis.top_word
         if word and word != request.hansard.most_frequent_word:

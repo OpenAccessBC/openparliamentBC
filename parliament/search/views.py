@@ -1,10 +1,12 @@
 # coding: utf-8
 
+import datetime
 import logging
 import re
 import urllib.error
 import urllib.parse
 import urllib.request
+from typing import Any, Dict, List
 from urllib.parse import urljoin
 
 import requests
@@ -183,7 +185,7 @@ def try_politician_first(request: HttpRequest) -> HttpResponse | None:
 
 class SearchFeed(Feed):
 
-    def get_object(self, request: HttpRequest):
+    def get_object(self, request: HttpRequest) -> str:
         if 'q' not in request.GET:
             raise Http404
         return request.GET['q']
@@ -198,18 +200,18 @@ class SearchFeed(Feed):
     def description(self, query: str) -> str:
         return "From openparliament.ca, search results for '%s'" % query
 
-    def items(self, query):
+    def items(self, query: str) -> List[Dict[str, Any]]:
         query_obj = SearchQuery(query, user_params={'sort': 'date desc'})
         return [item for item in query_obj.documents if item['django_ct'] == 'hansards.statement']
 
-    def item_title(self, item) -> str:
+    def item_title(self, item: Dict[str, Any]) -> str:
         return "%s / %s" % (item.get('topic', ''), item.get('politician', ''))
 
-    def item_link(self, item) -> str:
+    def item_link(self, item: Dict[str, Any]) -> str:
         return item['url']
 
-    def item_description(self, item) -> str:
+    def item_description(self, item: Dict[str, Any]) -> str:
         return item['text']
 
-    def item_pubdate(self, item):
+    def item_pubdate(self, item: Dict[str, Any]) -> datetime.datetime:
         return item['date']

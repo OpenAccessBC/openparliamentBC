@@ -1,8 +1,10 @@
+from typing import Any, Dict
+
 from django.contrib import messages
-from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 
 from parliament.accounts.models import LoginToken, TokenError, User
@@ -12,7 +14,7 @@ from parliament.utils.views import JSONView
 
 class CurrentAccountView(JSONView):
 
-    def get(self, request):
+    def get(self, request: HttpRequest) -> Dict[str, Any]:
         return {'email': request.authenticated_email}
 
 

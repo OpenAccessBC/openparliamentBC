@@ -7,6 +7,7 @@ from typing import Any, Dict, override
 
 from django.conf import settings
 from django.db import models
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -35,17 +36,15 @@ class BillManager(models.Manager):
             from parliament.imports import legisinfo
             return legisinfo.import_bill_by_id(legisinfo_id)
 
-    def create_temporary_bill(self, number, session, legisinfo_id=None):
+    def create_temporary_bill(self, number: str, session: Session, legisinfo_id: str | None = None) -> "Bill":
         """Creates a bare-bones Bill object, to be filled in later.
 
         Used because often it'll be a day or two between when a bill ID is
         first referenced in Hansard and when it shows up in LEGISinfo.
         """
-        if legisinfo_id:
-            legisinfo_id = int(legisinfo_id)
-            if BillInSession.objects.filter(legisinfo_id=int(legisinfo_id)).exists():
-                raise Bill.MultipleObjectsReturned(
-                    "There's already a bill with LEGISinfo id %s" % legisinfo_id)
+        if legisinfo_id and BillInSession.objects.filter(legisinfo_id=int(legisinfo_id)).exists():
+            raise Bill.MultipleObjectsReturned("There's already a bill with LEGISinfo id %s" % legisinfo_id)
+
         try:
             bill = Bill.objects.get(number=number, sessions=session)
             logger.error(
@@ -54,10 +53,10 @@ class BillManager(models.Manager):
             return bill
         except Bill.DoesNotExist:
             bill = self.create(number=number)
-            BillInSession.objects.create(bill=bill, session=session, legisinfo_id=legisinfo_id)
+            BillInSession.objects.create(bill=bill, session=session, legisinfo_id=int(legisinfo_id))
             return bill
 
-    def recently_active(self, number=12):
+    def recently_active(self, number: int = 12) -> QuerySet["Bill"]:
         return Bill.objects.filter(status_date__isnull=False).exclude(
             models.Q(privatemember=True) & models.Q(status_code='Introduced')).order_by('-status_date')[:number]
 
@@ -158,11 +157,11 @@ class Bill(models.Model):
     def get_absolute_url(self) -> str:
         return self.url_for_session(self.session)
 
-    def url_for_session(self, session) -> str:
+    def url_for_session(self, session: Session) -> str:
         return reverse('bill', kwargs={
             'session_id': session.id, 'bill_number': self.number})
 
-    def get_legisinfo_url(self, lang='en'):
+    def get_legisinfo_url(self, lang: str = 'en') -> str:
         return LEGISINFO_BILL_URL % {
             'lang': lang,
             'bill': self.number,
@@ -181,7 +180,7 @@ class Bill(models.Model):
         }
         return url
 
-    def get_text_object(self):
+    def get_text_object(self) -> "BillText":
         if not self.text_docid:
             raise BillText.DoesNotExist
         return BillText.objects.get(bill=self, docid=self.text_docid)
@@ -199,7 +198,7 @@ class Bill(models.Model):
             return ''
 
     @property
-    def latest_date(self):
+    def latest_date(self) -> datetime.date:
         return self.status_date if self.status_date else self.introduced
 
     @override
@@ -297,18 +296,18 @@ class Bill(models.Model):
     session = property(get_session)
 
     @property
-    def status(self):
+    def status(self) -> str:
         return self.STATUS_CODES.get(self.status_code, 'Unknown')
 
     @property
-    def dead(self):
+    def dead(self) -> bool:
         return self.status_code in ('BillNotActive', 'WillNotBeProceededWith', 'BillDefeated')
 
     @property
-    def dormant(self):
+    def dormant(self) -> bool:
         return (self.status_date and (datetime.date.today() - self.status_date).days > 150)
 
-    def search_dict(self):
+    def search_dict(self) -> Dict[str, Any]:
         d = {
             'text': self.get_text(),
             'title': self.name,
@@ -330,11 +329,11 @@ class Bill(models.Model):
             d['title'] = self.short_title if self.short_title else (self.name[:140] + '…')
         return d
 
-    def search_should_index(self):
+    def search_should_index(self) -> bool:
         return True  # index all bills
 
     @classmethod
-    def search_get_qs(cls):
+    def search_get_qs(cls) -> QuerySet["Bill"]:
         return Bill.objects.all().prefetch_related(
             'sponsor_politician', 'sponsor_member', 'sponsor_member__party'
         )
@@ -342,14 +341,14 @@ class Bill(models.Model):
 
 class BillInSessionManager(models.Manager):
 
-    def get_by_legisinfo_id(self, legisinfo_id):
-        legisinfo_id = int(legisinfo_id)
+    def get_by_legisinfo_id(self, legisinfo_id: str) -> "BillInSession":
+        legisinfo_id_int = int(legisinfo_id)
         try:
-            return self.get(legisinfo_id=legisinfo_id)
+            return self.get(legisinfo_id=legisinfo_id_int)
         except BillInSession.DoesNotExist:
             from parliament.imports import legisinfo
             legisinfo.import_bill_by_id(legisinfo_id)
-            return self.get(legisinfo_id=legisinfo_id)
+            return self.get(legisinfo_id=legisinfo_id_int)
 
 
 class BillInSession(models.Model):
@@ -385,7 +384,7 @@ class BillInSession(models.Model):
             'id': self.legisinfo_id
         }
 
-    def to_api_dict(self, representation):
+    def to_api_dict(self, representation: str) -> Dict[str, Any]:
         d = {
             'session': self.session_id,
             'legisinfo_id': self.legisinfo_id,
@@ -441,7 +440,7 @@ class BillEvent(models.Model):
         return "%s: %s, %s" % (self.status, self.bis.bill.number, self.date)
 
     @property
-    def bill_number(self):
+    def bill_number(self) -> str:
         return self.bis.bill.number
 
 
@@ -463,7 +462,7 @@ class BillText(models.Model):
         return "Document #%d for %s" % (self.docid, self.bill)
 
     @property
-    def summary_html(self):
+    def summary_html(self) -> str:
         summary = self.summary_en
         if not summary:
             return ''
@@ -596,7 +595,7 @@ class MemberVote(models.Model):
     def save_activity(self) -> None:
         activity.save_activity(self, politician=self.politician, date=self.votequestion.date)
 
-    def to_api_dict(self, representation):
+    def to_api_dict(self, representation: str) -> Dict[str, Any]:
         return {
             'vote_url': self.votequestion.get_absolute_url(),
             'politician_url': self.politician.get_absolute_url(),

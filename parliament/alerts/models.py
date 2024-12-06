@@ -3,7 +3,7 @@ import datetime
 import hashlib
 import logging
 import re
-from typing import Any, Tuple, override
+from typing import Any, Dict, List, Tuple, override
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -12,6 +12,7 @@ from django.db import models
 from django.template import loader
 from django.urls import reverse
 
+from parliament.accounts.models import User
 from parliament.core.models import Politician
 from parliament.core.templatetags.ours import english_list
 from parliament.core.utils import ActiveManager
@@ -52,7 +53,7 @@ class Topic(models.Model):
         super(Topic, self).save(*args, **kwargs)
         self.initialize_if_necessary()
 
-    def get_search_query(self, limit=25):
+    def get_search_query(self, limit: int = 25) -> SearchQuery:
         query_obj = SearchQuery(
             self.query,
             limit=limit,
@@ -77,7 +78,7 @@ class Topic(models.Model):
                 (datetime.datetime.now() - self.last_checked) > datetime.timedelta(hours=24)):
             self.get_new_items(limit=40)
 
-    def get_new_items(self, label_as_seen=True, limit=25):
+    def get_new_items(self, label_as_seen: bool = True, limit: int = 25) -> List[Dict[str, Any]]:
         query_obj = self.get_search_query(limit=limit)
         result_ids = set((result['url'] for result in query_obj.documents))
         if result_ids:
@@ -139,7 +140,7 @@ class SeenItem(models.Model):
 
 class SubscriptionManager(models.Manager):
 
-    def get_or_create_by_query(self, query, user):
+    def get_or_create_by_query(self, query: str, user: User) -> Tuple["Subscription", bool]:
         topic, _ = Topic.objects.get_or_create_by_query(query)
         return self.get_or_create(topic=topic, user=user)
 
@@ -177,8 +178,8 @@ class Subscription(models.Model):
         return (str(settings.SITE_URL) if full else '') + reverse(
             'alerts_unsubscribe', kwargs={'key': key})
 
-    def render_message(self, documents):
-        ctx = {
+    def render_message(self, documents: Dict[str, Any]) -> Dict[str, str]:
+        ctx: Dict[str, Any] = {
             'documents': documents,
             'unsubscribe_url': self.get_unsubscribe_url(full=True)
         }
@@ -196,7 +197,7 @@ class Subscription(models.Model):
         text = t.render(ctx)
         return {"text": text}
 
-    def get_subject_line(self, documents):
+    def get_subject_line(self, documents: List[Dict[str, Any]]) -> str:
         if self.topic.politician_hansard_alert:
             topics = set((d['topic'] for d in documents if 'topic' in d))
             if topics:
@@ -210,7 +211,7 @@ class Subscription(models.Model):
             subj = 'New from openparliament.ca for %s' % self.topic.query
         return subj[:200]
 
-    def send_email(self, documents) -> None:
+    def send_email(self, documents: List[Dict[str, Any]]) -> None:
         rendered = self.render_message(documents)
         msg = EmailMultiAlternatives(
             self.get_subject_line(documents),

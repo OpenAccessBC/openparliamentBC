@@ -7,6 +7,10 @@ from heapq import nlargest
 from operator import itemgetter
 from typing import Dict, FrozenSet, Generator, List, Tuple, override
 
+from django.db.models import QuerySet
+
+from parliament.core.models import Statement
+
 STOPWORDS = frozenset(
     ["i", "me", "my", "myself", "we", "our", "ours", "ourselves",
      "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself",
@@ -42,7 +46,7 @@ def text_token_iterator(text: str) -> Generator[str]:
     yield from r_whitespace.split(text)
 
 
-def statements_token_iterator(statements, statement_separator=None):
+def statements_token_iterator(statements: List[Statement], statement_separator: str | None = None) -> Generator[str]:
     for statement in statements:
         yield from text_token_iterator(statement.text_plain())
         if statement_separator is not None:
@@ -60,7 +64,7 @@ def ngram_iterator(tokens, n=2):
         yield ' '.join(words)
 
 
-class FrequencyModel(dict):
+class FrequencyModel(dict[str, float]):
     """
     Given an iterable of strings, constructs an object mapping each string
     to the probability that a randomly chosen string will be it (that is,
@@ -97,20 +101,20 @@ class FrequencyModel(dict):
     def item_count(self, key: str) -> int:
         return round(self[key] * self.count)
 
-    def most_common(self, n: int | None = None) -> List[Tuple[str, int]]:
+    def most_common(self, n: int | None = None) -> List[Tuple[str, float]]:
         if n is None:
             return sorted(iter(self.items()), key=itemgetter(1), reverse=True)
         return nlargest(n, iter(self.items()), key=itemgetter(1))
 
     @classmethod
-    def from_statement_qs(cls, qs, ngram=1, min_count=1):
+    def from_statement_qs(cls, qs: QuerySet[Statement], ngram: int = 1, min_count: int = 1):
         it = statements_token_iterator(qs.iterator(), statement_separator='/')
         if ngram > 1:
             it = ngram_iterator(it, ngram)
         return cls(it, min_count=min_count)
 
 
-class FrequencyDiffResult(dict):
+class FrequencyDiffResult(dict[str, float]):
 
     def __missing__(self, key: str) -> float:
         return float()
@@ -119,10 +123,10 @@ class FrequencyDiffResult(dict):
         return nlargest(n, iter(self.items()), key=itemgetter(1))
 
 
-class WordCounter(dict):
+class WordCounter(dict[str, int]):
 
     def __init__(self, stopwords: FrozenSet[str] = STOPWORDS) -> None:
-        self.stopwords: FrozenSet = stopwords
+        self.stopwords: FrozenSet[str] = stopwords
         super(WordCounter, self).__init__(self)
 
     def __missing__(self, key: str) -> int:
@@ -141,9 +145,9 @@ class WordCounter(dict):
 
 class WordAndAttributeCounter():
 
-    def __init__(self, stopwords: FrozenSet = STOPWORDS) -> None:
+    def __init__(self, stopwords: FrozenSet[str] = STOPWORDS) -> None:
         self.counter: Dict[str, WordAttributeCount] = defaultdict(WordAttributeCount)
-        self.stopwords: FrozenSet = stopwords
+        self.stopwords: FrozenSet[str] = stopwords
 
     def add(self, word: str, attribute: str) -> None:
         if word not in self.stopwords and len(word) > 2:

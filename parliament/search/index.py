@@ -72,7 +72,7 @@ def index_model(model_cls):
     return index_qs(model_cls.search_get_qs())
 
 
-def index_qs(qs, batchsize=1000):
+def index_qs(qs, batchsize: int = 1000) -> None:
     batches = itertools.batched(qs.iterator(chunk_size=batchsize), batchsize)
     for i, batch in enumerate(batches):
         index_objects(batch)

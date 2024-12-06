@@ -43,10 +43,11 @@ class TextAnalysisManager(models.Manager):
                 analysis.save()
         return analysis
 
-    def create_from_statements(self, key, qs, corpus_name, lang=settings.LANGUAGE_CODE):
+    def create_from_statements(
+            self, key: str, qs: List[Statement], corpus_name: str, lang: str = settings.LANGUAGE_CODE) -> "TextAnalysis":
         return self.get_or_create_from_statements(key, qs, corpus_name, lang, always_update=True)
 
-    def get_wordcloud_js(self, key, lang=settings.LANGUAGE_CODE):
+    def get_wordcloud_js(self, key: str, lang: str = settings.LANGUAGE_CODE) -> str:
         data = self.filter(key=key, lang=lang).values_list('probability_data_json', 'expires')
         if data and (data[0][1] is None or data[0][1] > datetime.datetime.now()):
             js = 'OP.wordcloud.drawSVG(%s, wordcloud_opts);' % data[0][0]

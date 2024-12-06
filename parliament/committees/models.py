@@ -85,7 +85,7 @@ class Committee(models.Model):
 
         return self.name + ' Committee'
 
-    def to_api_dict(self, representation):
+    def to_api_dict(self, representation: str) -> Dict[str, Any]:
         d = {
             "name": {'en': self.name_en, 'fr': self.name_fr},
             "short_name": {'en': self.short_name_en, 'fr': self.short_name_fr},
@@ -207,7 +207,7 @@ class CommitteeMeeting(models.Model):
     def __str__(self) -> str:
         return "%s on %s" % (self.committee.short_name, self.date)
 
-    def to_api_dict(self, representation):
+    def to_api_dict(self, representation: str) -> Dict[str, Any]:
         d: Dict[str, str | bool | None] = {
             "date": str(self.date),
             "number": self.number,

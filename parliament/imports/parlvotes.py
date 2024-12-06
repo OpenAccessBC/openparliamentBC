@@ -15,7 +15,7 @@ VOTEDETAIL_URL = 'https://www.ourcommons.ca/members/en/votes/{parliamentnum}/{se
 
 
 @transaction.atomic
-def import_votes():
+def import_votes() -> bool:
     votelisturl_en = VOTELIST_URL.format(lang='en')
     resp = requests.get(votelisturl_en, timeout=10)
     resp.raise_for_status()

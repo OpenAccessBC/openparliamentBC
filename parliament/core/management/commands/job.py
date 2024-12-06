@@ -3,7 +3,7 @@ import traceback
 from typing import Any, override
 
 from django.core.mail import mail_admins
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandParser
 
 try:
     from pudb import post_mortem
@@ -18,7 +18,7 @@ class Command(BaseCommand):
     args = '[job name]'
 
     @override
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument('jobname', type=str)
         parser.add_argument('--pdb', action='store_true', dest='pdb', help='Launch into Python debugger on exception')
 

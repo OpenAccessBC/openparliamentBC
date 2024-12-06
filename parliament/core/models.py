@@ -340,7 +340,7 @@ class Politician(Person):
 
     objects = PoliticianManager()
 
-    def to_api_dict(self, representation):
+    def to_api_dict(self, representation: str) -> Dict[str, Any]:
         d = {"name": self.name}
 
         if representation == 'detail':
@@ -539,10 +539,10 @@ class Politician(Person):
         self.headshot_thumbnail.save(f'{self.identifier}-thumb.jpg', ContentFile(bio.getvalue()))
 
     @classmethod
-    def search_get_qs(cls):
+    def search_get_qs(cls) -> QuerySet["Politician"]:
         return cls.objects.elected()
 
-    def search_should_index(self):
+    def search_should_index(self) -> bool:
         # Only index politicians who've been elected
         return bool(self.latest_member)
 
@@ -575,7 +575,7 @@ class PoliticianInfoManager(models.Manager):
     """Custom manager ensures we always pull in the politician FK."""
 
     @override
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet["Politician"]:
         return super(PoliticianInfoManager, self).get_queryset().select_related('politician')
 
 

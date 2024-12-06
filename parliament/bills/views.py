@@ -215,7 +215,7 @@ class VoteListView(ModelListView):
     }
 
     @override
-    def get_json(self, request, session_id=None, **kwargs):
+    def get_json(self, request: HttpRequest, session_id: str | None = None, **kwargs: Any) -> Dict[str, Any] | HttpResponse:
         if session_id:
             return HttpResponseRedirect(reverse('votes') + '?' + urlencode({'session': session_id}))
         return super(VoteListView, self).get_json(request, **kwargs)

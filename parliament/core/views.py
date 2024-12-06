@@ -1,5 +1,5 @@
 import datetime
-from typing import override
+from typing import Any, override
 
 from django.conf import settings
 from django.contrib.syndication.views import Feed
@@ -40,7 +40,7 @@ def closed(request: HttpRequest, message: str | None = None) -> HttpResponse:
 
 
 @never_cache
-def db_readonly(request, *args, **kwargs):
+def db_readonly(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
     title = "Temporarily unavailable"
     message = """We're currently running on our backup database, and this particular functionality is down.
         It should be back up soon. Sorry for the inconvenience!"""

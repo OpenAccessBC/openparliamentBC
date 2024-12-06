@@ -2,6 +2,7 @@ import datetime
 import logging
 import re
 import time
+from typing import cast
 from urllib.parse import urljoin
 
 import lxml.etree
@@ -98,27 +99,27 @@ def import_committee_list(session=None):
     return True
 
 
-def _docid_from_url(u):
+def _docid_from_url(u: str) -> int:
     return int(re.search(r'(Doc|publication)Id=(\d+)&', u).group(2))
 
 
-def _12hr(hour, ampm):
-    hour = int(hour)
-    hour += 12 * bool('p' in ampm.lower())
-    if hour % 12 == 0:
+def _12hr(hour: str, ampm: str) -> int:
+    hour_int = int(hour)
+    hour_int += 12 * bool('p' in ampm.lower())
+    if hour_int % 12 == 0:
         # noon, midnight
-        hour -= 12
-    return hour
+        hour_int -= 12
+    return hour_int
 
 
-def _parse_date(d):
+def _parse_date(d: str) -> datetime.date:
     """datetime objects from e.g. March 11, 2011"""
     return datetime.date(
         *time.strptime(d, '%B %d, %Y')[:3]
     )
 
 
-def import_committee_documents(session):
+def import_committee_documents(session: Session) -> None:
     for comm in Committee.objects.filter(sessions=session).order_by('-parent'):
         # subcommittees last
         try:
@@ -133,7 +134,7 @@ COMMITTEE_MEETINGS_URL = 'https://www.%(domain)s.ca/Committees/en/%(acronym)s/Me
 
 
 @transaction.atomic
-def import_committee_meetings(committee, session):
+def import_committee_meetings(committee: Committee, session: Session) -> bool:
 
     acronym = committee.get_acronym(session)
     url = COMMITTEE_MEETINGS_URL % {
@@ -257,7 +258,7 @@ class NoXMLError(Exception):
     pass
 
 
-def _get_xml_url_from_documentviewer_url(url):
+def _get_xml_url_from_documentviewer_url(url: str) -> str:
     resp = requests.get(url, timeout=10)
     resp.raise_for_status()
     root = lxml.html.fromstring(resp.text)
@@ -297,11 +298,11 @@ def _download_evidence(meeting, evidence_viewer_url):
     meeting.evidence.save_xml(xml_en, xml_fr)
 
 
-def get_activity_by_url(activity_url, committee, session):
+def get_activity_by_url(activity_url: str, committee: Committee, session: Session) -> CommitteeActivity:
     activity_id = int(re.search(r'(studyActivityId|Stac)=(\d+)', activity_url).group(2))
 
     try:
-        return CommitteeActivityInSession.objects.get(source_id=activity_id).activity
+        return cast(CommitteeActivity, CommitteeActivityInSession.objects.get(source_id=activity_id).activity)
     except CommitteeActivityInSession.DoesNotExist:
         pass
 

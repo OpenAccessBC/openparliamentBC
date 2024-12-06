@@ -303,13 +303,13 @@ class ModelDetailView(APIView):
 
     resource_type = 'single'
 
-    def object_to_dict(self, obj):
+    def object_to_dict(self, obj: Any) -> Dict[str, Any]:
         d = obj.to_api_dict(representation='detail')
         if 'url' not in d:
             d['url'] = obj.get_absolute_url()
         return d
 
-    def get_json(self, request, **kwargs):
+    def get_json(self, request: HttpRequest, **kwargs: Any) -> Dict[str, Any] | HttpResponse:
         try:
             obj = self.get_object(request, **kwargs)
         except ObjectDoesNotExist:

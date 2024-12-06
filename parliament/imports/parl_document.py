@@ -9,7 +9,8 @@ import logging
 import re
 import sys
 from difflib import SequenceMatcher
-from typing import Dict, List, Tuple
+from re import Match
+from typing import Any, Dict, List, Tuple, cast
 from xml.sax.saxutils import quoteattr
 
 import requests
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 @transaction.atomic
-def import_document(document, interactive=True, reimport_preserving_sequence=False):
+def import_document(document: Document, interactive: bool = True, reimport_preserving_sequence: bool = False) -> Document | None:
     old_statements = None
     if document.statement_set.all().exists():
         if reimport_preserving_sequence:
@@ -45,7 +46,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
             document.statement_set.all().delete()
 
     if not document.downloaded:
-        return False
+        return None
     xml_en = document.get_cached_xml('en')
     pdoc_en = alpheus_parse_string(xml_en.read())
     xml_en.close()
@@ -131,7 +132,7 @@ def import_document(document, interactive=True, reimport_preserving_sequence=Fal
             else:
                 missing_id_count += 1
 
-    def _substitute_french_content(match):
+    def _substitute_french_content(match: Match) -> str:
         try:
             pid = _get_paragraph_id(match.group(0))
             if pid:
@@ -267,7 +268,7 @@ def _process_related_links(content: str, statement: Statement) -> str:
         content)
 
 
-def _process_related_link(match, statement):
+def _process_related_link(match: Match[str], statement: Statement) -> str:
     (link_type, tagattrs, text) = match.groups()
     params = {m.group(1): m.group(2) for m in re.finditer(r'data-([\w-]+)="([^"]+)"', tagattrs)}
     hocid = int(params['HoCid'])
@@ -283,17 +284,20 @@ def _process_related_link(match, statement):
     elif link_type == 'legislation':
         try:
             bis = BillInSession.objects.get_by_legisinfo_id(hocid)
-            bill = bis.bill
+            bill = cast(Bill, bis.bill)
             url = bis.get_absolute_url()
         except Bill.DoesNotExist:
-            match = re.search(r'\b[CS]\-\d+[A-E]?\b', text)
-            if not match:
+            newmatch = re.search(r'\b[CS]\-\d+[A-E]?\b', text)
+            if not newmatch:
                 logger.error("Invalid bill link %s", text)
                 return text
+
+            match = newmatch
             bill = Bill.objects.create_temporary_bill(
                 legisinfo_id=hocid,
                 number=match.group(0), session=statement.document.session)
             url = bill.get_absolute_url()
+
         title = bill.name
         statement._related_bills.add(bill)
     elif link_type == 'vote':
@@ -321,14 +325,14 @@ def _process_related_link(match, statement):
     return _build_tag('a', attrs) + text + '</a>'
 
 
-def _build_tag(name, attrs):
+def _build_tag(name: str, attrs: Dict[str, Any]) -> str:
     return '<%s%s>' % (
         name,
         ''.join([" %s=%s" % (k, quoteattr(str(v))) for k, v in sorted(attrs.items())])
     )
 
 
-def _test_has_paragraph_ids(elem):
+def _test_has_paragraph_ids(elem: etree._Element) -> bool:
     """Do all, or almost all, of the paragraphs in this document have ID attributes?
     Sometimes they're missing at first."""
     paratext = elem.xpath('//ParaText')
@@ -343,7 +347,7 @@ class NoDocumentFound(Exception):
     pass
 
 
-def fetch_latest_debates(session=None):
+def fetch_latest_debates(session: Session | None = None) -> None:
     if not session:
         session = Session.objects.current()
 
@@ -366,7 +370,7 @@ def fetch_latest_debates(session=None):
             break
 
 
-def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_ids=True):
+def fetch_debate_for_sitting(session: Session, sitting_number: int, import_without_paragraph_ids: bool = True) -> None:
     url = HANSARD_URL.format(
         parliamentnum=session.parliamentnum,
         sessnum=session.sessnum, sitting=sitting_number, lang='E')
@@ -390,7 +394,7 @@ def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_i
 
     source_id = int(doc_en.get('id', -1))
     if Document.objects.filter(source_id=source_id).exists():
-        raise Exception("Document at source_id %d already exists but not sitting %s" % (source_id, sitting_number))
+        raise Exception("Document at source_id %d already exists but not sitting %d" % (source_id, sitting_number))
     assert int(doc_fr.get('id', -1)) == source_id
 
     if ((not import_without_paragraph_ids)
@@ -409,7 +413,7 @@ def fetch_debate_for_sitting(session, sitting_number, import_without_paragraph_i
         logger.info("Saved sitting %s", doc.number)
 
 
-def refresh_xml(document):
+def refresh_xml(document: Document) -> None:
     """
     Download new XML from Parliament, reimport.
     """
