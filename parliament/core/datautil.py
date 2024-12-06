@@ -10,7 +10,6 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import defaultdict
-from typing import Dict
 
 import text_utils
 from bs4 import BeautifulSoup, NavigableString
@@ -109,7 +108,7 @@ r_splitter = re.compile(r'[^\w\'\-]+', re.UNICODE)
 
 
 def spark_index(bucketsize, bigrams=False) -> None:
-    index: Dict[str, int] = defaultdict(int)
+    index: dict[str, int] = defaultdict(int)
     bucketidx = 0
     bucketcount = 0
     for s in Statement.objects.all().order_by('time'):

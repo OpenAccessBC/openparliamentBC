@@ -5,7 +5,7 @@ import logging
 import re
 from functools import wraps
 from html import escape as stdlib_escape
-from typing import Any, Dict, List, Tuple
+from typing import Any
 from xml.sax.saxutils import quoteattr
 
 from lxml import etree
@@ -20,7 +20,7 @@ def _n2s(o: str | None) -> str:
     return o if o is not None else ''
 
 
-def _build_tag(name: str, attrs: Dict[str, Any]) -> str:
+def _build_tag(name: str, attrs: dict[str, Any]) -> str:
     return '<%s%s>' % (
         name,
         ''.join((
@@ -201,7 +201,7 @@ class Document():
         return html
 
     def __init__(self) -> None:
-        self.meta: Dict[str, Any] = {}
+        self.meta: dict[str, Any] = {}
 
 
 class Statement():
@@ -276,18 +276,18 @@ class ParseHandler():
                    etree.ProcessingInstruction] + list(PASSTHROUGH_TAGS.keys())
 
     def __init__(self, document: Document) -> None:
-        self.statements: List[Statement] = []
+        self.statements: list[Statement] = []
         self.current_statement: Statement | None = None
         self.document_language = document.meta['language'].lower()
         self.current_attributes = {
             'language': self.document_language
         }
-        self.one_time_attributes: Dict[str, Any] = {}
+        self.one_time_attributes: dict[str, Any] = {}
         self.in_para = False
-        self.one_liner: Tuple[bool, Any] | None = None
-        self.people_seen: Dict[str, Any] = {}
-        self.people_types_seen: Dict[str, Any] = {}
-        self.people_contexts: Dict[str, Any] = {}
+        self.one_liner: tuple[bool, Any] | None = None
+        self.people_seen: dict[str, Any] = {}
+        self.people_types_seen: dict[str, Any] = {}
+        self.people_contexts: dict[str, Any] = {}
         self.date = document.meta['date']
         self.main_statement_speaker = ['', '']
         (self.parliament, self.session) = (document.meta['parliament'], document.meta['session'])
@@ -330,7 +330,7 @@ class ParseHandler():
             self.statements.append(self.current_statement)
             self.current_statement = None
 
-    def get_final_statements(self) -> List[Statement]:
+    def get_final_statements(self) -> list[Statement]:
         if self.current_statement and self.current_statement.content.strip():
             self.close_statement()
         return self.statements

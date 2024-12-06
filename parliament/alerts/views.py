@@ -1,7 +1,7 @@
 import datetime
 import json
 import re
-from typing import Any, Dict
+from typing import Any
 
 from django import forms
 from django.conf import settings
@@ -173,7 +173,7 @@ def _generate_query_for_politician(pol: Politician) -> str:
 
 @disable_on_readonly_db
 def politician_hansard_subscribe(request: HttpRequest, signed_key: str) -> HttpResponse:
-    ctx: Dict[str, bool | Politician | str] = {
+    ctx: dict[str, bool | Politician | str] = {
         'key_error': False
     }
     try:
@@ -205,7 +205,7 @@ def politician_hansard_subscribe(request: HttpRequest, signed_key: str) -> HttpR
 
 @never_cache
 def unsubscribe(request: HttpRequest, key: str) -> HttpResponse:
-    ctx: Dict[str, Any] = {
+    ctx: dict[str, Any] = {
         'title': 'Email alerts'
     }
     try:

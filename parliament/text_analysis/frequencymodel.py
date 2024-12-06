@@ -3,9 +3,10 @@
 import itertools
 import re
 from collections import defaultdict
+from collections.abc import Generator
 from heapq import nlargest
 from operator import itemgetter
-from typing import Dict, FrozenSet, Generator, List, Tuple, override
+from typing import override
 
 from django.db.models import QuerySet
 
@@ -46,7 +47,7 @@ def text_token_iterator(text: str) -> Generator[str]:
     yield from r_whitespace.split(text)
 
 
-def statements_token_iterator(statements: List[Statement], statement_separator: str | None = None) -> Generator[str]:
+def statements_token_iterator(statements: list[Statement], statement_separator: str | None = None) -> Generator[str]:
     for statement in statements:
         yield from text_token_iterator(statement.text_plain())
         if statement_separator is not None:
@@ -71,8 +72,8 @@ class FrequencyModel(dict[str, float]):
     # of occurences of string / # total number of items).
     """
 
-    def __init__(self, items: List[str], min_count: int = 1) -> None:
-        counts: Dict[str, int] = defaultdict(int)
+    def __init__(self, items: list[str], min_count: int = 1) -> None:
+        counts: dict[str, int] = defaultdict(int)
         total_count = 0
         for item in items:
             if len(item) > 2 and '/' not in item:
@@ -101,7 +102,7 @@ class FrequencyModel(dict[str, float]):
     def item_count(self, key: str) -> int:
         return round(self[key] * self.count)
 
-    def most_common(self, n: int | None = None) -> List[Tuple[str, float]]:
+    def most_common(self, n: int | None = None) -> list[tuple[str, float]]:
         if n is None:
             return sorted(iter(self.items()), key=itemgetter(1), reverse=True)
         return nlargest(n, iter(self.items()), key=itemgetter(1))
@@ -119,14 +120,14 @@ class FrequencyDiffResult(dict[str, float]):
     def __missing__(self, key: str) -> float:
         return float()
 
-    def most_common(self, n: int = 10) -> List[Tuple[str, float]]:
+    def most_common(self, n: int = 10) -> list[tuple[str, float]]:
         return nlargest(n, iter(self.items()), key=itemgetter(1))
 
 
 class WordCounter(dict[str, int]):
 
-    def __init__(self, stopwords: FrozenSet[str] = STOPWORDS) -> None:
-        self.stopwords: FrozenSet[str] = stopwords
+    def __init__(self, stopwords: frozenset[str] = STOPWORDS) -> None:
+        self.stopwords: frozenset[str] = stopwords
         super(WordCounter, self).__init__(self)
 
     def __missing__(self, key: str) -> int:
@@ -137,7 +138,7 @@ class WordCounter(dict[str, int]):
         if key not in self.stopwords:
             super(WordCounter, self).__setitem__(key, value)
 
-    def most_common(self, n: int | None = None) -> List[Tuple[str, int]]:
+    def most_common(self, n: int | None = None) -> list[tuple[str, int]]:
         if n is None:
             return sorted(iter(self.items()), key=itemgetter(1), reverse=True)
         return nlargest(n, iter(self.items()), key=itemgetter(1))
@@ -145,15 +146,15 @@ class WordCounter(dict[str, int]):
 
 class WordAndAttributeCounter():
 
-    def __init__(self, stopwords: FrozenSet[str] = STOPWORDS) -> None:
-        self.counter: Dict[str, WordAttributeCount] = defaultdict(WordAttributeCount)
-        self.stopwords: FrozenSet[str] = stopwords
+    def __init__(self, stopwords: frozenset[str] = STOPWORDS) -> None:
+        self.counter: dict[str, WordAttributeCount] = defaultdict(WordAttributeCount)
+        self.stopwords: frozenset[str] = stopwords
 
     def add(self, word: str, attribute: str) -> None:
         if word not in self.stopwords and len(word) > 2:
             self.counter[word].add(attribute)
 
-    def most_common(self, n: int | None = None) -> List[Tuple[str, "WordAttributeCount"]]:
+    def most_common(self, n: int | None = None) -> list[tuple[str, "WordAttributeCount"]]:
         if n is None:
             return sorted(iter(self.counter.items()), key=lambda x: x[1].count, reverse=True)
         return nlargest(n, iter(self.counter.items()), key=lambda x: x[1].count)
@@ -164,7 +165,7 @@ class WordAttributeCount():
     __slots__ = ('count', 'attributes')
 
     def __init__(self) -> None:
-        self.attributes: Dict[str, int] = defaultdict(int)
+        self.attributes: dict[str, int] = defaultdict(int)
         self.count: int = 0
 
     def add(self, attribute: str) -> None:

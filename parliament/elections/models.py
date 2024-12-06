@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 from decimal import Decimal
-from typing import Dict, override
+from typing import override
 
 from django.db import models
 
@@ -27,7 +27,7 @@ class Election(models.Model):
     def calculate_vote_percentages(self) -> None:
         candidacies = self.candidacy_set.all()
         riding_candidacies = defaultdict(list)
-        riding_votetotals: Dict[int, Decimal] = defaultdict(Decimal)
+        riding_votetotals: dict[int, Decimal] = defaultdict(Decimal)
         for candidacy in candidacies:
             riding_candidacies[candidacy.riding_id].append(candidacy)
             riding_votetotals[candidacy.riding_id] += candidacy.votetotal

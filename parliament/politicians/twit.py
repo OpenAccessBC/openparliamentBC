@@ -2,7 +2,7 @@ import datetime
 import email
 import logging
 import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import requests
 from django.conf import settings
@@ -78,7 +78,7 @@ def get_id_from_screen_name(screen_name: str) -> str:
 
 
 # TODO fix this return type salad
-def twitter_api_request(endpoint: str, params: Optional[Dict[str, Any]] = None) -> Union[Dict[str, Any], List[Any], None]:
+def twitter_api_request(endpoint: str, params: dict[str, Any] | None = None) -> dict[str, Any] | list[Any] | None:
     url = 'https://api.twitter.com/1.1/' + endpoint + '.json'
     auth = OAuth1(
         settings.TWITTER_OAUTH['consumer_key'],

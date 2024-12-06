@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from collections import OrderedDict, defaultdict
-from typing import Any, Dict, List, override
+from typing import Any, override
 
 from django.conf import settings
 from django.db import models
@@ -112,7 +112,7 @@ class Document(models.Model):
 
         return base_url + 'text-analysis/'
 
-    def to_api_dict(self, representation: str) -> Dict[str, Any]:
+    def to_api_dict(self, representation: str) -> dict[str, Any]:
         d = {
             "date": str(self.date) if self.date else None,
             "number": self.number,
@@ -229,7 +229,7 @@ class Document(models.Model):
         statements = self.statement_set.filter(procedural=False).select_related('member', 'politician')
         politicians = {s.politician for s in statements if s.politician}
         for pol in politicians:
-            topics: Dict[str, List[str]] = {}
+            topics: dict[str, list[str]] = {}
             wordcount = 0
             for statement in [s for s in statements if s.politician == pol]:
                 wordcount += statement.wordcount
@@ -471,7 +471,7 @@ class Statement(models.Model):
         return qs
 
     def _generate_wordcounts(self) -> None:
-        paragraphs: List[List[str]] = [
+        paragraphs: list[list[str]] = [
             [],  # english
             [],  # french
             []  # procedural
@@ -509,8 +509,8 @@ class Statement(models.Model):
     def topic(self) -> str:
         return self.h2
 
-    def to_api_dict(self, representation: str) -> Dict[str, Any]:
-        d: Dict[str, str | Dict[str, str] | None] = {
+    def to_api_dict(self, representation: str) -> dict[str, Any]:
+        d: dict[str, str | dict[str, str] | None] = {
             "time": str(self.time) if self.time else None,
             "attribution": {'en': self.who_en, 'fr': self.who_fr},
             "content": {'en': self.content_en, 'fr': self.content_fr},
@@ -532,8 +532,8 @@ class Statement(models.Model):
 
     @property
     @memoize_property
-    def name_info(self) -> Dict[str, Any]:
-        info: Dict[str, Any] = {
+    def name_info(self) -> dict[str, Any]:
+        info: dict[str, Any] = {
             'post': None,
             'named': True
         }
@@ -564,8 +564,8 @@ class Statement(models.Model):
         return info
 
     @staticmethod
-    def set_slugs(statements: List["Statement"]) -> None:
-        counter: Dict[str, int] = defaultdict(int)
+    def set_slugs(statements: list["Statement"]) -> None:
+        counter: dict[str, int] = defaultdict(int)
         for statement in statements:
             slug = slugify(statement.name_info['display_name'])[:50]
             if not slug:

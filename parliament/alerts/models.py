@@ -3,7 +3,7 @@ import datetime
 import hashlib
 import logging
 import re
-from typing import Any, Dict, List, Tuple, override
+from typing import Any, override
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class TopicManager(models.Manager):
 
-    def get_or_create_by_query(self, query: str) -> Tuple["Topic", bool]:
+    def get_or_create_by_query(self, query: str) -> tuple["Topic", bool]:
         query_obj = SearchQuery(query)
         if 'Date' in query_obj.filters:
             del query_obj.filters['Date']  # Date filters make no sense in alerts
@@ -78,7 +78,7 @@ class Topic(models.Model):
                 (datetime.datetime.now() - self.last_checked) > datetime.timedelta(hours=24)):
             self.get_new_items(limit=40)
 
-    def get_new_items(self, label_as_seen: bool = True, limit: int = 25) -> List[Dict[str, Any]]:
+    def get_new_items(self, label_as_seen: bool = True, limit: int = 25) -> list[dict[str, Any]]:
         query_obj = self.get_search_query(limit=limit)
         result_ids = set((result['url'] for result in query_obj.documents))
         if result_ids:
@@ -140,7 +140,7 @@ class SeenItem(models.Model):
 
 class SubscriptionManager(models.Manager):
 
-    def get_or_create_by_query(self, query: str, user: User) -> Tuple["Subscription", bool]:
+    def get_or_create_by_query(self, query: str, user: User) -> tuple["Subscription", bool]:
         topic, _ = Topic.objects.get_or_create_by_query(query)
         return self.get_or_create(topic=topic, user=user)
 
@@ -178,8 +178,8 @@ class Subscription(models.Model):
         return (str(settings.SITE_URL) if full else '') + reverse(
             'alerts_unsubscribe', kwargs={'key': key})
 
-    def render_message(self, documents: Dict[str, Any]) -> Dict[str, str]:
-        ctx: Dict[str, Any] = {
+    def render_message(self, documents: dict[str, Any]) -> dict[str, str]:
+        ctx: dict[str, Any] = {
             'documents': documents,
             'unsubscribe_url': self.get_unsubscribe_url(full=True)
         }
@@ -197,7 +197,7 @@ class Subscription(models.Model):
         text = t.render(ctx)
         return {"text": text}
 
-    def get_subject_line(self, documents: List[Dict[str, Any]]) -> str:
+    def get_subject_line(self, documents: list[dict[str, Any]]) -> str:
         if self.topic.politician_hansard_alert:
             topics = set((d['topic'] for d in documents if 'topic' in d))
             if topics:
@@ -211,7 +211,7 @@ class Subscription(models.Model):
             subj = 'New from openparliament.ca for %s' % self.topic.query
         return subj[:200]
 
-    def send_email(self, documents: List[Dict[str, Any]]) -> None:
+    def send_email(self, documents: list[dict[str, Any]]) -> None:
         rendered = self.render_message(documents)
         msg = EmailMultiAlternatives(
             self.get_subject_line(documents),

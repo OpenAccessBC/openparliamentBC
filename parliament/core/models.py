@@ -4,7 +4,7 @@ import datetime
 import logging
 import re
 from io import BytesIO
-from typing import Any, Dict, List, Optional, Tuple, override
+from typing import Any, override
 from urllib.parse import urljoin
 
 import lxml.etree
@@ -158,7 +158,7 @@ class PoliticianManager(models.Manager):
         """Returns a QuerySet of former MPs."""
         return self.get_queryset().exclude(electedmember__end_date__isnull=True)
 
-    def filter_by_name(self, name: str) -> List["Politician"]:
+    def filter_by_name(self, name: str) -> list["Politician"]:
         """Returns a list of politicians matching a given name."""
         return [i.politician for i in (
             PoliticianInfo.sr_objects.filter(schema='alternate_name', value=parsetools.normalizeName(name)))]
@@ -292,7 +292,7 @@ class PoliticianManager(models.Manager):
             return self.get_queryset().get(id=pol.id)
 
     def _get_pol_from_ourcommons_profile_url(
-            self, profile_url: str, session: "Session | None" = None, riding_name: str | None = None) -> Tuple["Politician", str]:
+            self, profile_url: str, session: "Session | None" = None, riding_name: str | None = None) -> tuple["Politician", str]:
 
         url_match = re.search(r'\((\d+)\)$', profile_url)
         if not url_match:
@@ -340,7 +340,7 @@ class Politician(Person):
 
     objects = PoliticianManager()
 
-    def to_api_dict(self, representation: str) -> Dict[str, Any]:
+    def to_api_dict(self, representation: str) -> dict[str, Any]:
         d = {"name": self.name}
 
         if representation == 'detail':
@@ -449,7 +449,7 @@ class Politician(Person):
         return "http://openparliament.ca" + self.get_absolute_url()
 
     @property
-    def parlpage(self) -> Optional[str]:
+    def parlpage(self) -> str | None:
         parlid = self.info().get('parl_mp_id')
         if parlid:
             return f"https://www.ourcommons.ca/members/{settings.LANGUAGE_CODE}/{self.identifier}({parlid})"
@@ -472,7 +472,7 @@ class Politician(Person):
         """Returns a dictionary of PoliticianInfo attributes for this politician,
         where each key is a list of items. This allows more than one value for a
         given key."""
-        info: Dict[str, List[str]] = {}
+        info: dict[str, list[str]] = {}
         for i in self.politicianinfo_set.all().values_list('schema', 'value'):
             info.setdefault(i[0], []).append(i[1])
         return info
@@ -546,10 +546,10 @@ class Politician(Person):
         # Only index politicians who've been elected
         return bool(self.latest_member)
 
-    def search_dict(self) -> Dict[str, str]:
+    def search_dict(self) -> dict[str, str]:
         member = self.latest_member
         assert member is not None
-        d: Dict[str, str] = {
+        d: dict[str, str] = {
             'text': '',
             'politician': self.name,
             'party': member.party.short_name,

@@ -3,7 +3,7 @@
 import datetime
 import re
 from calendar import monthrange
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import pysolr
 from django.conf import settings
@@ -70,10 +70,10 @@ class SearchQuery(BaseSearchQuery):
                  query: str,
                  start: int = 0,
                  limit: int = 15,
-                 user_params: Dict[str, Any] | None = None,
+                 user_params: dict[str, Any] | None = None,
                  facet: bool = False,
                  full_text: bool = False,
-                 solr_params: Dict[str, Any] | None = None) -> None:
+                 solr_params: dict[str, Any] | None = None) -> None:
         if user_params is None:
             user_params = {}
 
@@ -88,8 +88,8 @@ class SearchQuery(BaseSearchQuery):
         self.full_text = full_text
         self.extra_solr_params = solr_params
 
-    def get_solr_query(self) -> Tuple[str, Dict[str, Any]]:
-        searchparams: Dict[str, Any] = {
+    def get_solr_query(self) -> tuple[str, dict[str, Any]]:
+        searchparams: dict[str, Any] = {
             'start': self.start,
             'rows': self.limit
         }
@@ -174,7 +174,7 @@ class SearchQuery(BaseSearchQuery):
 
     @property
     @memoize_property
-    def validated_user_params(self) -> Dict[str, str]:
+    def validated_user_params(self) -> dict[str, str]:
         p = {}
         for opt, choices in self.ALLOWABLE_OPTIONS.items():
             if opt in self.user_params and self.user_params[opt] in choices:
@@ -193,7 +193,7 @@ class SearchQuery(BaseSearchQuery):
         return self.solr_results.hits
 
     @property
-    def facet_fields(self) -> Dict[str, Any]:
+    def facet_fields(self) -> dict[str, Any]:
         return self.solr_results.facets.get('facet_fields')
 
     @property
@@ -202,7 +202,7 @@ class SearchQuery(BaseSearchQuery):
 
     @property
     @memoize_property
-    def date_counts(self) -> List[Tuple[int, str]]:
+    def date_counts(self) -> list[tuple[int, str]]:
         counts = []
         if self.facet and 'facet_ranges' in self.solr_results.facets:
             datefacets = self.solr_results.facets['facet_ranges']['date']['counts']

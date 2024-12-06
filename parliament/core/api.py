@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Any, Dict, override
+from typing import Any, override
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -277,7 +277,7 @@ class ModelListView(APIView):
                     qs = self.filters[filter_name](qs, self, filter_name, filter_extra, val)
         return qs
 
-    def get_json(self, request: HttpRequest, **kwargs: Any) -> Dict[str, Any] | HttpResponse:
+    def get_json(self, request: HttpRequest, **kwargs: Any) -> dict[str, Any] | HttpResponse:
         try:
             qs = self.get_qs(request, **kwargs)
         except ObjectDoesNotExist:
@@ -290,12 +290,12 @@ class ModelListView(APIView):
             "objects": [self.object_to_dict(obj) for obj in objects],
             "pagination": page_data
         }
-        related: Dict[str, str] | None = self.get_related_resources(request, qs, result)
+        related: dict[str, str] | None = self.get_related_resources(request, qs, result)
         if related:
             result['related'] = related
         return result
 
-    def get_related_resources(self, request: HttpRequest, qs: Any, result: Dict[str, str]) -> Dict[str, str] | None:
+    def get_related_resources(self, request: HttpRequest, qs: Any, result: dict[str, str]) -> dict[str, str] | None:
         return None
 
 
@@ -303,24 +303,24 @@ class ModelDetailView(APIView):
 
     resource_type = 'single'
 
-    def object_to_dict(self, obj: Any) -> Dict[str, Any]:
+    def object_to_dict(self, obj: Any) -> dict[str, Any]:
         d = obj.to_api_dict(representation='detail')
         if 'url' not in d:
             d['url'] = obj.get_absolute_url()
         return d
 
-    def get_json(self, request: HttpRequest, **kwargs: Any) -> Dict[str, Any] | HttpResponse:
+    def get_json(self, request: HttpRequest, **kwargs: Any) -> dict[str, Any] | HttpResponse:
         try:
             obj = self.get_object(request, **kwargs)
         except ObjectDoesNotExist:
             raise Http404 from None
         result = self.object_to_dict(obj)
-        related: Dict[str, str] | None = self.get_related_resources(request, obj, result)
+        related: dict[str, str] | None = self.get_related_resources(request, obj, result)
         if related:
             result['related'] = related
         return result
 
-    def get_related_resources(self, request: HttpRequest, obj: Any, result: Dict[str, str]) -> Dict[str, str] | None:
+    def get_related_resources(self, request: HttpRequest, obj: Any, result: dict[str, str]) -> dict[str, str] | None:
         return None
 
 

@@ -3,7 +3,7 @@ import json
 import logging
 import re
 from collections import Counter, defaultdict
-from typing import Any, Dict, override
+from typing import Any, override
 
 from django.conf import settings
 from django.db import models
@@ -307,7 +307,7 @@ class Bill(models.Model):
     def dormant(self) -> bool:
         return (self.status_date and (datetime.date.today() - self.status_date).days > 150)
 
-    def search_dict(self) -> Dict[str, Any]:
+    def search_dict(self) -> dict[str, Any]:
         d = {
             'text': self.get_text(),
             'title': self.name,
@@ -384,7 +384,7 @@ class BillInSession(models.Model):
             'id': self.legisinfo_id
         }
 
-    def to_api_dict(self, representation: str) -> Dict[str, Any]:
+    def to_api_dict(self, representation: str) -> dict[str, Any]:
         d = {
             'session': self.session_id,
             'legisinfo_id': self.legisinfo_id,
@@ -499,7 +499,7 @@ class VoteQuestion(models.Model):
     class Meta:
         ordering = ('-date', '-number')
 
-    def to_api_dict(self, representation: str) -> Dict[str, Any]:
+    def to_api_dict(self, representation: str) -> dict[str, Any]:
         r = {
             'bill_url': self.bill.get_absolute_url() if self.bill else None,
             'session': self.session_id,
@@ -532,7 +532,7 @@ class VoteQuestion(models.Model):
     def label_party_votes(self) -> None:
         """Create PartyVote objects representing the party-line vote; label individual dissenting votes."""
         membervotes = self.membervote_set.select_related('member', 'member__party').all()
-        parties: Dict[Party, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        parties: dict[Party, dict[str, int]] = defaultdict(lambda: defaultdict(int))
 
         for mv in membervotes:
             if mv.member.party.name != 'Independent':
@@ -595,7 +595,7 @@ class MemberVote(models.Model):
     def save_activity(self) -> None:
         activity.save_activity(self, politician=self.politician, date=self.votequestion.date)
 
-    def to_api_dict(self, representation: str) -> Dict[str, Any]:
+    def to_api_dict(self, representation: str) -> dict[str, Any]:
         return {
             'vote_url': self.votequestion.get_absolute_url(),
             'politician_url': self.politician.get_absolute_url(),

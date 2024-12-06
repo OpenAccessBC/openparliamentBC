@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Any, Dict, List, override
+from typing import Any, override
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -29,7 +29,7 @@ class Command(BaseCommand):
             user__email_bouncing=False
         ).prefetch_related('user', 'topic')
 
-        by_topic: Dict[Topic, List[Subscription]] = {}
+        by_topic: dict[Topic, list[Subscription]] = {}
         for sub in subscriptions:
             by_topic.setdefault(sub.topic, []).append(sub)
 

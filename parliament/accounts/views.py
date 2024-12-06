@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
@@ -14,7 +14,7 @@ from parliament.utils.views import JSONView
 
 class CurrentAccountView(JSONView):
 
-    def get(self, request: HttpRequest) -> Dict[str, Any]:
+    def get(self, request: HttpRequest) -> dict[str, Any]:
         return {'email': request.authenticated_email}
 
 

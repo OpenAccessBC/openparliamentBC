@@ -1,7 +1,8 @@
 import datetime
 import itertools
 import re
-from typing import Any, Dict, Callable, Generator, List, override
+from collections.abc import Generator
+from typing import Any, Callable, override
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -65,7 +66,7 @@ class CurrentMPView(ModelListView):
             'riding__province', 'politician__name_family').select_related('politician', 'riding', 'party')
 
     @override
-    def object_to_dict(self, obj: Any) -> Dict[str, Any]:
+    def object_to_dict(self, obj: Any) -> dict[str, Any]:
         if isinstance(obj, ElectedMember):
             return {
                 "name": obj.politician.name,
@@ -133,7 +134,7 @@ class PoliticianView(ModelDetailView):
         return get_object_or_404(Politician, pk=pol_id)
 
     @override
-    def get_related_resources(self, request: HttpRequest, obj: Politician, result: Dict[str, str]) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: Politician, result: dict[str, str]) -> dict[str, str]:
         pol_query = '?' + urlencode({'politician': obj.identifier})
         return {
             'speeches_url': reverse('speeches') + pol_query,
@@ -218,12 +219,12 @@ def hide_activity(request: HttpRequest) -> HttpResponse:
 
 class PoliticianAutocompleteView(JSONView):
 
-    def get(self, request: HttpRequest) -> List[Dict[str, str]]:
+    def get(self, request: HttpRequest) -> list[dict[str, str]]:
 
         q = request.GET.get('q', '').lower()
 
         if not hasattr(self, 'politician_list'):
-            self.politician_list: List[Politician] = list(Politician.objects.elected().values(
+            self.politician_list: list[Politician] = list(Politician.objects.elected().values(
                 'name', 'name_family', 'slug', 'id').order_by('name_family'))
 
         results = (

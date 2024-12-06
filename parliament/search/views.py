@@ -6,7 +6,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-from typing import Any, Dict, List
+from typing import Any
 from urllib.parse import urljoin
 
 import requests
@@ -200,18 +200,18 @@ class SearchFeed(Feed):
     def description(self, query: str) -> str:
         return "From openparliament.ca, search results for '%s'" % query
 
-    def items(self, query: str) -> List[Dict[str, Any]]:
+    def items(self, query: str) -> list[dict[str, Any]]:
         query_obj = SearchQuery(query, user_params={'sort': 'date desc'})
         return [item for item in query_obj.documents if item['django_ct'] == 'hansards.statement']
 
-    def item_title(self, item: Dict[str, Any]) -> str:
+    def item_title(self, item: dict[str, Any]) -> str:
         return "%s / %s" % (item.get('topic', ''), item.get('politician', ''))
 
-    def item_link(self, item: Dict[str, Any]) -> str:
+    def item_link(self, item: dict[str, Any]) -> str:
         return item['url']
 
-    def item_description(self, item: Dict[str, Any]) -> str:
+    def item_description(self, item: dict[str, Any]) -> str:
         return item['text']
 
-    def item_pubdate(self, item: Dict[str, Any]) -> datetime.datetime:
+    def item_pubdate(self, item: dict[str, Any]) -> datetime.datetime:
         return item['date']

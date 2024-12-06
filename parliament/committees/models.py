@@ -1,7 +1,7 @@
 import datetime
 import random
 import string
-from typing import Any, Dict, cast, override
+from typing import Any, cast, override
 
 from django.conf import settings
 from django.db import models
@@ -85,7 +85,7 @@ class Committee(models.Model):
 
         return self.name + ' Committee'
 
-    def to_api_dict(self, representation: str) -> Dict[str, Any]:
+    def to_api_dict(self, representation: str) -> dict[str, Any]:
         d = {
             "name": {'en': self.name_en, 'fr': self.name_fr},
             "short_name": {'en': self.short_name_en, 'fr': self.short_name_fr},
@@ -207,8 +207,8 @@ class CommitteeMeeting(models.Model):
     def __str__(self) -> str:
         return "%s on %s" % (self.committee.short_name, self.date)
 
-    def to_api_dict(self, representation: str) -> Dict[str, Any]:
-        d: Dict[str, str | bool | None] = {
+    def to_api_dict(self, representation: str) -> dict[str, Any]:
+        d: dict[str, str | bool | None] = {
             "date": str(self.date),
             "number": self.number,
             "in_camera": self.in_camera,

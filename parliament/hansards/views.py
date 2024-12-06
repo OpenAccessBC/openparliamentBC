@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Dict, Tuple, override
+from typing import Any, override
 from urllib.parse import urlencode
 
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
@@ -37,7 +37,7 @@ class HansardView(ModelDetailView):
         return document_view(request, _get_hansard(**kwargs))
 
     @override
-    def get_related_resources(self, request: HttpRequest, obj: Document, result: Dict[str, str]) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: Document, result: dict[str, str]) -> dict[str, str]:
         return {
             'speeches_url': reverse('speeches') + '?' + urlencode({'document': result['url']}),
             'debates_url': reverse('debates')
@@ -60,7 +60,7 @@ class HansardStatementView(ModelDetailView):
         )
 
     @override
-    def get_related_resources(self, request: HttpRequest, obj: Statement, result: Dict[str, str]) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: Statement, result: dict[str, str]) -> dict[str, str]:
         return {
             'document_speeches_url': reverse('speeches') + '?' + urlencode({'document': result['document_url']}),
         }
@@ -217,7 +217,7 @@ speeches = SpeechesView.as_view()
 
 class DebatePermalinkView(ModelDetailView):
 
-    def _get_objs(self, request: HttpRequest, slug: str, year: str, month: str, day: str) -> Tuple[Document, Statement]:
+    def _get_objs(self, request: HttpRequest, slug: str, year: str, month: str, day: str) -> tuple[Document, Statement]:
         doc = _get_hansard(year, month, day)
         if slug.isdigit():
             statement = get_object_or_404(Statement, document=doc, sequence=slug)
@@ -277,7 +277,7 @@ def document_cache(request: HttpRequest, document_id: str, language: str) -> Htt
 
 class TitleAdder():
 
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super(TitleAdder, self).get_context_data(**kwargs)
         context.update(title=self.page_title)
         return context

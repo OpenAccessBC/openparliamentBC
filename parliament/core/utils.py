@@ -5,7 +5,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from functools import wraps
-from typing import Any, Dict
+from typing import Any
 
 from compressor.filters import CompilerFilter
 from compressor.storage import CompressorFileStorage
@@ -126,7 +126,7 @@ def feed_wrapper(feed_class):
     return call_feed
 
 
-def settings_context(request: HttpRequest) -> Dict[str, Any]:
+def settings_context(request: HttpRequest) -> dict[str, Any]:
     """Context processor makes certain settings available to templates."""
     return {
         'fr': settings.LANGUAGE_CODE.startswith('fr'),

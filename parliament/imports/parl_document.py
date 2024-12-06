@@ -10,7 +10,7 @@ import re
 import sys
 from difflib import SequenceMatcher
 from re import Match
-from typing import Any, Dict, List, Tuple, cast
+from typing import Any, cast
 from xml.sax.saxutils import quoteattr
 
 import requests
@@ -65,7 +65,7 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
     document.number = pdoc_en.meta['document_number']
     document.public = True
 
-    statements: List[Statement] = []
+    statements: list[Statement] = []
 
     for pstate in pdoc_en.statements:
         s = Statement(
@@ -120,7 +120,7 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
     def _get_paragraph_id(p: str) -> int:
         return int(_r_paragraph_id.match(p).group('id'))
 
-    def _get_paragraphs_and_ids(content: str) -> List[Tuple[str, int]]:
+    def _get_paragraphs_and_ids(content: str) -> list[tuple[str, int]]:
         return [(p, _get_paragraph_id(p)) for p in _r_paragraphs.findall(content)]
 
     for st in pdoc_fr.statements:
@@ -150,8 +150,8 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
         document.multilingual = True
         for st in statements:
             fr_data = fr_statements.get(st.source_id)
-            pids_en: List[int] = [pid for p, pid in _get_paragraphs_and_ids(st.content_en)]
-            pids_fr: List[int] | None = [pid for p, pid in _get_paragraphs_and_ids(fr_data.content)] if fr_data else None
+            pids_en: list[int] = [pid for p, pid in _get_paragraphs_and_ids(st.content_en)]
+            pids_fr: list[int] | None = [pid for p, pid in _get_paragraphs_and_ids(fr_data.content)] if fr_data else None
             if fr_data and pids_en == pids_fr:
                 # Match by statement
                 st.content_fr = _process_related_links(fr_data.content, st)
@@ -198,17 +198,17 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
     return document
 
 
-def _align_sequences(new_statements: List[Statement], old_statements: List[Statement]) -> List[Tuple[int, str]]:
+def _align_sequences(new_statements: list[Statement], old_statements: list[Statement]) -> list[tuple[int, str]]:
     """Given two list of statements, returns a list of mappings in the form of
     (old_statement_sequence, new_statement_slug)"""
 
-    def build_speaker_dict(states: List[Statement]) -> Dict[str, List[Statement]]:
-        d: Dict[str, List[Statement]] = {}
+    def build_speaker_dict(states: list[Statement]) -> dict[str, list[Statement]]:
+        d: dict[str, list[Statement]] = {}
         for s in states:
             d.setdefault(s.name_info['display_name'], []).append(s)
         return d
 
-    def get_comparison_sequence(text: str) -> List[str]:
+    def get_comparison_sequence(text: str) -> list[str]:
         return re.split(r'\s+', text)
 
     def calculate_similarity(old: Statement, new: Statement) -> float:
@@ -325,7 +325,7 @@ def _process_related_link(match: Match[str], statement: Statement) -> str:
     return _build_tag('a', attrs) + text + '</a>'
 
 
-def _build_tag(name: str, attrs: Dict[str, Any]) -> str:
+def _build_tag(name: str, attrs: dict[str, Any]) -> str:
     return '<%s%s>' % (
         name,
         ''.join([" %s=%s" % (k, quoteattr(str(v))) for k, v in sorted(attrs.items())])

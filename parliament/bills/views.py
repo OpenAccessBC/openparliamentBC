@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Dict, List, override
+from typing import Any, override
 from urllib.parse import urlencode
 
 from django.contrib.syndication.views import Feed
@@ -35,7 +35,7 @@ class BillDetailView(ModelDetailView):
             'bill', 'sponsor_politician').get(session=session_id, bill__number=bill_number)
 
     @override
-    def get_related_resources(self, request: HttpRequest, obj: BillInSession, result: Dict[str, str]) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: BillInSession, result: dict[str, str]) -> dict[str, str]:
         return {
             'bills_url': reverse('bills')
         }
@@ -215,7 +215,7 @@ class VoteListView(ModelListView):
     }
 
     @override
-    def get_json(self, request: HttpRequest, session_id: str | None = None, **kwargs: Any) -> Dict[str, Any] | HttpResponse:
+    def get_json(self, request: HttpRequest, session_id: str | None = None, **kwargs: Any) -> dict[str, Any] | HttpResponse:
         if session_id:
             return HttpResponseRedirect(reverse('votes') + '?' + urlencode({'session': session_id}))
         return super(VoteListView, self).get_json(request, **kwargs)
@@ -258,7 +258,7 @@ class VoteDetailView(ModelDetailView):
         return get_object_or_404(VoteQuestion, session=session_id, number=number)
 
     @override
-    def get_related_resources(self, request: HttpRequest, obj: VoteQuestion, result: Dict[str, str]) -> Dict[str, str]:
+    def get_related_resources(self, request: HttpRequest, obj: VoteQuestion, result: dict[str, str]) -> dict[str, str]:
         return {
             'ballots_url': reverse('vote_ballots') + '?' + urlencode({'vote': result['url']}),
             'votes_url': reverse('votes')
@@ -355,7 +355,7 @@ class BillFeed(Feed):
         return "From openparliament.ca, speeches about Bill %s, %s" % (bill.number, bill.name)
 
     @override
-    def items(self, bill: Bill) -> List[Statement | VoteQuestion]:
+    def items(self, bill: Bill) -> list[Statement | VoteQuestion]:
         statements = (bill.statement_set.all()
                       .order_by('-time', '-sequence')
                       .select_related('member', 'member__politician', 'member__riding', 'member__party')[:10])
