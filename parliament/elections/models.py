@@ -75,7 +75,7 @@ class CandidacyManager(models.Manager):
         first_name and last_name are strings; remaining arguments are as in
         the Candidacy model"""
 
-        candidate = None
+        candidate: Politician | None = None
         fullname = ' '.join((first_name, last_name))
         candidates = Politician.objects.filter_by_name(fullname)
         # If there's nothing in the list, try a little harder
@@ -84,14 +84,14 @@ class CandidacyManager(models.Manager):
             if first_name.strip().count(' ') >= 1:
                 minifirst = first_name.strip().split(' ')[0]
                 candidates = Politician.objects.filter_by_name("%s %s" % (minifirst, last_name))
+
         # Then, evaluate the possibilities in the list
         for posscand in candidates:
             # You're only a match if you've run for office for the same party in the same province
             match = (
-                ElectedMember.objects.filter(
-                    riding__province=riding.province, party=party, politician=posscand).exists()
-                or Candidacy.objects.filter(
-                    riding__province=riding.province, party=party, candidate=posscand).exists())
+                ElectedMember.objects.filter(riding__province=riding.province, party=party, politician=posscand).exists()
+                or Candidacy.objects.filter(riding__province=riding.province, party=party, candidate=posscand).exists())
+
             if match:
                 if candidate is not None:
                     if interactive:

@@ -114,7 +114,7 @@ class APIView(View):
     def process_default(self, result: HttpResponse, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         return result
 
-    def process_json(self, result: HttpResponse, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+    def process_json(self, result: HttpResponse | dict[str, Any] | Any, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         if isinstance(result, HttpResponse):
             return result
 
@@ -136,7 +136,7 @@ class APIView(View):
 
         return resp
 
-    def process_apibrowser(self, result: HttpResponse, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+    def process_apibrowser(self, result: HttpResponse | dict[str, Any] | Any, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         if isinstance(result, HttpResponse):
             return result
 
@@ -377,7 +377,7 @@ class APIPaginator():
         self.limit = limit
         self.max_limit = max_limit
         self.offset = offset
-        self.resource_uri = request.path
+        self.resource_uri: str | None = request.path
 
     def get_limit(self):
         """
