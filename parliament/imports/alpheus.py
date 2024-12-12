@@ -192,6 +192,7 @@ class Document():
                 _build_tag('tr', {'class': 'metadata', 'data-name': k, 'data-value': v}),
                 escape(k), escape(str(v))))
 
+        assert self.statements is not None
         html = self.BASE_HTML % {
             'title': title,
             'lang': self.meta['language'],
@@ -202,6 +203,7 @@ class Document():
 
     def __init__(self) -> None:
         self.meta: dict[str, Any] = {}
+        self.statements: list[Statement] | None = None
 
 
 class Statement():
@@ -305,7 +307,7 @@ class ParseHandler():
             self._initialize_statement()
         self.current_statement.content += s
 
-    def _add_text(self, s: str) -> None:
+    def _add_text(self, s: str | None) -> None:
         """Add text (that will be escaped) to the current statement."""
         if s:
             self._add_code(escape(s))

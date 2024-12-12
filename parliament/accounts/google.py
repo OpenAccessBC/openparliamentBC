@@ -17,7 +17,8 @@ def google_info_from_token(token: str) -> dict[str, Any]:
     return idinfo
 
 
-def get_user_from_google_token(token: str) -> User:
+def get_user_from_google_token(token: str | None) -> User:
+    assert token is not None
     idinfo = google_info_from_token(token)
     assert idinfo['email']
     assert idinfo['email_verified']

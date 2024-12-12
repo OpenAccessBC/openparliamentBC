@@ -178,7 +178,7 @@ class Subscription(models.Model):
         return (str(settings.SITE_URL) if full else '') + reverse(
             'alerts_unsubscribe', kwargs={'key': key})
 
-    def render_message(self, documents: dict[str, Any]) -> dict[str, str]:
+    def render_message(self, documents: list[dict[str, Any]]) -> dict[str, str]:
         ctx: dict[str, Any] = {
             'documents': documents,
             'unsubscribe_url': self.get_unsubscribe_url(full=True)

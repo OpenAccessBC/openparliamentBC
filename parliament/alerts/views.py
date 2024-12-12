@@ -239,9 +239,9 @@ def bounce_webhook(request: HttpRequest) -> HttpResponse:
                 recipients = [b['emailAddress'] for b in data['bounce']['bouncedRecipients']]
             elif ntype == 'Complaint':
                 recipients = [b['emailAddress'] for b in data['complaint']['complainedRecipients']]
-                mail_admins("SES complaint (%r)" % recipients, request.body)
+                mail_admins("SES complaint (%r)" % recipients, str(request.body))
             else:
-                mail_admins("Unhandled SES notification", request.body)
+                mail_admins("Unhandled SES notification", str(request.body))
                 return HttpResponse('OK')
 
             for recipient in recipients:
@@ -258,7 +258,7 @@ def bounce_webhook(request: HttpRequest) -> HttpResponse:
                         email_bouncing=True,
                         email_bounce_reason=request.body)
         except KeyError:
-            mail_admins("Unhandled SES notification", request.body)
+            mail_admins("Unhandled SES notification", str(request.body))
     elif 'mandrill_events' in request.POST:
         for event in json.loads(request.POST['mandrill_events']):
             if 'bounce' in event['event']:

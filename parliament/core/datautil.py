@@ -27,6 +27,7 @@ def load_pol_pic(pol: Politician) -> None:
     print(pol.parlpage)
 
     img: NavigableString | None = None
+    assert pol.parlpage is not None
     with urllib.request.urlopen(pol.parlpage) as soup_data:
         soup = BeautifulSoup(soup_data)
         souped = soup.find(

@@ -3,7 +3,7 @@
 import itertools
 import re
 from collections import defaultdict
-from collections.abc import Generator
+from collections.abc import Generator, Iterator
 from heapq import nlargest
 from operator import itemgetter
 from typing import override
@@ -47,7 +47,7 @@ def text_token_iterator(text: str) -> Generator[str]:
     yield from r_whitespace.split(text)
 
 
-def statements_token_iterator(statements: list[Statement], statement_separator: str | None = None) -> Generator[str]:
+def statements_token_iterator(statements: Iterator[Statement], statement_separator: str | None = None) -> Generator[str]:
     for statement in statements:
         yield from text_token_iterator(statement.text_plain())
         if statement_separator is not None:

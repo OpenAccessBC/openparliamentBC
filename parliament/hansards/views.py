@@ -87,7 +87,8 @@ def document_redirect(request: HttpRequest, document_id: str, slug: str | None =
 
 
 @vary_on_headers('X-Requested-With')
-def document_view(request: HttpRequest, document: Document, meeting: str | None = None, slug: str | None = None) -> HttpResponse:
+def document_view(
+        request: HttpRequest, document: Document, meeting: CommitteeMeeting | None = None, slug: str | None = None) -> HttpResponse:
 
     per_page: int = 25
     if 'singlepage' in request.GET:
@@ -344,6 +345,7 @@ class HansardAnalysisView(TextAnalysisView):
 
     @override
     def get_corpus_name(self, request: HttpRequest, year: str | None = None, **kwargs: Any) -> str:
+        assert year is not None
         # Use a special corpus for old debates
         if int(year) < (datetime.date.today().year - 1):
             return 'debates-%s' % year

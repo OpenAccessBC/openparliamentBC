@@ -273,7 +273,7 @@ class Document(models.Model):
 
         return os.path.join(settings.MEDIA_ROOT, 'document_cache', filename)
 
-    def _save_file(self, path: str, content: str) -> None:
+    def _save_file(self, path: str, content: bytes) -> None:
         with open(path, 'wb') as out:
             out.write(content)
 
@@ -290,7 +290,7 @@ class Document(models.Model):
         self.downloaded = False
         self.save()
 
-    def save_xml(self, xml_en: str, xml_fr: str, overwrite: bool = False) -> None:
+    def save_xml(self, xml_en: bytes, xml_fr: bytes, overwrite: bool = False) -> None:
         if not overwrite and any(
                 os.path.exists(p) for p in [self.get_filepath(lang) for lang in ['en', 'fr']]):
             raise Exception("XML files already exist")

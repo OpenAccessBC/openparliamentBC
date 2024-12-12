@@ -67,6 +67,7 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
 
     statements: list[Statement] = []
 
+    assert pdoc_en.statements is not None
     for pstate in pdoc_en.statements:
         s = Statement(
             document=document,
@@ -97,7 +98,7 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
             # At the moment. person_type is only set if we know the person
             # is a non-politician. This might change...
             try:
-                s.politician = Politician.objects.get_by_parl_affil_id(s.who_hocid, session=document.session)
+                s.politician = Politician.objects.get_by_parl_affil_id(s.who_hocid, session=cast(Session, document.session))
                 s.member = ElectedMember.objects.get_by_pol(s.politician, date=document.date)
             except Politician.DoesNotExist:
                 logger.info("Could not resolve speaking politician ID %s for %r", s.who_hocid, s.who)
@@ -108,6 +109,7 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
 
         statements.append(s)
 
+    assert pdoc_fr.statements is not None
     if len(statements) != len(pdoc_fr.statements):
         logger.info("French and English statement counts don't match for %r", document)
 
@@ -123,10 +125,10 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
     def _get_paragraphs_and_ids(content: str) -> list[tuple[str, int]]:
         return [(p, _get_paragraph_id(p)) for p in _r_paragraphs.findall(content)]
 
-    for st in pdoc_fr.statements:
-        if st.meta['id']:
-            fr_statements[st.meta['id']] = st
-        for p, pid in _get_paragraphs_and_ids(st.content):
+    for alph_st in pdoc_fr.statements:
+        if alph_st.meta['id']:
+            fr_statements[alph_st.meta['id']] = alph_st
+        for p, pid in _get_paragraphs_and_ids(alph_st.content):
             if pid:
                 fr_paragraphs[pid] = p
             else:
@@ -271,7 +273,7 @@ def _process_related_links(content: str, statement: Statement) -> str:
 def _process_related_link(match: Match[str], statement: Statement) -> str:
     (link_type, tagattrs, text) = match.groups()
     params = {m.group(1): m.group(2) for m in re.finditer(r'data-([\w-]+)="([^"]+)"', tagattrs)}
-    hocid = int(params['HoCid'])
+    hocid = params['HoCid']
     if link_type == 'politician':
         try:
             pol = Politician.objects.get_by_parl_affil_id(hocid)
@@ -318,7 +320,7 @@ def _process_related_link(match: Match[str], statement: Statement) -> str:
 
     attrs = {
         'href': url,
-        'data-HoCid': hocid
+        'data-HoCid': int(hocid)
     }
     if title:
         attrs['title'] = title

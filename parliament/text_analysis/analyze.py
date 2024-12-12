@@ -1,8 +1,13 @@
+from typing import Any
+
+from django.db.models import QuerySet
+
+from parliament.core.models import Statement
 from parliament.text_analysis.corpora import load_background_model
 from parliament.text_analysis.frequencymodel import STOPWORDS, FrequencyModel
 
 
-def analyze_statements(statements, corpus_name):
+def analyze_statements(statements: QuerySet[Statement], corpus_name: str) -> list[dict[str, Any]] | None:
     results = []
     ngram_lengths = [
         {

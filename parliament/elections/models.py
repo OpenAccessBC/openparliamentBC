@@ -65,8 +65,8 @@ class CandidacyManager(models.Manager):
             party: Party,
             election: Election,
             votetotal: int,
-            elected: bool,
-            votepercent: float | None = None,
+            elected: bool | None,
+            votepercent: Decimal | None = None,
             occupation: str = '',
             interactive: bool = True) -> "Candidacy":
         """Create a Candidacy based on a candidate's name; checks for prior

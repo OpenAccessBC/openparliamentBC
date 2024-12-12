@@ -259,7 +259,7 @@ class PoliticianManager(models.Manager):
             pol.set_info('parl_mp_id', parlid, overwrite=False)
             return self.get_queryset().get(id=pol.id)
 
-    def get_by_parl_affil_id(self, parlid, session=None, riding_name=None):
+    def get_by_parl_affil_id(self, parlid: int | str, session: "Session | None" = None, riding_name: str | None = None):
         """
         Find a Politician object, based on one of Parliament's affiliation IDs.
         These are internal person-in-role IDs that are not, as far as I know,

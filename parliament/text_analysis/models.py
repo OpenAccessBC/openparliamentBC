@@ -1,12 +1,13 @@
 import datetime
 import json
 from operator import itemgetter
-from typing import List, override
+from typing import override
 
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models import QuerySet
 from django.template.defaultfilters import escapejs
 from django.utils.safestring import mark_safe
 
@@ -19,7 +20,7 @@ class TextAnalysisManager(models.Manager):
     def get_or_create_from_statements(
             self,
             key: str,
-            qs: List[Statement],
+            qs: QuerySet[Statement],
             corpus_name: str,
             lang: str = settings.LANGUAGE_CODE,
             always_update: bool = False,
@@ -44,7 +45,7 @@ class TextAnalysisManager(models.Manager):
         return analysis
 
     def create_from_statements(
-            self, key: str, qs: List[Statement], corpus_name: str, lang: str = settings.LANGUAGE_CODE) -> "TextAnalysis":
+            self, key: str, qs: QuerySet[Statement], corpus_name: str, lang: str = settings.LANGUAGE_CODE) -> "TextAnalysis":
         return self.get_or_create_from_statements(key, qs, corpus_name, lang, always_update=True)
 
     def get_wordcloud_js(self, key: str, lang: str = settings.LANGUAGE_CODE) -> str:
