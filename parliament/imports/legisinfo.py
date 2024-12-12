@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Any, List, Optional, override
+from typing import Any, override
 
 import requests
 from django.db import transaction
@@ -80,7 +80,7 @@ class BillData():
         return self
 
 
-def get_bill_list(session: Session) -> List[BillData]:
+def get_bill_list(session: Session) -> list[BillData]:
     url = LEGISINFO_JSON_LIST_URL % {"sessid": session.id}
     resp = requests.get(url, timeout=10)
     resp.raise_for_status()
@@ -133,7 +133,7 @@ def _update(obj: Bill | BillInSession, field: str, value: Any) -> None:
         obj._changed = True
 
 
-def _import_bill(bd: BillData, session: Session, previous_session: Optional[Session] = None) -> Bill:
+def _import_bill(bd: BillData, session: Session, previous_session: Session | None = None) -> Bill:
 
     if previous_session is None:
         previous_session = _get_previous_session(session)

@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from django.conf import settings
 from django.db.models import QuerySet
@@ -13,7 +13,7 @@ class TextAnalysisView(View):
     """Returns JSON text analysis data. Subclasses must define get_qs."""
 
     corpus_name = 'default'
-    expiry_days: Optional[int] = None
+    expiry_days: int | None = None
 
     def get(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         if not settings.PARLIAMENT_GENERATE_TEXT_ANALYSIS:

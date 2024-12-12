@@ -2,7 +2,7 @@ import datetime
 import os.path
 import pickle
 import re
-from typing import Any, List
+from typing import Any
 
 from django.conf import settings
 from django.db.models import QuerySet
@@ -23,7 +23,7 @@ def load_background_model(corpus_name: str, n: int) -> Any:
         return pickle.load(f)
 
 
-def generate_background_models(corpus_name: str, statements: QuerySet[Statement], ngram_lengths: List[int] | None = None) -> None:
+def generate_background_models(corpus_name: str, statements: QuerySet[Statement], ngram_lengths: list[int] | None = None) -> None:
     if ngram_lengths is None:
         ngram_lengths = [1, 2, 3]
 

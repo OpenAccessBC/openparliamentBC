@@ -1,6 +1,5 @@
 import datetime
 import re
-from typing import List
 
 from django import template
 
@@ -88,7 +87,7 @@ def time_since(value: datetime.date) -> str:
 
 
 @register.filter(name='english_list')
-def english_list(value: List[str], arg: str = ', ') -> str:
+def english_list(value: list[str], arg: str = ', ') -> str:
     if value is not list:
         raise Exception("Tag english_list takes a list as argument")
 
@@ -103,10 +102,10 @@ def english_list(value: List[str], arg: str = ', ') -> str:
 
 
 @register.filter(name='list_prefix')
-def list_prefix(value: List[str], arg: str) -> List[str]:
+def list_prefix(value: list[str], arg: str) -> list[str]:
     return ["%s%s" % (arg, i) for i in value]
 
 
 @register.filter(name='list_filter')
-def list_filter(value: List[str], arg: str) -> List[str]:
+def list_filter(value: list[str], arg: str) -> list[str]:
     return [x for x in value if x != arg]
