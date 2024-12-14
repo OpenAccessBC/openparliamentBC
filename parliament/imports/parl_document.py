@@ -350,12 +350,9 @@ class NoDocumentFound(Exception):
 
 
 def fetch_latest_debates(session: Session | None = None) -> None:
-    if not session:
-        session = Session.objects.current()
+    session_obj: Session = session or Session.objects.current()
 
-    sittings = Document.objects.filter(
-        document_type=Document.DEBATE, session=session).values_list(
-        'number', flat=True)
+    sittings = Document.objects.filter(document_type=Document.DEBATE, session=session_obj).values_list('number', flat=True)
     # FIXME at the moment ourcommons.ca doesn't make it easy to get a list of
     # debates; this is a quick temporary solution that will break on special
     # sittings like 128-B
@@ -367,7 +364,7 @@ def fetch_latest_debates(session: Session | None = None) -> None:
     while True:
         max_sitting += 1
         try:
-            fetch_debate_for_sitting(session, max_sitting)
+            fetch_debate_for_sitting(session_obj, max_sitting)
         except NoDocumentFound:
             break
 

@@ -342,15 +342,29 @@ class ParseHandler():
         description = _tame_whitespace(description)
         stripped_description = _strip_person_name(description)
         if self.current_statement:
+            def is_new_person() -> bool:
+                if hoc_id and hoc_id == self.current_statement.meta.get('person_id'):
+                    return True
+
+                if hoc_id is not None:
+                    return False
+
+                person_attribution = self.current_statement.meta.get('person_attribution')
+                assert person_attribution is not None
+                if _letters_only(stripped_description) == _letters_only(_strip_person_name(cast(str, person_attribution))):
+                    return True
+
+                return False
+
             # If this "new person" is the same as the last person,
             # don't start a new statement
-            if ((hoc_id and hoc_id == self.current_statement.meta.get('person_id')) or (
-                (not hoc_id) and _letters_only(stripped_description) == _letters_only(
-                    _strip_person_name(self.current_statement.meta.get('person_attribution'))))):
+            if is_new_person():
                 if not _r_indeterminate.search(description):
                     # (Though if it's "An hon. member", two in a row *can* be different people.)
                     return False
+
             self.close_statement()
+
         self.one_time_attributes['person_attribution'] = description
         if hoc_id:
             self.one_time_attributes['person_id'] = hoc_id

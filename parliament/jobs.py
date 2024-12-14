@@ -49,15 +49,16 @@ def committee_evidence() -> None:
 
 
 def committees(sess: Session | None = None) -> None:
+    session_obj: Session = sess or Session.objects.current()
     if sess is None:
-        sess = Session.objects.current()
-        if sess.start >= datetime.date.today():
+        if session_obj.start >= datetime.date.today():
             return
+
     try:
-        parl_cmte.import_committee_list(session=sess)
+        parl_cmte.import_committee_list(session=session_obj)
     except Exception:
         logger.exception("Committee list import failure")
-    parl_cmte.import_committee_documents(sess)
+    parl_cmte.import_committee_documents(session_obj)
 
 
 def committees_full() -> None:

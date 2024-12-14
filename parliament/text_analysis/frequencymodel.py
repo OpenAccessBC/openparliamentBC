@@ -54,7 +54,7 @@ def statements_token_iterator(statements: Iterator[Statement], statement_separat
             yield statement_separator
 
 
-def ngram_iterator(tokens, n=2):
+def ngram_iterator(tokens: Generator[str], n: int = 2) -> Generator[str]:
     sub_iterators = itertools.tee(tokens, n)
     for i, iterator in enumerate(sub_iterators[1:]):
         # TODO: consume(iterator, i + 1)
@@ -72,7 +72,7 @@ class FrequencyModel(dict[str, float]):
     # of occurences of string / # total number of items).
     """
 
-    def __init__(self, items: list[str], min_count: int = 1) -> None:
+    def __init__(self, items: Iterator[str], min_count: int = 1) -> None:
         counts: dict[str, int] = defaultdict(int)
         total_count = 0
         for item in items:
@@ -108,8 +108,8 @@ class FrequencyModel(dict[str, float]):
         return nlargest(n, iter(self.items()), key=itemgetter(1))
 
     @classmethod
-    def from_statement_qs(cls, qs: QuerySet[Statement], ngram: int = 1, min_count: int = 1):
-        it = statements_token_iterator(qs.iterator(), statement_separator='/')
+    def from_statement_qs(cls: type["FrequencyModel"], qs: QuerySet[Statement], ngram: int = 1, min_count: int = 1):
+        it: Generator[str] = statements_token_iterator(qs.iterator(), statement_separator='/')
         if ngram > 1:
             it = ngram_iterator(it, ngram)
         return cls(it, min_count=min_count)

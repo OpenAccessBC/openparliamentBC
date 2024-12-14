@@ -5,7 +5,7 @@ from typing import Any, override
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import QuerySet
-from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBadRequest
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBadRequest, QueryDict
 from django.middleware.cache import FetchFromCacheMiddleware as DjangoFetchFromCacheMiddleware
 from django.shortcuts import render
 from django.utils.html import escape
@@ -372,14 +372,14 @@ class APIPaginator():
         Optionally accepts an ``offset`` argument, which specifies where in
         the ``objects`` to start displaying results from. Defaults to 0.
         """
-        self.request_data = request.GET
+        self.request_data: QueryDict = request.GET
         self.objects = objects
-        self.limit = limit
-        self.max_limit = max_limit
-        self.offset = offset
+        self.limit: int | None = limit
+        self.max_limit: int = max_limit
+        self.offset: int = offset
         self.resource_uri: str | None = request.path
 
-    def get_limit(self):
+    def get_limit(self) -> int:
         """
         Determines the proper maximum number of results to return.
 
@@ -418,7 +418,7 @@ class APIPaginator():
 
         return limit
 
-    def get_offset(self):
+    def get_offset(self) -> int:
         """
         Determines the proper starting offset of results to return.
 
@@ -430,7 +430,7 @@ class APIPaginator():
         offset = self.offset
 
         if 'offset' in self.request_data:
-            offset_str = self.request_data['offset']
+            offset_str: str | list[object] = self.request_data['offset']
             try:
                 offset = int(offset_str)
             except ValueError:
@@ -467,7 +467,7 @@ class APIPaginator():
         limit = self.get_limit()
         offset = self.get_offset()
 
-        page_data = {
+        page_data: dict[str, int | str | None] = {
             'offset': offset,
             'limit': limit,
         }
