@@ -5,7 +5,7 @@ import logging
 import re
 from functools import wraps
 from html import escape as stdlib_escape
-from typing import Any
+from typing import Any, cast
 from xml.sax.saxutils import quoteattr
 
 from lxml import etree
@@ -682,7 +682,7 @@ class ParseHandler():
         if el.tag in self.PASSTHROUGH_TAGS:
             self._add_code('<%s%s>' % (
                 '/' if openclose == TAG_CLOSE else '',
-                self.PASSTHROUGH_TAGS[el.tag]))
+                self.PASSTHROUGH_TAGS[cast(str, el.tag)]))
         if self.in_para:
             self._add_tag_text(el, openclose)
         if openclose == TAG_OPEN and el.tag not in self.IGNORE_TAGS:

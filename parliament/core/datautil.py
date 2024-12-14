@@ -12,7 +12,7 @@ import urllib.request
 from collections import defaultdict
 
 import text_utils
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup, Tag
 from django.core.files import File
 from django.db import models, transaction
 
@@ -26,20 +26,20 @@ def load_pol_pic(pol: Politician) -> None:
     print("#%d: %s" % (pol.id, pol))
     print(pol.parlpage)
 
-    img: NavigableString | None = None
+    img: Tag | None = None
     assert pol.parlpage is not None
     with urllib.request.urlopen(pol.parlpage) as soup_data:
         soup = BeautifulSoup(soup_data)
         souped = soup.find(
             'img', id='MasterPage_MasterPage_BodyContent_PageContent_Content_TombstoneContent_TombstoneContent_ucHeaderMP_imgPhoto')
 
-        if isinstance(souped, NavigableString):
+        if isinstance(souped, Tag):
             img = souped
 
     if img is None:
         raise Exception("Didn't work for %s" % pol.parlpage)
 
-    imgurl: str = img['src']
+    imgurl: str = str(img['src'])
     if '?' not in imgurl:  # no query string
         imgurl = urllib.parse.quote(imgurl.encode('utf8'))  # but there might be accents!
     if 'BlankMPPhoto' in imgurl:

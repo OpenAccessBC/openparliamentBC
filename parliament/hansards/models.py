@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from collections import OrderedDict, defaultdict
-from typing import Any, override
+from typing import Any, cast, override
 
 from django.conf import settings
 from django.db import models
@@ -527,7 +527,7 @@ class Statement(models.Model):
                 d[h] = {'en': getattr(self, h + '_en'), 'fr': getattr(self, h + '_fr')}
 
         if d['url']:
-            d['document_url'] = d['url'][:d['url'].rstrip('/').rfind('/') + 1]
+            d['document_url'] = cast(str, d['url'])[:d['url'].rstrip('/').rfind('/') + 1]
         return d
 
     @property
