@@ -32,8 +32,19 @@ exclude = ["**/hans_old", ".mypy_cache", ".venv", "parliament/politicians/twit.p
 pythonVersion = "3.12"
 
 # TODO make basic -> standard -> strict
-typeCheckingMode = "standard"
+typeCheckingMode = "strict"
 
 reportArgumentType = "none"
 reportAttributeAccessIssue = "none"
 reportOptionalMemberAccess = "none"
+
+reportUnknownVariableType = "none"
+reportUnknownMemberType = "none"
+reportMissingTypeArgument = "none"
+reportUnknownArgumentType = "none"
+reportUnknownParameterType = "none"
+reportMissingParameterType = "none"
+reportMissingTypeStubs = "none"
+reportPrivateUsage = "none"
+reportUnknownLambdaType = "none"
+reportUntypedBaseClass = "none"

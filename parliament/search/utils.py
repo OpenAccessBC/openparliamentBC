@@ -1,9 +1,9 @@
 import math
 import re
-from collections import namedtuple
 from re import Match
+from typing import NamedTuple
 
-_FakePaginator = namedtuple('_FakePaginator', 'num_pages count')
+_FakePaginator = NamedTuple('_FakePaginator', ['num_pages', 'count'])
 
 
 class SearchPaginator():

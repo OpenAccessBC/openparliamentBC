@@ -19,7 +19,7 @@ class TextAnalysisView(View):
         if not settings.PARLIAMENT_GENERATE_TEXT_ANALYSIS:
             raise Http404
         try:
-            analysis = self.get_analysis(request, **kwargs)
+            analysis: TextAnalysis = self.get_analysis(request, **kwargs)
         except IOError:
             raise Http404 from None
         return HttpResponse(analysis.probability_data_json, content_type='application/json')

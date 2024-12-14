@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('token', models.CharField(
                     # pylint: disable=protected-access
-                    default=parliament.accounts.models._random_token,
+                    default=parliament.accounts.models.random_token,
                     max_length=40,
                     serialize=False,
                     primary_key=True)),

@@ -152,8 +152,8 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
         document.multilingual = True
         for st in statements:
             fr_data = fr_statements.get(st.source_id)
-            pids_en: list[int] = [pid for p, pid in _get_paragraphs_and_ids(st.content_en)]
-            pids_fr: list[int] | None = [pid for p, pid in _get_paragraphs_and_ids(fr_data.content)] if fr_data else None
+            pids_en: list[int] = [pid for _, pid in _get_paragraphs_and_ids(st.content_en)]
+            pids_fr: list[int] | None = [pid for _, pid in _get_paragraphs_and_ids(fr_data.content)] if fr_data else None
             if fr_data and pids_en == pids_fr:
                 # Match by statement
                 st.content_fr = _process_related_links(fr_data.content, st)

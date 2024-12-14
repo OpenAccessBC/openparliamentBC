@@ -48,10 +48,11 @@ def generate_for_old_debates() -> None:
 
 
 def generate_for_committees() -> None:
+    committee: Committee
     for committee in Committee.objects.filter(sessions=Session.objects.current()):
         since = datetime.date.today() - datetime.timedelta(days=365 * 3)
-        document_ids = CommitteeMeeting.objects.filter(committee=committee, date__gte=since).values_list(
-            'evidence_id', flat=True)
+        document_ids: QuerySet[CommitteeMeeting] = CommitteeMeeting.objects.filter(
+            committee=committee, date__gte=since).values_list('evidence_id', flat=True)
         qs = Statement.objects.filter(document__in=document_ids)
         generate_background_models(committee.slug, qs)
 

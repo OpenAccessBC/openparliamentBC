@@ -31,7 +31,7 @@ class User(models.Model):
         self.__class__.objects.filter(id=self.id).update(last_login=datetime.datetime.now())
 
 
-def _random_token():
+def random_token():
     return urlsafe_b64encode(os.urandom(15)).decode('ascii').rstrip('=')
 
 
@@ -43,7 +43,7 @@ class TokenError(Exception):
 
 
 class LoginToken(models.Model):
-    token: models.CharField = models.CharField(max_length=40, primary_key=True, default=_random_token)
+    token: models.CharField = models.CharField(max_length=40, primary_key=True, default=random_token)
     email: models.EmailField = models.EmailField()
     created: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
     requesting_ip: models.GenericIPAddressField = models.GenericIPAddressField()

@@ -694,9 +694,7 @@ class ParseHandler():
         if el.tag in self.EXCLUDE_TAGS:
             return NO_DESCEND
         if el.tag in self.PASSTHROUGH_TAGS:
-            self._add_code('<%s%s>' % (
-                '/' if openclose == TAG_CLOSE else '',
-                self.PASSTHROUGH_TAGS[cast(str, el.tag)]))
+            self._add_code('<%s%s>' % ('/' if openclose == TAG_CLOSE else '', self.PASSTHROUGH_TAGS[el.tag]))
         if self.in_para:
             self._add_tag_text(el, openclose)
         if openclose == TAG_OPEN and el.tag not in self.IGNORE_TAGS:

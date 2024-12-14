@@ -99,8 +99,8 @@ def import_committee_list(session=None):
     return True
 
 
-def _docid_from_url(u: str) -> int:
-    return int(re.search(r'(Doc|publication)Id=(\d+)&', u).group(2))
+# def _docid_from_url(u: str) -> int:
+#     return int(re.search(r'(Doc|publication)Id=(\d+)&', u).group(2))
 
 
 def _12hr(hour: str, ampm: str) -> int:

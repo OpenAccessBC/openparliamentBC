@@ -688,38 +688,35 @@ class RidingManager(models.Manager):
         return self.get_queryset().get(slug=slug)
 
 
-if settings.LANGUAGE_CODE.startswith('fr'):
-    PROVINCE_CHOICES = (
-        ('AB', 'Alberta'),
-        ('BC', 'C.-B.'),
-        ('SK', 'Saskatchewan'),
-        ('MB', 'Manitoba'),
-        ('ON', 'Ontario'),
-        ('QC', 'Québec'),
-        ('NB', 'Nouveau-Brunswick'),
-        ('NS', 'Nouvelle-Écosse'),
-        ('PE', 'Île-du-Prince-Édouard'),
-        ('NL', 'Terre-Neuve & Labrador'),
-        ('YT', 'Yukon'),
-        ('NT', 'Territories du Nord-Ouest'),
-        ('NU', 'Nunavut'),
-    )
-else:
-    PROVINCE_CHOICES = (
-        ('AB', 'Alberta'),
-        ('BC', 'B.C.'),
-        ('SK', 'Saskatchewan'),
-        ('MB', 'Manitoba'),
-        ('ON', 'Ontario'),
-        ('QC', 'Québec'),
-        ('NB', 'New Brunswick'),
-        ('NS', 'Nova Scotia'),
-        ('PE', 'P.E.I.'),
-        ('NL', 'Newfoundland & Labrador'),
-        ('YT', 'Yukon'),
-        ('NT', 'Northwest Territories'),
-        ('NU', 'Nunavut'),
-    )
+PROVINCE_CHOICES = (
+    ('AB', 'Alberta'),
+    ('BC', 'C.-B.'),
+    ('SK', 'Saskatchewan'),
+    ('MB', 'Manitoba'),
+    ('ON', 'Ontario'),
+    ('QC', 'Québec'),
+    ('NB', 'Nouveau-Brunswick'),
+    ('NS', 'Nouvelle-Écosse'),
+    ('PE', 'Île-du-Prince-Édouard'),
+    ('NL', 'Terre-Neuve & Labrador'),
+    ('YT', 'Yukon'),
+    ('NT', 'Territories du Nord-Ouest'),
+    ('NU', 'Nunavut'),
+) if settings.LANGUAGE_CODE.startswith('fr') else (
+    ('AB', 'Alberta'),
+    ('BC', 'B.C.'),
+    ('SK', 'Saskatchewan'),
+    ('MB', 'Manitoba'),
+    ('ON', 'Ontario'),
+    ('QC', 'Québec'),
+    ('NB', 'New Brunswick'),
+    ('NS', 'Nova Scotia'),
+    ('PE', 'P.E.I.'),
+    ('NL', 'Newfoundland & Labrador'),
+    ('YT', 'Yukon'),
+    ('NT', 'Northwest Territories'),
+    ('NU', 'Nunavut'),
+)
 PROVINCE_LOOKUP = dict(PROVINCE_CHOICES)
 
 

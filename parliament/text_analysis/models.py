@@ -1,7 +1,7 @@
 import datetime
 import json
 from operator import itemgetter
-from typing import override
+from typing import Any, override
 
 from django.conf import settings
 from django.core.cache import cache
@@ -81,11 +81,11 @@ class TextAnalysis(models.Model):
         return "%s (%s)" % (self.key, self.lang)
 
     @property
-    def expired(self):
+    def expired(self) -> bool:
         return self.expires and self.expires < datetime.datetime.now()
 
     @property
-    def probability_data(self):
+    def probability_data(self) -> list[dict[str, Any]] | None:
         return json.loads(self.probability_data_json) if self.probability_data_json else None
 
     @property

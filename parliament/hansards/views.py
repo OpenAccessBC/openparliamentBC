@@ -117,7 +117,7 @@ def document_view(
     except (EmptyPage, InvalidPage):
         statements = paginator.page(paginator.num_pages)
 
-    if highlight_statement is not None:
+    if highlight_statement:
         try:
             highlight_statement = [s for s in statements.object_list if s.sequence == highlight_statement][0]
         except IndexError:
