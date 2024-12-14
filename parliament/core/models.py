@@ -52,7 +52,7 @@ class InternalXref(models.Model):
 
 class PartyManager(models.Manager):
 
-    def get_by_name(self, name):
+    def get_by_name(self, name: str) -> "Party":
         x = InternalXref.objects.filter(schema='party_names', text_value=name.strip().lower())
         if len(x) == 0:
             raise Party.DoesNotExist()
@@ -100,11 +100,11 @@ class Party(models.Model):
             self.add_alternate_name(self.name_fr)
 
     @override
-    def delete(self, *args, **kwargs):
+    def delete(self, *args: Any, **kwargs: Any) -> tuple[int, dict[str, int]]:
         InternalXref.objects.filter(schema='party_names', target_id=self.id).delete()
         return super(Party, self).delete(*args, **kwargs)
 
-    def add_alternate_name(self, name):
+    def add_alternate_name(self, name: str) -> None:
         name = name.strip().lower()
         # check if exists
         x = InternalXref.objects.filter(schema='party_names', text_value=name)
@@ -681,7 +681,7 @@ class RidingManager(models.Manager):
         # 'edmonton-mill-woods-beaumont': 'edmonton-beaumont',
     }
 
-    def get_by_name(self, name):
+    def get_by_name(self, name: str) -> "Riding":
         slug = parsetools.slugify(name)
         if slug in RidingManager.FIX_RIDING:
             slug = RidingManager.FIX_RIDING[slug]

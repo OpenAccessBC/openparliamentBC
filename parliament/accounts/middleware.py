@@ -1,5 +1,7 @@
 from django.conf import settings
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
+
+from .models import User
 
 EMAIL_COOKIE_NAME = 'email'
 
@@ -7,23 +9,22 @@ EMAIL_COOKIE_NAME = 'email'
 class AuthenticatedEmailDescriptor():
     """Make request.authenticated_email an alias of request.session['_ae']"""
 
-    def __get__(self, request, objtype=None):
+    def __get__(self, request: HttpRequest, objtype=None):
         return request.session.get('_ae')
 
-    def __set__(self, request, email):
+    def __set__(self, request: HttpRequest, email: str) -> None:
         request.session['_ae'] = email
         request.session.modified = True
 
 
 class AuthenticatedEmailUserDescriptor():
 
-    def __get__(self, request, objtype=None):
+    def __get__(self, request: HttpRequest, objtype: None = None) -> User | None:
         from parliament.accounts.models import User
         if not request.authenticated_email:
             return None
         try:
-            user = User.objects.get(
-                email=request.authenticated_email)
+            user = User.objects.get(email=request.authenticated_email)
         except User.DoesNotExist:
             user = None
         request.authenticated_email_user = user
@@ -41,7 +42,7 @@ class AuthenticatedEmailMiddleware:
     def __init__(self, get_response) -> None:
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest) -> HttpResponse:
         assert not hasattr(request, 'session'), "AuthenticatedEmailMiddleware must be before SessionMiddleware"
         response = self.get_response(request)
 

@@ -22,21 +22,20 @@ Importers for MP data, from ourcommons.ca or represent.opennorth.ca
 """
 
 
-def update_mps_from_represent(download_headshots=False, update_all_headshots=False):
-
+def update_mps_from_represent(download_headshots: bool = False, update_all_headshots: bool = False) -> None:
     resp = requests.get('https://represent.opennorth.ca/representatives/house-of-commons/?limit=500', timeout=5)
     resp.raise_for_status()
     data = resp.json()
 
-    return _import_mps(data['objects'], download_headshots, update_all_headshots)
+    _import_mps(data['objects'], download_headshots, update_all_headshots)
 
 
-def update_mps_from_ourcommons(download_headshots=False, update_all_headshots=False):
+def update_mps_from_ourcommons(download_headshots: bool = False, update_all_headshots: bool = False) -> None:
     data = scrape_mps_from_ourcommons()
-    return _import_mps(data, download_headshots, update_all_headshots)
+    _import_mps(data, download_headshots, update_all_headshots)
 
 
-def _import_mps(objs, download_headshots=False, update_all_headshots=False):
+def _import_mps(objs, download_headshots: bool = False, update_all_headshots: bool = False) -> None:
     """
     Updates MP objects from provided list of MP data.
     objs: iterable of dicts in Represent data format
@@ -116,8 +115,7 @@ def _import_mps(objs, download_headshots=False, update_all_headshots=False):
 
 
 @transaction.atomic
-def update_ridings_from_represent(boundary_set='federal-electoral-districts'):
-
+def update_ridings_from_represent(boundary_set: str = 'federal-electoral-districts') -> None:
     Riding.objects.filter(current=True).update(current=False)
 
     base_url = 'http://represent.opennorth.ca/'

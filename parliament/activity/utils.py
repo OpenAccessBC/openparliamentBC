@@ -5,19 +5,22 @@ from django.conf import settings
 from django.template import loader
 
 from parliament.activity.models import Activity
+from parliament.core.models import Politician
 
 
-def save_activity(obj, politician, date, guid=None, variety=None):
+def save_activity(obj, politician: Politician, date: datetime.date, guid: str | None = None, variety: str | None = None) -> bool | None:
     if not getattr(settings, 'PARLIAMENT_SAVE_ACTIVITIES', True):
         return None
-    if not variety:
-        variety = obj.__class__.__name__.lower()
-    if not guid:
-        guid = variety + str(obj.id)
+
+    variety = variety or obj.__class__.__name__.lower()
+    guid = guid or variety + str(obj.id)
+
     if len(guid) > 50:
         guid = sha1(guid.encode('utf8')).hexdigest()
+
     if Activity.objects.filter(guid=guid).exists():
         return False
+
     t = loader.get_template("activity/%s.html" % variety.lower())
     c = {'obj': obj, 'politician': politician}
     Activity(

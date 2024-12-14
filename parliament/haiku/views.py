@@ -1,6 +1,6 @@
 import json
 
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.views.decorators.cache import never_cache
@@ -11,7 +11,7 @@ from .models import Haiku
 
 
 @never_cache
-def haiku(request, haiku_id=None):
+def haiku(request: HttpRequest, haiku_id: str | None = None) -> HttpResponse:
 
     if haiku_id:
         haikus = [get_object_or_404(Haiku, pk=haiku_id)]

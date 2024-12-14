@@ -5,6 +5,7 @@ from typing import override
 
 from django.core.mail import send_mail
 from django.db import models
+from django.http import HttpRequest
 from django.template import loader
 from django.urls import reverse
 
@@ -26,12 +27,12 @@ class User(models.Model):
     def __str__(self) -> str:
         return self.email
 
-    def log_in(self, request):
+    def log_in(self, request: HttpRequest) -> None:
         request.authenticated_email = self.email
         self.__class__.objects.filter(id=self.id).update(last_login=datetime.datetime.now())
 
 
-def random_token():
+def random_token() -> str:
     return urlsafe_b64encode(os.urandom(15)).decode('ascii').rstrip('=')
 
 
@@ -58,7 +59,7 @@ class LoginToken(models.Model):
         return "%s for %s" % (self.token, self.email)
 
     @classmethod
-    def generate(cls, email, requesting_ip):
+    def generate(cls: type["LoginToken"], email: str, requesting_ip: str) -> "LoginToken":
         lt = cls.objects.create(email=email, requesting_ip=requesting_ip)
         login_url = reverse('token_login', kwargs={'token': lt.token})
         ctx = {'login_url': login_url, 'email': email}
@@ -71,7 +72,7 @@ class LoginToken(models.Model):
         return lt
 
     @classmethod
-    def validate(cls, token, login_ip):
+    def validate(cls: type["LoginToken"], token: str, login_ip: str) -> "LoginToken":
         try:
             lt = cls.objects.get(token=token)
         except cls.DoesNotExist:

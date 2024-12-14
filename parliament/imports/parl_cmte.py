@@ -20,9 +20,8 @@ COMMITTEE_LIST_URL = 'https://www.ourcommons.ca/Committees/{lang}/List?parl={par
 
 
 @transaction.atomic
-def import_committee_list(session=None):
-    if session is None:
-        session = Session.objects.current()
+def import_committee_list(session: Session | None = None) -> bool:
+    session = session or Session.objects.current()
 
     def make_committee(name_en: str, name_fr: str, acronym: str, parent=None):
         try:
@@ -269,7 +268,7 @@ def _get_xml_url_from_documentviewer_url(url: str) -> str:
     return urljoin(url, xml_button.get('href'))
 
 
-def _download_evidence(meeting, evidence_viewer_url):
+def _download_evidence(meeting: CommitteeMeeting, evidence_viewer_url: str) -> None:
     xml_url_en = _get_xml_url_from_documentviewer_url(evidence_viewer_url)
     xml_url_fr = xml_url_en.replace('-E.', '-F.')
     assert xml_url_fr.upper().endswith('-F.XML')

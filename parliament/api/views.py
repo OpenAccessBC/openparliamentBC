@@ -1,6 +1,9 @@
+from typing import Any
+
+from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
-from parliament.hansards.models import Document
+from parliament.hansards.models import Document, Statement
 from parliament.utils.views import JSONView
 
 
@@ -8,7 +11,7 @@ class LegacyAPIHansardListView(JSONView):
 
     wrap = False
 
-    def get(self, request):
+    def get(self, request: HttpRequest):
         return [{
             'note': "This API is deprecated. Please use the API documented on the openparliament.ca Developers page.",
             'date': str(h.date),
@@ -21,7 +24,7 @@ class LegacyAPIHansardListView(JSONView):
 hansard_list = LegacyAPIHansardListView.as_view()
 
 
-def _serialize_statement(s):
+def _serialize_statement(s: Statement) -> dict[str, str | dict[str, str]]:
     v = {
         'url': s.get_absolute_url(),
         'heading': s.heading,
@@ -46,7 +49,7 @@ class LegacyAPIHansardView(JSONView):
 
     wrap = False
 
-    def get(self, request, hansard_id):
+    def get(self, request: HttpRequest, hansard_id: str) -> dict[str, Any]:
         doc = get_object_or_404(Document, document_type='D', id=hansard_id)
         return {
             'date': str(doc.date),

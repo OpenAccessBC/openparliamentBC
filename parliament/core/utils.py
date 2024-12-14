@@ -44,7 +44,7 @@ def language_property(fieldname: str) -> property:
 def redir_view(view):
     """Function factory to redirect requests to the given view."""
 
-    def wrapped(request, *args: Any, **kwargs: Any) -> HttpResponse:
+    def wrapped(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         return HttpResponsePermanentRedirect(reverse(view, args=args, kwargs=kwargs))
 
     return wrapped
@@ -118,7 +118,7 @@ def feed_wrapper(feed_class):
     """Decorator that ensures django.contrib.syndication.Feed objects are created for
     each request, not reused over several requests. This means feed classes can safely
     store request-specific attributes on self."""
-    def call_feed(request, *args: Any, **kwargs: Any):
+    def call_feed(request: HttpRequest, *args: Any, **kwargs: Any):
         feed_instance = feed_class()
         feed_instance.request = request
         return feed_instance(request, *args, **kwargs)

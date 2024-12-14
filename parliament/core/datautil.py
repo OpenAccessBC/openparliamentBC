@@ -3,6 +3,7 @@
 Production code should NOT import from this file."""
 
 import csv
+import datetime
 import os
 import re
 import sys
@@ -138,7 +139,7 @@ def populate_members_by() -> None:
             populate_members(by, session, None)
 
 
-def populate_members(election, session, start_date) -> None:
+def populate_members(election: Election, session: Session, start_date: datetime.date | None) -> None:
     """ Label all winners in an election Members for the subsequent session. """
     for winner in Candidacy.objects.filter(election=election, elected=True):
         candidate = winner.candidate
@@ -168,7 +169,7 @@ def populate_parlid() -> None:
             pol.save()
 
 
-def replace_links(old, new, allow_self_relation=False) -> None:
+def replace_links(old, new, allow_self_relation: bool = False) -> None:
     if old.__class__ != new.__class__:
         raise Exception("Are old and new the same type?")
     fields = [f for f in old._meta.get_fields() if (f.auto_created and not f.concrete)]

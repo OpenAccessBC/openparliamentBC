@@ -16,7 +16,7 @@ from parliament.hansards.models import Document
 
 class CommitteeManager(models.Manager):
 
-    def get_by_acronym(self, acronym: str, session: str) -> "Committee":
+    def get_by_acronym(self, acronym: str, session: Session) -> "Committee":
         try:
             return cast(Committee, CommitteeInSession.objects.get(acronym=acronym, session=session).committee)
         except CommitteeInSession.DoesNotExist:

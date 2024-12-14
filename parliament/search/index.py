@@ -1,5 +1,5 @@
 import itertools
-from typing import Set
+from typing import Any, Set
 
 from django.conf import settings
 from django.db.models import signals
@@ -47,11 +47,11 @@ def _enqueue(action: str, instance):
         it.save()
 
 
-def save_handler(instance, **kwargs):
+def save_handler(instance, **kwargs: Any):
     return _enqueue('update', instance)
 
 
-def delete_handler(instance, **kwargs):
+def delete_handler(instance, **kwargs: Any):
     return _enqueue('delete', instance)
 
 
