@@ -11,38 +11,38 @@ class PoliticianInfoInline(admin.TabularInline):
     model = PoliticianInfo
 
 
-class PoliticianOptions (admin.ModelAdmin):
+class PoliticianOptions(admin.ModelAdmin[Politician]):
     inlines = [PoliticianInfoInline]
     search_fields = ['name']
 
 
-class RidingOptions (admin.ModelAdmin):
+class RidingOptions(admin.ModelAdmin[Riding]):
     list_display = ['name_en', 'current', 'province', 'edid', 'name_fr']
     search_fields = ['name_en', 'edid']
     list_filter = ['province', 'current']
 
 
-class SessionOptions (admin.ModelAdmin):
+class SessionOptions(admin.ModelAdmin[Session]):
     list_display = ['name', 'start', 'end']
 
 
-class ElectedMemberOptions(admin.ModelAdmin):
+class ElectedMemberOptions(admin.ModelAdmin[ElectedMember]):
     list_display = ['politician', 'riding', 'party', 'start_date', 'end_date']
     list_filter = ['party']
     search_fields = ['politician__name']
 
 
-class InternalXrefOptions(admin.ModelAdmin):
+class InternalXrefOptions(admin.ModelAdmin[InternalXref]):
     list_display = ['schema', 'text_value', 'int_value', 'target_id']
     search_fields = ['schema', 'text_value', 'int_value', 'target_id']
     list_editable = ['text_value', 'int_value', 'target_id']
 
 
-class PartyOptions(admin.ModelAdmin):
+class PartyOptions(admin.ModelAdmin[Party]):
     list_display = ['name_en', 'short_name', 'name_fr', 'short_name_fr']
 
 
-class PoliticianInfoOptions(admin.ModelAdmin):
+class PoliticianInfoOptions(admin.ModelAdmin[PoliticianInfo]):
     list_display = ['politician', 'schema', 'value']
     search_fields = ['politician__name', 'schema', 'value']
 
@@ -52,10 +52,10 @@ class PoliticianInfoOptions(admin.ModelAdmin):
         if db_field.name == "politician":
             kwargs["queryset"] = Politician.objects.elected()
             return db_field.formfield(**kwargs)
-        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs, on_delete=models.CASCADE)
+        return super(admin.ModelAdmin[PoliticianInfo], self).formfield_for_foreignkey(db_field, request, **kwargs, on_delete=models.CASCADE)
 
 
-class SiteNewsOptions(admin.ModelAdmin):
+class SiteNewsOptions(admin.ModelAdmin[SiteNews]):
     list_display = ['title', 'date', 'active']
 
 

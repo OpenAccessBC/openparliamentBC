@@ -4,16 +4,16 @@ from parliament.committees.models import (Committee, CommitteeActivity, Committe
                                           CommitteeReport)
 
 
-class CommitteeAdmin(admin.ModelAdmin):
+class CommitteeAdmin(admin.ModelAdmin[Committee]):
     list_display = ['short_name', 'slug', 'latest_session', 'display']
     list_filter = ['sessions', 'display']
 
 
-class CommitteeInSessionAdmin(admin.ModelAdmin):
+class CommitteeInSessionAdmin(admin.ModelAdmin[CommitteeInSession]):
     list_display = ['committee', 'acronym', 'session']
 
 
-class MeetingAdmin(admin.ModelAdmin):
+class MeetingAdmin(admin.ModelAdmin[CommitteeMeeting]):
     list_display = [
         'committee', 'number', 'date', 'start_time', 'end_time', 'notice', 'minutes', 'evidence', 'in_camera']
     list_filter = ['committee', 'date']
@@ -21,13 +21,13 @@ class MeetingAdmin(admin.ModelAdmin):
     search_fields = ['number', 'committee__name_en', 'source_id']
 
 
-class ReportAdmin(admin.ModelAdmin):
+class ReportAdmin(admin.ModelAdmin[CommitteeReport]):
     list_display = ['committee', 'number', 'session', 'name', 'government_response']
     list_filter = ['committee', 'session', 'government_response']
     search_fields = ['name_en', 'number']
 
 
-class ActivityAdmin(admin.ModelAdmin):
+class ActivityAdmin(admin.ModelAdmin[CommitteeActivity]):
     list_display = ['name_en', 'committee', 'study']
     list_filter = ['committee', 'study']
     search_fields = ['name_en']

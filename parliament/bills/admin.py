@@ -3,7 +3,7 @@ from django.contrib import admin
 from parliament.bills.models import Bill, BillEvent, BillInSession, BillText, MemberVote, PartyVote, VoteQuestion
 
 
-class BillOptions(admin.ModelAdmin):
+class BillOptions(admin.ModelAdmin[Bill]):
     search_fields = ['number']
     raw_id_fields = ['sponsor_member', 'sponsor_politician']
     list_display = ['number', 'name', 'session', 'privatemember', 'sponsor_politician', 'added', 'introduced']
@@ -11,30 +11,30 @@ class BillOptions(admin.ModelAdmin):
     ordering = ['-introduced']
 
 
-class BillInSessionOptions(admin.ModelAdmin):
+class BillInSessionOptions(admin.ModelAdmin[BillInSession]):
     list_display = ['bill', 'session']
 
 
-class BillTextOptions(admin.ModelAdmin):
+class BillTextOptions(admin.ModelAdmin[BillText]):
     list_display = ['bill', 'docid', 'created']
     search_fields = ['bill__number', 'bill__name_en', 'docid']
 
 
-class VoteQuestionOptions(admin.ModelAdmin):
+class VoteQuestionOptions(admin.ModelAdmin[VoteQuestion]):
     list_display = ['number', 'date', 'bill', 'description', 'result']
     raw_id_fields = ['bill', 'context_statement']
 
 
-class MemberVoteOptions(admin.ModelAdmin):
+class MemberVoteOptions(admin.ModelAdmin[MemberVote]):
     list_display = ['politician', 'votequestion', 'vote']
     raw_id_fields = ['politician', 'member']
 
 
-class PartyVoteAdmin(admin.ModelAdmin):
+class PartyVoteAdmin(admin.ModelAdmin[PartyVote]):
     list_display = ['party', 'votequestion', 'vote', 'disagreement']
 
 
-class BillEventAdmin(admin.ModelAdmin):
+class BillEventAdmin(admin.ModelAdmin[BillEvent]):
     list_display = ['bill_number', 'status', 'date', 'institution']
     raw_id_fields = ['debate', 'committee_meetings', 'bis']
     list_filter = ['date', 'institution']

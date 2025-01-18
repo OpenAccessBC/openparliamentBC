@@ -3,7 +3,7 @@ from django.contrib import admin
 from parliament.text_analysis.models import TextAnalysis
 
 
-class TextAnalysisOptions(admin.ModelAdmin):
+class TextAnalysisOptions(admin.ModelAdmin[TextAnalysis]):
     search_fields = ['key']
     list_display = ['key', 'lang', 'updated']
 
