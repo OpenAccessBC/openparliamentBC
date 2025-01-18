@@ -314,7 +314,7 @@ class BallotListView(ModelListView):
 ballots = BallotListView.as_view()
 
 
-class BillListFeed(Feed):
+class BillListFeed(Feed[Bill, Bill]):
     title = 'Bills in the House of Commons'
     description = 'New bills introduced to the House, from openparliament.ca.'
     link = "/bills/"
@@ -336,7 +336,7 @@ class BillListFeed(Feed):
         return item.get_absolute_url()
 
 
-class BillFeed(Feed):
+class BillFeed(Feed[Statement | VoteQuestion, Bill]):
 
     @override
     def get_object(self, request: HttpRequest, bill_id: str) -> Bill:

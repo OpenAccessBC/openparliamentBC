@@ -253,5 +253,4 @@ class PoliticianAlert(models.Model):
 
     @override
     def __str__(self) -> str:
-        return "%s for %s (%s)" % \
-            (self.email, self.politician.name, 'active' if self.active else 'inactive')
+        return "%s for %s (%s)" % (self.email, self.politician.name, 'active' if self.active else 'inactive')

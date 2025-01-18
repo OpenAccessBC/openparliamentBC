@@ -255,7 +255,7 @@ class PoliticianMembershipListView(ModelListView):
         return ElectedMember.objects.all().select_related('party', 'riding', 'politician')
 
 
-class PoliticianStatementFeed(Feed):
+class PoliticianStatementFeed(Feed[Statement, Politician]):
     @override
     def get_object(self, request: HttpRequest, pol_id: str) -> Politician:
         self.language = request.GET.get('language', settings.LANGUAGE_CODE)
@@ -303,7 +303,7 @@ r_link = re.compile(r'<a [^>]*?href="(.+?)"')
 r_excerpt = re.compile(r'<span class="excerpt">')
 
 
-class PoliticianActivityFeed(Feed):
+class PoliticianActivityFeed(Feed[Activity, Politician]):
 
     @override
     def get_object(self, request: HttpRequest, pol_id: str) -> Politician:

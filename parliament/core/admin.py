@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from parliament.core.models import ElectedMember, InternalXref, Party, Politician, PoliticianInfo, Riding, Session, SiteNews, models
 
 
-class PoliticianInfoInline(admin.TabularInline):
+class PoliticianInfoInline(admin.TabularInline[PoliticianInfo, PoliticianInfo]):
     model = PoliticianInfo
 
 

@@ -67,7 +67,7 @@ def flatpage_response(request: HttpRequest, title: str, message: str) -> HttpRes
     return HttpResponse(t.render(c, request))
 
 
-class SiteNewsFeed(Feed):
+class SiteNewsFeed(Feed[SiteNews, SiteNews]):
 
     title = "openparliament.ca: Site news"
     link = "http://openparliament.ca/"

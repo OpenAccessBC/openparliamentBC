@@ -183,7 +183,7 @@ def try_politician_first(request: HttpRequest) -> HttpResponse | None:
     return None
 
 
-class SearchFeed(Feed):
+class SearchFeed(Feed[dict[str, Any], str]):
 
     def get_object(self, request: HttpRequest) -> str:
         if 'q' not in request.GET:

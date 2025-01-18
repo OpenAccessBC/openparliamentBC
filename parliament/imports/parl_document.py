@@ -134,7 +134,7 @@ def import_document(document: Document, interactive: bool = True, reimport_prese
             else:
                 missing_id_count += 1
 
-    def _substitute_french_content(match: Match) -> str:
+    def _substitute_french_content(match: Match[str]) -> str:
         try:
             pid = _get_paragraph_id(match.group(0))
             if pid:

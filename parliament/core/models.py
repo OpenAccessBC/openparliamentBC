@@ -575,7 +575,7 @@ class PoliticianInfoManager(models.Manager["PoliticianInfo"]):
     """Custom manager ensures we always pull in the politician FK."""
 
     @override
-    def get_queryset(self) -> QuerySet["Politician"]:
+    def get_queryset(self) -> QuerySet["PoliticianInfo"]:
         return super(PoliticianInfoManager, self).get_queryset().select_related('politician')
 
 

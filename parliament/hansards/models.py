@@ -27,22 +27,22 @@ logger = logging.getLogger(__name__)
 class DebateManager(models.Manager["Document"]):
 
     @override
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet["Document"]:
         return super(DebateManager, self).get_queryset().filter(document_type=Document.DEBATE)
 
 
 class EvidenceManager(models.Manager["Document"]):
 
     @override
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet["Document"]:
         return super(EvidenceManager, self).get_queryset().filter(document_type=Document.EVIDENCE)
 
 
-class NoStatementManager(models.Manager):
+class NoStatementManager(models.Manager["Document"]):
     """Manager restricts to Documents that haven't had statements parsed."""
 
     @override
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet["Document"]:
         return super(NoStatementManager, self).get_queryset()\
             .annotate(scount=models.Count('statement'))\
             .exclude(scount__gt=0)

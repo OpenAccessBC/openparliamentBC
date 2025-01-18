@@ -2,7 +2,6 @@ import datetime
 from typing import override
 
 from django.contrib.sitemaps import Sitemap
-from django.db import models
 from django.db.models import QuerySet
 
 from parliament.bills.models import Bill, VoteQuestion
@@ -10,31 +9,31 @@ from parliament.core.models import Politician
 from parliament.hansards.models import Document
 
 
-class PoliticianSitemap(Sitemap):
+class PoliticianSitemap(Sitemap[Politician]):
 
     @override
     def items(self) -> QuerySet[Politician]:
         return Politician.objects.elected()
 
 
-class HansardSitemap(Sitemap):
+class HansardSitemap(Sitemap[Document]):
 
     @override
     def items(self) -> QuerySet[Document]:
         return Document.objects.all()
 
-    def lastmod(self, obj: Document) -> models.DateField:
+    def lastmod(self, obj: Document) -> datetime.date:
         return obj.date
 
 
-class BillSitemap(Sitemap):
+class BillSitemap(Sitemap[Bill]):
 
     @override
     def items(self) -> QuerySet[Bill]:
         return Bill.objects.all()
 
 
-class VoteQuestionSitemap(Sitemap):
+class VoteQuestionSitemap(Sitemap[VoteQuestion]):
     @override
     def items(self) -> QuerySet[VoteQuestion]:
         return VoteQuestion.objects.all()

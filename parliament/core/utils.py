@@ -108,9 +108,9 @@ def int64_decode(s: str) -> int:
     return n
 
 
-class ActiveManager(models.Manager):
+class ActiveManager(models.Manager[Any]):
 
-    def get_queryset(self) -> QuerySet:
+    def get_queryset(self) -> QuerySet[Any]:
         return super(ActiveManager, self).get_queryset().filter(active=True)
 
 
