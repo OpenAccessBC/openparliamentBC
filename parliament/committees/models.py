@@ -25,19 +25,19 @@ class CommitteeManager(models.Manager):
 
 class Committee(models.Model):
 
-    name_en: models.TextField = models.TextField()
-    short_name_en: models.TextField = models.TextField()
-    name_fr: models.TextField = models.TextField(blank=True)
-    short_name_fr: models.TextField = models.TextField(blank=True)
-    slug: models.SlugField = models.SlugField(unique=True)
-    parent: models.ForeignKey = models.ForeignKey(
+    name_en = models.TextField()
+    short_name_en = models.TextField()
+    name_fr = models.TextField(blank=True)
+    short_name_fr = models.TextField(blank=True)
+    slug = models.SlugField(unique=True)
+    parent = models.ForeignKey(
         'self',
         related_name='subcommittees',
         blank=True, null=True, on_delete=models.CASCADE)
-    sessions: models.ManyToManyField = models.ManyToManyField(Session, through='CommitteeInSession')
-    joint: models.BooleanField = models.BooleanField('Joint committee?', default=False)
+    sessions = models.ManyToManyField(Session, through='CommitteeInSession')
+    joint = models.BooleanField('Joint committee?', default=False)
 
-    display: models.BooleanField = models.BooleanField('Display on site?', db_index=True, default=True)
+    display = models.BooleanField('Display on site?', db_index=True, default=True)
 
     objects = CommitteeManager()
 
@@ -104,9 +104,9 @@ class Committee(models.Model):
 
 
 class CommitteeInSession(models.Model):
-    session: models.ForeignKey = models.ForeignKey(Session, on_delete=models.CASCADE)
-    committee: models.ForeignKey = models.ForeignKey(Committee, on_delete=models.CASCADE)
-    acronym: models.CharField = models.CharField(max_length=5, db_index=True)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
+    acronym = models.CharField(max_length=5, db_index=True)
 
     class Meta:
         unique_together = [
@@ -130,12 +130,12 @@ class CommitteeInSession(models.Model):
 
 class CommitteeActivity(models.Model):
 
-    committee: models.ForeignKey = models.ForeignKey(Committee, on_delete=models.CASCADE)
+    committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
 
-    name_en: models.CharField = models.CharField(max_length=500)
-    name_fr: models.CharField = models.CharField(max_length=500)
+    name_en = models.CharField(max_length=500)
+    name_fr = models.CharField(max_length=500)
 
-    study: models.BooleanField = models.BooleanField(default=False)  # study or activity
+    study = models.BooleanField(default=False)  # study or activity
 
     name = language_property('name')
 
@@ -159,9 +159,9 @@ class CommitteeActivity(models.Model):
 
 class CommitteeActivityInSession(models.Model):
 
-    activity: models.ForeignKey = models.ForeignKey(CommitteeActivity, on_delete=models.CASCADE)
-    session: models.ForeignKey = models.ForeignKey(Session, on_delete=models.CASCADE)
-    source_id: models.IntegerField = models.IntegerField(unique=True)
+    activity = models.ForeignKey(CommitteeActivity, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    source_id = models.IntegerField(unique=True)
 
     def get_source_url(self) -> str:
         return 'https://www.ourcommons.ca/Committees/%(lang)s/%(acronym)s/StudyActivity?studyActivityId=%(source_id)s' % {
@@ -178,25 +178,25 @@ class CommitteeActivityInSession(models.Model):
 
 class CommitteeMeeting(models.Model):
 
-    date: models.DateField = models.DateField(db_index=True)
-    start_time: models.TimeField = models.TimeField()
-    end_time: models.TimeField = models.TimeField(blank=True, null=True)
-    source_id: models.IntegerField = models.IntegerField(blank=True, null=True)
+    date = models.DateField(db_index=True)
+    start_time = models.TimeField()
+    end_time = models.TimeField(blank=True, null=True)
+    source_id = models.IntegerField(blank=True, null=True)
 
-    committee: models.ForeignKey = models.ForeignKey(Committee, on_delete=models.CASCADE)
-    number: models.SmallIntegerField = models.SmallIntegerField()
-    session: models.ForeignKey = models.ForeignKey(Session, on_delete=models.CASCADE)
+    committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
+    number = models.SmallIntegerField()
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
 
-    minutes: models.IntegerField = models.IntegerField(blank=True, null=True)  # docid
-    notice: models.IntegerField = models.IntegerField(blank=True, null=True)
-    evidence: models.OneToOneField = models.OneToOneField(Document, blank=True, null=True, on_delete=models.CASCADE)
+    minutes = models.IntegerField(blank=True, null=True)  # docid
+    notice = models.IntegerField(blank=True, null=True)
+    evidence = models.OneToOneField(Document, blank=True, null=True, on_delete=models.CASCADE)
 
-    in_camera: models.BooleanField = models.BooleanField(default=False)
-    travel: models.BooleanField = models.BooleanField(default=False)
-    webcast: models.BooleanField = models.BooleanField(default=False)
-    televised: models.BooleanField = models.BooleanField(default=False)
+    in_camera = models.BooleanField(default=False)
+    travel = models.BooleanField(default=False)
+    webcast = models.BooleanField(default=False)
+    televised = models.BooleanField(default=False)
 
-    activities: models.ManyToManyField = models.ManyToManyField(CommitteeActivity)
+    activities = models.ManyToManyField(CommitteeActivity)
 
     class Meta:
         unique_together = [
@@ -281,20 +281,20 @@ class CommitteeMeeting(models.Model):
 
 class CommitteeReport(models.Model):
 
-    committee: models.ForeignKey = models.ForeignKey(Committee, on_delete=models.CASCADE)
+    committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
 
-    session: models.ForeignKey = models.ForeignKey(Session, on_delete=models.CASCADE)
-    number: models.SmallIntegerField = models.SmallIntegerField(blank=True, null=True)  # watch this become a char
-    name_en: models.CharField = models.CharField(max_length=500)
-    name_fr: models.CharField = models.CharField(max_length=500, blank=True)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    number = models.SmallIntegerField(blank=True, null=True)  # watch this become a char
+    name_en = models.CharField(max_length=500)
+    name_fr = models.CharField(max_length=500, blank=True)
 
-    source_id: models.IntegerField = models.IntegerField(unique=True, db_index=True)
+    source_id = models.IntegerField(unique=True, db_index=True)
 
-    adopted_date: models.DateField = models.DateField(blank=True, null=True)
-    presented_date: models.DateField = models.DateField(blank=True, null=True)
+    adopted_date = models.DateField(blank=True, null=True)
+    presented_date = models.DateField(blank=True, null=True)
 
-    government_response: models.BooleanField = models.BooleanField(default=False)
-    parent: models.ForeignKey = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
+    government_response = models.BooleanField(default=False)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
 
     name = language_property('name')
 

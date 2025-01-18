@@ -30,13 +30,13 @@ def validate_line(line: str) -> None:
 
 
 class Haiku(models.Model):
-    line1: models.CharField = models.CharField(max_length=50, validators=[validate_first_line, validate_line])
-    line2: models.CharField = models.CharField(max_length=70, validators=[validate_line])
-    line3: models.CharField = models.CharField(max_length=50, validators=[validate_last_line, validate_line])
+    line1 = models.CharField(max_length=50, validators=[validate_first_line, validate_line])
+    line2 = models.CharField(max_length=70, validators=[validate_line])
+    line3 = models.CharField(max_length=50, validators=[validate_last_line, validate_line])
 
-    attribution: models.CharField = models.CharField(max_length=300)
-    attribution_url: models.CharField = models.CharField(max_length=100)
-    worthy: models.BooleanField = models.BooleanField(blank=True, default=False, db_index=True)
+    attribution = models.CharField(max_length=300)
+    attribution_url = models.CharField(max_length=100)
+    worthy = models.BooleanField(blank=True, default=False, db_index=True)
     # statement = models.ForeignKey(Statement)
 
     def set_statement(self, statement: Statement) -> None:

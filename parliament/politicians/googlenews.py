@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from django.utils.html import strip_tags
 
 from parliament.activity import utils as activity
+from parliament.core.models import Politician
 
 logger = logging.getLogger(__name__)
 
@@ -15,11 +16,11 @@ GOOGLE_NEWS_URL = ('https://news.google.ca/news?pz=1&cf=all&ned=ca&hl=en&as_maxm
                    '&as_mind=25&as_minm=2&cf=all&as_maxd=27&scoring=n&output=rss')
 
 
-def get_feed(pol):
+def get_feed(pol: Politician):
     return feedparser.parse(GOOGLE_NEWS_URL % quote(get_query_string(pol)))
 
 
-def get_query_string(pol):
+def get_query_string(pol: Politician) -> str:
     if 'googlenews_query' in pol.info():
         return pol.info()['googlenews_query']
     names = pol.alternate_names()
@@ -31,7 +32,7 @@ def get_query_string(pol):
     return q
 
 
-def news_items_for_pol(pol):
+def news_items_for_pol(pol: Politician):
     feed = get_feed(pol)
     items = []
     for i in feed['entries'][:10]:
@@ -57,7 +58,7 @@ def news_items_for_pol(pol):
     return items
 
 
-def save_politician_news(pol):
+def save_politician_news(pol: Politician):
     items = news_items_for_pol(pol)
     for item in items:
         activity.save_activity(item, politician=pol, date=item['date'], guid=item['guid'], variety='gnews')

@@ -23,7 +23,7 @@ COMMITTEE_LIST_URL = 'https://www.ourcommons.ca/Committees/{lang}/List?parl={par
 def import_committee_list(session: Session | None = None) -> bool:
     session = session or Session.objects.current()
 
-    def make_committee(name_en: str, name_fr: str, acronym: str, parent=None):
+    def make_committee(name_en: str, name_fr: str, acronym: str, parent: Committee | None = None) -> Committee:
         try:
             cmte = Committee.objects.get_by_acronym(acronym, session)
             if name_fr and cmte.name_fr != name_fr:

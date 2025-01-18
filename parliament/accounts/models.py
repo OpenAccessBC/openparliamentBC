@@ -12,16 +12,16 @@ from django.urls import reverse
 
 class User(models.Model):
 
-    email: models.EmailField = models.EmailField(unique=True, db_index=True)
-    email_bouncing: models.BooleanField = models.BooleanField(default=False)
-    email_bounce_reason: models.TextField = models.TextField(blank=True)
+    email = models.EmailField(unique=True, db_index=True)
+    email_bouncing = models.BooleanField(default=False)
+    email_bounce_reason = models.TextField(blank=True)
 
-    name: models.CharField = models.CharField(max_length=250, blank=True)
+    name = models.CharField(max_length=250, blank=True)
 
-    created: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
-    last_login: models.DateTimeField = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(default=datetime.datetime.now)
+    last_login = models.DateTimeField(blank=True, null=True)
 
-    data: models.JSONField = models.JSONField(blank=True, default=dict)
+    data = models.JSONField(blank=True, default=dict)
 
     @override
     def __str__(self) -> str:
@@ -44,13 +44,13 @@ class TokenError(Exception):
 
 
 class LoginToken(models.Model):
-    token: models.CharField = models.CharField(max_length=40, primary_key=True, default=random_token)
-    email: models.EmailField = models.EmailField()
-    created: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
-    requesting_ip: models.GenericIPAddressField = models.GenericIPAddressField()
-    used: models.BooleanField = models.BooleanField(default=False)
-    login_ip: models.GenericIPAddressField = models.GenericIPAddressField(blank=True, null=True)
-    post_login_url: models.TextField = models.TextField(blank=True)
+    token = models.CharField(max_length=40, primary_key=True, default=random_token)
+    email = models.EmailField()
+    created = models.DateTimeField(default=datetime.datetime.now)
+    requesting_ip = models.GenericIPAddressField()
+    used = models.BooleanField(default=False)
+    login_ip = models.GenericIPAddressField(blank=True, null=True)
+    post_login_url = models.TextField(blank=True)
 
     MAX_TOKEN_AGE: datetime.timedelta = datetime.timedelta(seconds=60 * 60 * 8)
 

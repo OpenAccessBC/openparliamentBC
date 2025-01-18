@@ -62,13 +62,13 @@ class TextAnalysisManager(models.Manager):
 
 class TextAnalysis(models.Model):
 
-    key: models.CharField = models.CharField(max_length=150, db_index=True, help_text="A URL to a view that calculates this object")
-    lang: models.CharField = models.CharField(max_length=2)
+    key = models.CharField(max_length=150, db_index=True, help_text="A URL to a view that calculates this object")
+    lang = models.CharField(max_length=2)
 
-    updated: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
-    expires: models.DateTimeField = models.DateTimeField(blank=True, null=True)
+    updated = models.DateTimeField(default=datetime.datetime.now)
+    expires = models.DateTimeField(blank=True, null=True)
 
-    probability_data_json: models.TextField = models.TextField()
+    probability_data_json = models.TextField()
 
     objects = TextAnalysisManager()
 

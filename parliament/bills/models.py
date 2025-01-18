@@ -122,25 +122,25 @@ class Bill(models.Model):
         'At consideration in the House of Commons of amendments made by the Senate': 'HouseConsideringSenAmendments',
     }
 
-    name_en: models.TextField = models.TextField(blank=True)
-    name_fr: models.TextField = models.TextField(blank=True)
-    short_title_en: models.TextField = models.TextField(blank=True)
-    short_title_fr: models.TextField = models.TextField(blank=True)
-    number: models.CharField = models.CharField(max_length=10)
-    number_only: models.SmallIntegerField = models.SmallIntegerField()
-    institution: models.CharField = models.CharField(max_length=1, db_index=True, choices=CHAMBERS)
-    sessions: models.ManyToManyField = models.ManyToManyField(Session, through='BillInSession')
-    privatemember: models.BooleanField = models.BooleanField(blank=True, null=True)
-    sponsor_member: models.ForeignKey = models.ForeignKey(ElectedMember, blank=True, null=True, on_delete=models.CASCADE)
-    sponsor_politician: models.ForeignKey = models.ForeignKey(Politician, blank=True, null=True, on_delete=models.CASCADE)
-    law: models.BooleanField = models.BooleanField(blank=True, null=True)
+    name_en = models.TextField(blank=True)
+    name_fr = models.TextField(blank=True)
+    short_title_en = models.TextField(blank=True)
+    short_title_fr = models.TextField(blank=True)
+    number = models.CharField(max_length=10)
+    number_only = models.SmallIntegerField()
+    institution = models.CharField(max_length=1, db_index=True, choices=CHAMBERS)
+    sessions = models.ManyToManyField(Session, through='BillInSession')
+    privatemember = models.BooleanField(blank=True, null=True)
+    sponsor_member = models.ForeignKey(ElectedMember, blank=True, null=True, on_delete=models.CASCADE)
+    sponsor_politician = models.ForeignKey(Politician, blank=True, null=True, on_delete=models.CASCADE)
+    law = models.BooleanField(blank=True, null=True)
 
-    status_date: models.DateField = models.DateField(blank=True, null=True, db_index=True)
-    status_code: models.CharField = models.CharField(max_length=50, blank=True)
+    status_date = models.DateField(blank=True, null=True, db_index=True)
+    status_code = models.CharField(max_length=50, blank=True)
 
-    added: models.DateField = models.DateField(default=datetime.date.today, db_index=True)
-    introduced: models.DateField = models.DateField(blank=True, null=True)
-    text_docid: models.IntegerField = models.IntegerField(
+    added = models.DateField(default=datetime.date.today, db_index=True)
+    introduced = models.DateField(blank=True, null=True)
+    text_docid = models.IntegerField(
         blank=True, null=True,
         help_text="The parl.gc.ca document ID of the latest version of the bill's text")
 
@@ -291,7 +291,7 @@ class Bill(models.Model):
                 h1_en='Government Orders').values_list('h2_en', flat=True)
             if not speech_headings:
                 return Statement.objects.none()
-            h2: models.TextField = Counter(speech_headings).most_common(1)[0][0]
+            h2 = Counter(speech_headings).most_common(1)[0][0]
             qs = qs.filter(h2_en=h2)
         return qs
 
@@ -361,15 +361,15 @@ class BillInSession(models.Model):
     reintroduced bills into a single Bill object. But it's this model
     that maps one-to-one to most IDs used elsewhere.
     """
-    bill: models.ForeignKey = models.ForeignKey(Bill, on_delete=models.CASCADE)
-    session: models.ForeignKey = models.ForeignKey(Session, on_delete=models.CASCADE)
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
 
-    legisinfo_id: models.PositiveIntegerField = models.PositiveIntegerField(db_index=True, blank=True, null=True)
-    introduced: models.DateField = models.DateField(blank=True, null=True, db_index=True)
-    sponsor_politician: models.ForeignKey = models.ForeignKey(Politician, blank=True, null=True, on_delete=models.CASCADE)
-    sponsor_member: models.ForeignKey = models.ForeignKey(ElectedMember, blank=True, null=True, on_delete=models.CASCADE)
+    legisinfo_id = models.PositiveIntegerField(db_index=True, blank=True, null=True)
+    introduced = models.DateField(blank=True, null=True, db_index=True)
+    sponsor_politician = models.ForeignKey(Politician, blank=True, null=True, on_delete=models.CASCADE)
+    sponsor_member = models.ForeignKey(ElectedMember, blank=True, null=True, on_delete=models.CASCADE)
 
-    billstages_json: models.TextField = models.TextField(blank=True, null=True)
+    billstages_json = models.TextField(blank=True, null=True)
 
     objects = BillInSessionManager()
 
@@ -421,19 +421,19 @@ class BillInSession(models.Model):
 
 
 class BillEvent(models.Model):
-    bis: models.ForeignKey = models.ForeignKey(BillInSession, on_delete=models.CASCADE)
+    bis = models.ForeignKey(BillInSession, on_delete=models.CASCADE)
 
-    date: models.DateField = models.DateField(db_index=True)
+    date = models.DateField(db_index=True)
 
-    source_id: models.PositiveIntegerField = models.PositiveIntegerField(unique=True, db_index=True)
+    source_id = models.PositiveIntegerField(unique=True, db_index=True)
 
-    institution: models.CharField = models.CharField(max_length=1, choices=Bill.CHAMBERS)
+    institution = models.CharField(max_length=1, choices=Bill.CHAMBERS)
 
-    status_en: models.TextField = models.TextField()
-    status_fr: models.TextField = models.TextField(blank=True)
+    status_en = models.TextField()
+    status_fr = models.TextField(blank=True)
 
-    debate: models.ForeignKey = models.ForeignKey('hansards.Document', blank=True, null=True, on_delete=models.SET_NULL)
-    committee_meetings: models.ManyToManyField = models.ManyToManyField('committees.CommitteeMeeting', blank=True)
+    debate = models.ForeignKey('hansards.Document', blank=True, null=True, on_delete=models.SET_NULL)
+    committee_meetings = models.ManyToManyField('committees.CommitteeMeeting', blank=True)
 
     status = language_property('status')
 
@@ -448,14 +448,14 @@ class BillEvent(models.Model):
 
 class BillText(models.Model):
 
-    bill: models.ForeignKey = models.ForeignKey(Bill, on_delete=models.CASCADE)
-    docid: models.PositiveIntegerField = models.PositiveIntegerField(unique=True, db_index=True)
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
+    docid = models.PositiveIntegerField(unique=True, db_index=True)
 
-    created: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
+    created = models.DateTimeField(default=datetime.datetime.now)
 
-    text_en: models.TextField = models.TextField()
-    text_fr: models.TextField = models.TextField(blank=True)
-    summary_en: models.TextField = models.TextField(blank=True)
+    text_en = models.TextField()
+    text_fr = models.TextField(blank=True)
+    summary_en = models.TextField(blank=True)
 
     text = language_property('text')
 
@@ -480,17 +480,17 @@ VOTE_RESULT_CHOICES = (
 
 class VoteQuestion(models.Model):
 
-    bill: models.ForeignKey = models.ForeignKey(Bill, blank=True, null=True, on_delete=models.CASCADE)
-    session: models.ForeignKey = models.ForeignKey(Session, on_delete=models.CASCADE)
-    number: models.PositiveIntegerField = models.PositiveIntegerField()
-    date: models.DateField = models.DateField(db_index=True)
-    description_en: models.TextField = models.TextField()
-    description_fr: models.TextField = models.TextField(blank=True)
-    result: models.CharField = models.CharField(max_length=1, choices=VOTE_RESULT_CHOICES)
-    yea_total: models.SmallIntegerField = models.SmallIntegerField()
-    nay_total: models.SmallIntegerField = models.SmallIntegerField()
-    paired_total: models.SmallIntegerField = models.SmallIntegerField()
-    context_statement: models.ForeignKey = models.ForeignKey('hansards.Statement', blank=True, null=True, on_delete=models.SET_NULL)
+    bill = models.ForeignKey(Bill, blank=True, null=True, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    number = models.PositiveIntegerField()
+    date = models.DateField(db_index=True)
+    description_en = models.TextField()
+    description_fr = models.TextField(blank=True)
+    result = models.CharField(max_length=1, choices=VOTE_RESULT_CHOICES)
+    yea_total = models.SmallIntegerField()
+    nay_total = models.SmallIntegerField()
+    paired_total = models.SmallIntegerField()
+    context_statement = models.ForeignKey('hansards.Statement', blank=True, null=True, on_delete=models.SET_NULL)
 
     description = language_property('description')
 
@@ -584,11 +584,11 @@ VOTE_CHOICES = [
 
 class MemberVote(models.Model):
 
-    votequestion: models.ForeignKey = models.ForeignKey(VoteQuestion, on_delete=models.CASCADE)
-    member: models.ForeignKey = models.ForeignKey(ElectedMember, on_delete=models.CASCADE)
-    politician: models.ForeignKey = models.ForeignKey(Politician, on_delete=models.CASCADE)
-    vote: models.CharField = models.CharField(max_length=1, choices=VOTE_CHOICES)
-    dissent: models.BooleanField = models.BooleanField(default=False, db_index=True)
+    votequestion = models.ForeignKey(VoteQuestion, on_delete=models.CASCADE)
+    member = models.ForeignKey(ElectedMember, on_delete=models.CASCADE)
+    politician = models.ForeignKey(Politician, on_delete=models.CASCADE)
+    vote = models.CharField(max_length=1, choices=VOTE_CHOICES)
+    dissent = models.BooleanField(default=False, db_index=True)
 
     @override
     def __str__(self) -> str:
@@ -613,10 +613,10 @@ VOTE_CHOICES_PARTY = VOTE_CHOICES + [('F', "Free vote")]
 
 class PartyVote(models.Model):
 
-    votequestion: models.ForeignKey = models.ForeignKey(VoteQuestion, on_delete=models.CASCADE)
-    party: models.ForeignKey = models.ForeignKey(Party, on_delete=models.CASCADE)
-    vote: models.CharField = models.CharField(max_length=1, choices=VOTE_CHOICES_PARTY)
-    disagreement: models.FloatField = models.FloatField(null=True)
+    votequestion = models.ForeignKey(VoteQuestion, on_delete=models.CASCADE)
+    party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    vote = models.CharField(max_length=1, choices=VOTE_CHOICES_PARTY)
+    disagreement = models.FloatField(null=True)
 
     class Meta:
         unique_together = ('votequestion', 'party')

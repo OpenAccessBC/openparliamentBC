@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class Election(models.Model):
-    date: models.DateField = models.DateField(db_index=True)
-    byelection: models.BooleanField = models.BooleanField()
+    date = models.DateField(db_index=True)
+    byelection = models.BooleanField()
 
     class Meta:
         ordering = ('-date',)
@@ -119,14 +119,14 @@ class CandidacyManager(models.Manager):
 
 
 class Candidacy(models.Model):
-    candidate: models.ForeignKey = models.ForeignKey(Politician, on_delete=models.CASCADE)
-    riding: models.ForeignKey = models.ForeignKey(Riding, on_delete=models.CASCADE)
-    party: models.ForeignKey = models.ForeignKey(Party, on_delete=models.CASCADE)
-    election: models.ForeignKey = models.ForeignKey(Election, on_delete=models.CASCADE)
-    occupation: models.CharField = models.CharField(max_length=100, blank=True)
-    votetotal: models.IntegerField = models.IntegerField(blank=True, null=True)
-    votepercent: models.DecimalField = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    elected: models.BooleanField = models.BooleanField(blank=True, null=True)
+    candidate = models.ForeignKey(Politician, on_delete=models.CASCADE)
+    riding = models.ForeignKey(Riding, on_delete=models.CASCADE)
+    party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    election = models.ForeignKey(Election, on_delete=models.CASCADE)
+    occupation = models.CharField(max_length=100, blank=True)
+    votetotal = models.IntegerField(blank=True, null=True)
+    votepercent = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    elected = models.BooleanField(blank=True, null=True)
 
     objects = CandidacyManager()
 

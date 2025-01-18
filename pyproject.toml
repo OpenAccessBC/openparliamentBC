@@ -3,7 +3,6 @@ exclude = ["**/hans_old", ".mypy_cache", ".venv", "parliament/politicians/twit.p
 
 pythonVersion = "3.12"
 
-# TODO make basic -> standard -> strict
 typeCheckingMode = "strict"
 
 reportArgumentType = "none"
@@ -12,7 +11,6 @@ reportOptionalMemberAccess = "none"
 
 reportUnknownVariableType = "none"
 reportUnknownMemberType = "none"
-reportMissingTypeArgument = "none"
 reportUnknownArgumentType = "none"
 reportUnknownParameterType = "none"
 reportMissingParameterType = "none"

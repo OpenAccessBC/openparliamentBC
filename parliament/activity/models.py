@@ -8,12 +8,12 @@ from parliament.core.utils import ActiveManager
 
 class Activity(models.Model):
 
-    date: models.DateField = models.DateField(db_index=True)
-    variety: models.CharField = models.CharField(max_length=15)
-    politician: models.ForeignKey = models.ForeignKey(Politician, on_delete=models.CASCADE)
-    payload: models.TextField = models.TextField()
-    guid: models.CharField = models.CharField(max_length=50, db_index=True, unique=True)
-    active: models.BooleanField = models.BooleanField(default=True, db_index=True)
+    date = models.DateField(db_index=True)
+    variety = models.CharField(max_length=15)
+    politician = models.ForeignKey(Politician, on_delete=models.CASCADE)
+    payload = models.TextField()
+    guid = models.CharField(max_length=50, db_index=True, unique=True)
+    active = models.BooleanField(default=True, db_index=True)
 
     objects = models.Manager()
     public = ActiveManager()

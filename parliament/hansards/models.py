@@ -53,28 +53,28 @@ class Document(models.Model):
     DEBATE = 'D'
     EVIDENCE = 'E'
 
-    document_type: models.CharField = models.CharField(max_length=1, db_index=True, choices=(
+    document_type = models.CharField(max_length=1, db_index=True, choices=(
         ('D', 'Debate'),
         ('E', 'Committee Evidence'),
     ))
-    date: models.DateField = models.DateField(blank=True, null=True)
-    number: models.CharField = models.CharField(max_length=6, blank=True)  # there exist 'numbers' with letters
-    session: models.ForeignKey = models.ForeignKey(Session, on_delete=models.CASCADE)
+    date = models.DateField(blank=True, null=True)
+    number = models.CharField(max_length=6, blank=True)  # there exist 'numbers' with letters
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
 
-    source_id: models.IntegerField = models.IntegerField(unique=True, db_index=True)
+    source_id = models.IntegerField(unique=True, db_index=True)
 
-    most_frequent_word: models.CharField = models.CharField(max_length=20, blank=True)
+    most_frequent_word = models.CharField(max_length=20, blank=True)
     wordcloud = models.ImageField(upload_to='autoimg/wordcloud', blank=True, null=True)
 
-    downloaded: models.BooleanField = models.BooleanField(
+    downloaded = models.BooleanField(
         default=False,
         help_text="Has the source data been downloaded?")
-    skip_parsing: models.BooleanField = models.BooleanField(
+    skip_parsing = models.BooleanField(
         default=False,
         help_text="Don't try to parse this, presumably because of errors in the source.")
 
-    public: models.BooleanField = models.BooleanField("Display on site?", default=False)
-    multilingual: models.BooleanField = models.BooleanField("Content parsed in both languages?", default=False)
+    public = models.BooleanField("Display on site?", default=False)
+    multilingual = models.BooleanField("Content parsed in both languages?", default=False)
 
     objects = models.Manager()
     debates = DebateManager()
@@ -302,45 +302,45 @@ class Document(models.Model):
 
 @register_search_model
 class Statement(models.Model):
-    document: models.ForeignKey = models.ForeignKey(Document, on_delete=models.CASCADE)
-    time: models.DateTimeField = models.DateTimeField(db_index=True)
-    source_id: models.CharField = models.CharField(max_length=15, blank=True)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    time = models.DateTimeField(db_index=True)
+    source_id = models.CharField(max_length=15, blank=True)
 
-    slug: models.SlugField = models.SlugField(max_length=100, blank=True)
-    urlcache: models.CharField = models.CharField(max_length=200, blank=True)
+    slug = models.SlugField(max_length=100, blank=True)
+    urlcache = models.CharField(max_length=200, blank=True)
 
-    h1_en: models.CharField = models.CharField(max_length=300, blank=True)
-    h2_en: models.CharField = models.CharField(max_length=300, blank=True)
-    h3_en: models.CharField = models.CharField(max_length=300, blank=True)
-    h1_fr: models.CharField = models.CharField(max_length=400, blank=True)
-    h2_fr: models.CharField = models.CharField(max_length=400, blank=True)
-    h3_fr: models.CharField = models.CharField(max_length=400, blank=True)
+    h1_en = models.CharField(max_length=300, blank=True)
+    h2_en = models.CharField(max_length=300, blank=True)
+    h3_en = models.CharField(max_length=300, blank=True)
+    h1_fr = models.CharField(max_length=400, blank=True)
+    h2_fr = models.CharField(max_length=400, blank=True)
+    h3_fr = models.CharField(max_length=400, blank=True)
 
-    member: models.ForeignKey = models.ForeignKey(ElectedMember, blank=True, null=True, on_delete=models.CASCADE)
+    member = models.ForeignKey(ElectedMember, blank=True, null=True, on_delete=models.CASCADE)
     # a shortcut -- should == member.politician
-    politician: models.ForeignKey = models.ForeignKey(Politician, blank=True, null=True, on_delete=models.CASCADE)
-    who_en: models.CharField = models.CharField(max_length=300, blank=True)
-    who_fr: models.CharField = models.CharField(max_length=500, blank=True)
-    who_hocid: models.PositiveIntegerField = models.PositiveIntegerField(blank=True, null=True, db_index=True)
-    who_context_en: models.CharField = models.CharField(max_length=300, blank=True)
-    who_context_fr: models.CharField = models.CharField(max_length=500, blank=True)
+    politician = models.ForeignKey(Politician, blank=True, null=True, on_delete=models.CASCADE)
+    who_en = models.CharField(max_length=300, blank=True)
+    who_fr = models.CharField(max_length=500, blank=True)
+    who_hocid = models.PositiveIntegerField(blank=True, null=True, db_index=True)
+    who_context_en = models.CharField(max_length=300, blank=True)
+    who_context_fr = models.CharField(max_length=500, blank=True)
 
-    content_en: models.TextField = models.TextField()
-    content_fr: models.TextField = models.TextField(blank=True)
-    sequence: models.IntegerField = models.IntegerField(db_index=True)
-    wordcount: models.IntegerField = models.IntegerField()
-    wordcount_en: models.PositiveSmallIntegerField = models.PositiveSmallIntegerField(
+    content_en = models.TextField()
+    content_fr = models.TextField(blank=True)
+    sequence = models.IntegerField(db_index=True)
+    wordcount = models.IntegerField()
+    wordcount_en = models.PositiveSmallIntegerField(
         null=True, help_text="# words originally spoken in English")
 
-    procedural: models.BooleanField = models.BooleanField(default=False, db_index=True)
-    written_question: models.CharField = models.CharField(max_length=1, blank=True, choices=(
+    procedural = models.BooleanField(default=False, db_index=True)
+    written_question = models.CharField(max_length=1, blank=True, choices=(
         ('Q', 'Question'),
         ('R', 'Response')
     ))
-    statement_type: models.CharField = models.CharField(max_length=35, blank=True)
+    statement_type = models.CharField(max_length=35, blank=True)
 
-    bills: models.ManyToManyField = models.ManyToManyField('bills.Bill', blank=True)
-    mentioned_politicians: models.ManyToManyField = models.ManyToManyField(Politician, blank=True, related_name='statements_with_mentions')
+    bills = models.ManyToManyField('bills.Bill', blank=True)
+    mentioned_politicians = models.ManyToManyField(Politician, blank=True, related_name='statements_with_mentions')
 
     class Meta:
         ordering = ('sequence',)
@@ -587,9 +587,9 @@ class Statement(models.Model):
 
 
 class OldSequenceMapping(models.Model):
-    document: models.ForeignKey = models.ForeignKey(Document, on_delete=models.CASCADE)
-    sequence: models.PositiveIntegerField = models.PositiveIntegerField()
-    slug: models.SlugField = models.SlugField(max_length=100)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    sequence = models.PositiveIntegerField()
+    slug = models.SlugField(max_length=100)
 
     class Meta:
         unique_together = (

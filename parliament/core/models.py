@@ -34,16 +34,16 @@ POL_PERSON_ID_LOOKUP_URL = 'https://www.ourcommons.ca/Members/en/openparliamentd
 
 class InternalXref(models.Model):
     """A general-purpose table for quickly storing internal links."""
-    text_value: models.CharField = models.CharField(max_length=250, blank=True, db_index=True)
-    int_value: models.IntegerField = models.IntegerField(blank=True, null=True, db_index=True)
-    target_id: models.IntegerField = models.IntegerField(db_index=True)
+    text_value = models.CharField(max_length=250, blank=True, db_index=True)
+    int_value = models.IntegerField(blank=True, null=True, db_index=True)
+    target_id = models.IntegerField(db_index=True)
 
     # CURRENT SCHEMAS
     # party_names
     # bill_callbackid
     # session_legisin -- LEGISinfo ID for a session
     # edid_postcode -- the EDID -- which points to a riding, but is NOT the primary  key -- for a postcode
-    schema: models.CharField = models.CharField(max_length=15, db_index=True)
+    schema = models.CharField(max_length=15, db_index=True)
 
     @override
     def __str__(self) -> str:
@@ -65,13 +65,13 @@ class PartyManager(models.Manager):
 
 class Party(models.Model):
     """A federal political party."""
-    name_en: models.CharField = models.CharField(max_length=100)
-    name_fr: models.CharField = models.CharField(max_length=100, blank=True)
+    name_en = models.CharField(max_length=100)
+    name_fr = models.CharField(max_length=100, blank=True)
 
-    short_name_en: models.CharField = models.CharField(max_length=100, blank=True)
-    short_name_fr: models.CharField = models.CharField(max_length=100, blank=True)
+    short_name_en = models.CharField(max_length=100, blank=True)
+    short_name_fr = models.CharField(max_length=100, blank=True)
 
-    slug: models.CharField = models.CharField(max_length=10, blank=True)
+    slug = models.CharField(max_length=10, blank=True)
 
     name = language_property('name')
     short_name = language_property('short_name')
@@ -122,9 +122,9 @@ class Party(models.Model):
 class Person(models.Model):
     """Abstract base class for models representing a person."""
 
-    name: models.CharField = models.CharField(max_length=100)
-    name_given: models.CharField = models.CharField("Given name", max_length=50, blank=True)
-    name_family: models.CharField = models.CharField("Family name", max_length=50, blank=True)
+    name = models.CharField(max_length=100)
+    name_given = models.CharField("Given name", max_length=50, blank=True)
+    name_family = models.CharField("Family name", max_length=50, blank=True)
 
     @override
     def __str__(self) -> str:
@@ -332,11 +332,11 @@ class Politician(Person):
         ('F', 'Female'),
     )
 
-    dob: models.DateField = models.DateField(blank=True, null=True)
-    gender: models.CharField = models.CharField(max_length=1, blank=True, choices=GENDER_CHOICES)
-    headshot: models.ImageField = models.ImageField(upload_to='polpics', blank=True, null=True)
-    headshot_thumbnail: models.ImageField = models.ImageField(blank=True, null=True, upload_to='polpics/thumbnail')
-    slug: models.CharField = models.CharField(max_length=30, blank=True, db_index=True)
+    dob = models.DateField(blank=True, null=True)
+    gender = models.CharField(max_length=1, blank=True, choices=GENDER_CHOICES)
+    headshot = models.ImageField(upload_to='polpics', blank=True, null=True)
+    headshot_thumbnail = models.ImageField(blank=True, null=True, upload_to='polpics/thumbnail')
+    slug = models.CharField(max_length=30, blank=True, db_index=True)
 
     objects = PoliticianManager()
 
@@ -592,11 +592,11 @@ POLITICIAN_INFO_SCHEMAS = (
 
 class PoliticianInfo(models.Model):
     """Key-value store for attributes of a Politician."""
-    politician: models.ForeignKey = models.ForeignKey(Politician, on_delete=models.CASCADE)
-    schema: models.CharField = models.CharField(max_length=40, db_index=True)
-    value: models.TextField = models.TextField()
+    politician = models.ForeignKey(Politician, on_delete=models.CASCADE)
+    schema = models.CharField(max_length=40, db_index=True)
+    value = models.TextField()
 
-    created: models.DateTimeField = models.DateTimeField(blank=True, null=True, default=datetime.datetime.now)
+    created = models.DateTimeField(blank=True, null=True, default=datetime.datetime.now)
 
     objects = models.Manager()
     sr_objects = PoliticianInfoManager()
@@ -634,12 +634,12 @@ class SessionManager(models.Manager):
 class Session(models.Model):
     "A session of Parliament."
 
-    id: models.CharField = models.CharField(max_length=4, primary_key=True)
-    name: models.CharField = models.CharField(max_length=100)
-    start: models.DateField = models.DateField()
-    end: models.DateField = models.DateField(blank=True, null=True)
-    parliamentnum: models.IntegerField = models.IntegerField(blank=True, null=True)
-    sessnum: models.IntegerField = models.IntegerField(blank=True, null=True)
+    id = models.CharField(max_length=4, primary_key=True)
+    name = models.CharField(max_length=100)
+    start = models.DateField()
+    end = models.DateField(blank=True, null=True)
+    parliamentnum = models.IntegerField(blank=True, null=True)
+    sessnum = models.IntegerField(blank=True, null=True)
 
     objects = SessionManager()
 
@@ -723,12 +723,12 @@ PROVINCE_LOOKUP = dict(PROVINCE_CHOICES)
 class Riding(models.Model):
     "A federal riding."
 
-    name_en: models.CharField = models.CharField(max_length=200)
-    name_fr: models.CharField = models.CharField(blank=True, max_length=200)
-    province: models.CharField = models.CharField(max_length=2, choices=PROVINCE_CHOICES)
-    slug: models.CharField = models.CharField(max_length=60, unique=True, db_index=True)
-    edid: models.IntegerField = models.IntegerField(blank=True, null=True, db_index=True)
-    current: models.BooleanField = models.BooleanField(blank=True, default=False)
+    name_en = models.CharField(max_length=200)
+    name_fr = models.CharField(blank=True, max_length=200)
+    province = models.CharField(max_length=2, choices=PROVINCE_CHOICES)
+    slug = models.CharField(max_length=60, unique=True, db_index=True)
+    edid = models.IntegerField(blank=True, null=True, db_index=True)
+    current = models.BooleanField(blank=True, default=False)
 
     objects = RidingManager()
 
@@ -782,12 +782,12 @@ class ElectedMemberManager(models.Manager):
 
 class ElectedMember(models.Model):
     """Represents one person, elected to a given riding for a given party."""
-    sessions: models.ManyToManyField = models.ManyToManyField(Session)
-    politician: models.ForeignKey = models.ForeignKey(Politician, on_delete=models.CASCADE)
-    riding: models.ForeignKey = models.ForeignKey(Riding, on_delete=models.CASCADE)
-    party: models.ForeignKey = models.ForeignKey(Party, on_delete=models.CASCADE)
-    start_date: models.DateField = models.DateField(db_index=True)
-    end_date: models.DateField = models.DateField(blank=True, null=True, db_index=True)
+    sessions = models.ManyToManyField(Session)
+    politician = models.ForeignKey(Politician, on_delete=models.CASCADE)
+    riding = models.ForeignKey(Riding, on_delete=models.CASCADE)
+    party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    start_date = models.DateField(db_index=True)
+    end_date = models.DateField(blank=True, null=True, db_index=True)
 
     objects = ElectedMemberManager()
 
@@ -830,10 +830,10 @@ class ElectedMember(models.Model):
 
 class SiteNews(models.Model):
     """Entries for the semi-blog on the openparliament homepage."""
-    date: models.DateTimeField = models.DateTimeField(default=datetime.datetime.now)
-    title: models.CharField = models.CharField(max_length=200)
-    text: models.TextField = models.TextField()
-    active: models.BooleanField = models.BooleanField(default=True)
+    date = models.DateTimeField(default=datetime.datetime.now)
+    title = models.CharField(max_length=200)
+    text = models.TextField()
+    active = models.BooleanField(default=True)
 
     objects = models.Manager()
     public = ActiveManager()

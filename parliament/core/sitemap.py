@@ -1,3 +1,4 @@
+import datetime
 from typing import override
 
 from django.contrib.sitemaps import Sitemap
@@ -38,7 +39,7 @@ class VoteQuestionSitemap(Sitemap):
     def items(self) -> QuerySet[VoteQuestion]:
         return VoteQuestion.objects.all()
 
-    def lastmod(self, obj: VoteQuestion) -> models.DateField:
+    def lastmod(self, obj: VoteQuestion) -> datetime.date:
         return obj.date
 
 
