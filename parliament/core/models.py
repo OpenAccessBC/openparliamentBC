@@ -50,7 +50,7 @@ class InternalXref(models.Model):
         return "%s: %s %s for %s" % (self.schema, self.text_value, self.int_value, self.target_id)
 
 
-class PartyManager(models.Manager):
+class PartyManager(models.Manager["Party"]):
 
     def get_by_name(self, name: str) -> "Party":
         x = InternalXref.objects.filter(schema='party_names', text_value=name.strip().lower())
@@ -135,7 +135,7 @@ class Person(models.Model):
         ordering = ('name',)
 
 
-class PoliticianManager(models.Manager):
+class PoliticianManager(models.Manager["Politician"]):
 
     def elected(self) -> QuerySet["Politician"]:
         """Returns a QuerySet of all politicians that were once elected to office."""
@@ -571,7 +571,7 @@ class Politician(Person):
         return d
 
 
-class PoliticianInfoManager(models.Manager):
+class PoliticianInfoManager(models.Manager["PoliticianInfo"]):
     """Custom manager ensures we always pull in the politician FK."""
 
     @override
@@ -610,7 +610,7 @@ class PoliticianInfo(models.Model):
         return int(self.value)
 
 
-class SessionManager(models.Manager):
+class SessionManager(models.Manager["Session"]):
 
     def with_bills(self) -> QuerySet["Session"]:
         return self.get_queryset().filter(bill__number_only__gt=1).distinct()
@@ -654,7 +654,7 @@ class Session(models.Model):
         return bool(self.votequestion_set.all().count())
 
 
-class RidingManager(models.Manager):
+class RidingManager(models.Manager["Riding"]):
 
     # FIXME: This should really be in the database, not the model
     FIX_RIDING = {
@@ -752,7 +752,7 @@ class Riding(models.Model):
         return "%s (%s)" % (self.dashed_name, self.get_province_display())
 
 
-class ElectedMemberManager(models.Manager):
+class ElectedMemberManager(models.Manager["ElectedMember"]):
 
     def current(self) -> QuerySet["ElectedMember"]:
         return self.get_queryset().filter(end_date__isnull=True)

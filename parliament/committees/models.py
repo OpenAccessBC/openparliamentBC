@@ -14,7 +14,7 @@ from parliament.core.utils import language_property, memoize_property
 from parliament.hansards.models import Document
 
 
-class CommitteeManager(models.Manager):
+class CommitteeManager(models.Manager["Committee"]):
 
     def get_by_acronym(self, acronym: str, session: Session) -> "Committee":
         try:

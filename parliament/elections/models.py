@@ -55,7 +55,7 @@ class Election(models.Model):
             candidacy.create_member(session)
 
 
-class CandidacyManager(models.Manager):
+class CandidacyManager(models.Manager["Candidacy"]):
 
     def create_from_name(
             self,

@@ -24,14 +24,14 @@ from parliament.search.index import register_search_model
 logger = logging.getLogger(__name__)
 
 
-class DebateManager(models.Manager):
+class DebateManager(models.Manager["Document"]):
 
     @override
     def get_queryset(self):
         return super(DebateManager, self).get_queryset().filter(document_type=Document.DEBATE)
 
 
-class EvidenceManager(models.Manager):
+class EvidenceManager(models.Manager["Document"]):
 
     @override
     def get_queryset(self):

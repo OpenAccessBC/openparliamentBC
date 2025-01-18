@@ -15,7 +15,7 @@ from parliament.hansards.models import Statement
 from parliament.text_analysis.analyze import analyze_statements
 
 
-class TextAnalysisManager(models.Manager):
+class TextAnalysisManager(models.Manager["TextAnalysis"]):
 
     def get_or_create_from_statements(
             self,

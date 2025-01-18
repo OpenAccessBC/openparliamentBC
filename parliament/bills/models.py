@@ -25,7 +25,7 @@ LEGISINFO_BILL_ID_URL = 'https://www.parl.ca/legisinfo/%(lang)s/bill/%(id)s'
 PARLIAMENT_DOCVIEWER_URL = 'https://www.parl.ca/DocumentViewer/%(lang)s/%(docid)s'
 
 
-class BillManager(models.Manager):
+class BillManager(models.Manager["Bill"]):
 
     def get_by_legisinfo_id(self, legisinfo_id: str) -> "Bill":
         """Given a House of Commons ID (e.g. from LEGISinfo, or a Hansard link),
@@ -341,7 +341,7 @@ class Bill(models.Model):
         )
 
 
-class BillInSessionManager(models.Manager):
+class BillInSessionManager(models.Manager["BillInSession"]):
 
     def get_by_legisinfo_id(self, legisinfo_id: str) -> "BillInSession":
         legisinfo_id_int = int(legisinfo_id)

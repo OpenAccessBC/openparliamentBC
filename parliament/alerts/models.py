@@ -21,7 +21,7 @@ from parliament.search.solr import SearchQuery
 logger = logging.getLogger(__name__)
 
 
-class TopicManager(models.Manager):
+class TopicManager(models.Manager["Topic"]):
 
     def get_or_create_by_query(self, query: str) -> tuple["Topic", bool]:
         query_obj = SearchQuery(query)
@@ -138,7 +138,7 @@ class SeenItem(models.Model):
         return '%s seen for %s' % (self.item_id, self.topic)
 
 
-class SubscriptionManager(models.Manager):
+class SubscriptionManager(models.Manager["Subscription"]):
 
     def get_or_create_by_query(self, query: str, user: User) -> tuple["Subscription", bool]:
         topic, _ = Topic.objects.get_or_create_by_query(query)
