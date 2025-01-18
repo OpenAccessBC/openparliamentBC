@@ -13,7 +13,7 @@ class UserAdmin(admin.ModelAdmin):
 class LoginTokenAdmin(admin.ModelAdmin):
     list_display = ['token', 'email', 'used', 'created', 'requesting_ip', 'login_ip']
     search_fields = ['token', 'email']
-    ordering = ('-created',)
+    ordering = ['-created']
 
 
 admin.site.register(User, UserAdmin)

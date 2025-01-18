@@ -5,8 +5,8 @@ from parliament.alerts.models import PoliticianAlert, SeenItem, Subscription, To
 
 class PoliticianAlertAdmin(admin.ModelAdmin):
 
-    list_display = ('email', 'politician', 'active', 'created')
-    search_fields = ('email', 'politician__name')
+    list_display = ['email', 'politician', 'active', 'created']
+    search_fields = ['email', 'politician__name']
 
 
 admin.site.register(PoliticianAlert, PoliticianAlertAdmin)

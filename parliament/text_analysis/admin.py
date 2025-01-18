@@ -4,7 +4,7 @@ from parliament.text_analysis.models import TextAnalysis
 
 
 class TextAnalysisOptions(admin.ModelAdmin):
-    search_fields = ('key',)
+    search_fields = ['key']
     list_display = ['key', 'lang', 'updated']
 
 
