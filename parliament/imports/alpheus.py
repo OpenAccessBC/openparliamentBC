@@ -71,7 +71,7 @@ def _following_char(el: etree._Element) -> str:
 def _only_open(target):
     """Only execute the function if argument openclose == TAG_OPEN"""
     @wraps(target)
-    def inner(self, el, openclose, *args: Any, **kwargs: Any):
+    def inner(self, el, openclose: int, *args: Any, **kwargs: Any):
         if openclose == TAG_OPEN:
             return target(self, el, openclose, *args, **kwargs)
         return None

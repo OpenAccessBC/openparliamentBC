@@ -160,7 +160,7 @@ def document_view(
 class SpeechesView(ModelListView):
 
     @staticmethod
-    def document_filter(qs, view, filter_name: str, filter_extra, val: str):
+    def document_filter(qs: QuerySet, view: ModelListView, filter_name: str, filter_extra: str, val: str) -> QuerySet:
         u = val.strip('/').split('/')
         if len(u) < 4:
             raise BadRequest("Invalid document URL")

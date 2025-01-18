@@ -62,7 +62,7 @@ def _import_mps(objs, download_headshots: bool = False, update_all_headshots: bo
             warnings.append("Potential party change for %s: Current %s, potential %s" %
                             (pol, pol.current_member.party, mp_info.get('party_name')))
 
-        def _update(fieldname, value):
+        def _update(fieldname: str, value: str | None):
             if value == '':
                 value = None
             if value == pol.info().get(fieldname):

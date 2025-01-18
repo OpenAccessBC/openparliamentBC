@@ -40,7 +40,7 @@ class BillDetailView(ModelDetailView):
             'bills_url': reverse('bills')
         }
 
-    def _render_page(self, request: HttpRequest, qs, per_page: int = 10):
+    def _render_page(self, request: HttpRequest, qs: QuerySet, per_page: int = 10):
         paginator = Paginator(qs, per_page)
 
         try:

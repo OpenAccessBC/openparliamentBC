@@ -22,6 +22,7 @@ def hansard_redirect(
         doc = get_object_or_404(Document.debates, date=datetime.date(*[int(x) for x in hansard_date.split('-')]))
 
     url = doc.get_absolute_url()
+    assert url is not None
 
     if sequence:
         try:

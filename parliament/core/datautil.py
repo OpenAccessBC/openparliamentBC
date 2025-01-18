@@ -16,6 +16,7 @@ import text_utils
 from bs4 import BeautifulSoup, Tag
 from django.core.files import File
 from django.db import models, transaction
+from django.db.models import QuerySet
 
 from parliament.core.models import ElectedMember, InternalXref, Politician, PoliticianInfo, Session
 from parliament.core.parsetools import slugify
@@ -372,9 +373,10 @@ def twitter_from_csv(infile) -> None:
 #        twit.openparlca.mps.members(id=t.value)
 
 
-def slugs_for_pols(qs=None) -> None:
+def slugs_for_pols(qs: QuerySet[Politician] | None = None) -> None:
     if not qs:
         qs = Politician.objects.current()
+
     for pol in qs.filter(slug=''):
         slug = slugify(pol.name)
         if Politician.objects.filter(slug=slug).exists():
@@ -442,7 +444,7 @@ def pol_urls_to_ids() -> None:
             pol.set_info('parl_id', match.group(1))
 
 
-def export_statements(outfile, qs) -> None:
+def export_statements(outfile, qs: QuerySet[Statement]) -> None:
     for s in qs.iterator():
         if not s.speaker:
             outfile.write(s.text_plain().encode('utf8'))

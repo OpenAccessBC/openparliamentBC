@@ -244,7 +244,7 @@ class PoliticianManager(models.Manager["Politician"]):
             return self.get(id=slug_or_id)
         return self.get(slug=slug_or_id)
 
-    def get_by_parl_mp_id(self, parlid, session=None, riding_name=None):
+    def get_by_parl_mp_id(self, parlid, session: "Session | None" = None, riding_name: str | None = None):
         """
         Find a Politician object, based on the ourcommons.ca person ID.
         """
@@ -619,8 +619,7 @@ class SessionManager(models.Manager["Session"]):
         return self.get_queryset().order_by('-start')[0]
 
     def get_by_date(self, date):
-        return self.filter(models.Q(end__isnull=True) | models.Q(end__gte=date))\
-            .get(start__lte=date)
+        return self.filter(models.Q(end__isnull=True) | models.Q(end__gte=date)).get(start__lte=date)
 
     def get_from_string(self, string: str) -> "Session":
         """Given a string like '41st Parliament, 1st Session, returns the session."""

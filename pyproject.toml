@@ -11,6 +11,7 @@ reportOptionalMemberAccess = "none"
 
 reportUnknownVariableType = "none"
 reportUnknownMemberType = "none"
+reportMissingTypeArgument = "none"
 reportUnknownArgumentType = "none"
 reportUnknownParameterType = "none"
 reportMissingParameterType = "none"

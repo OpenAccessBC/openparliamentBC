@@ -2,6 +2,7 @@ import datetime
 from hashlib import sha1
 
 from django.conf import settings
+from django.db.models import QuerySet
 from django.template import loader
 
 from parliament.activity.models import Activity
@@ -42,7 +43,7 @@ ACTIVITY_MAX = {
 }
 
 
-def iter_recent(queryset):
+def iter_recent(queryset: QuerySet[Activity]):
     activity_counts = ACTIVITY_MAX.copy()
     for activity in queryset:
         if activity_counts[activity.variety]:
@@ -50,7 +51,7 @@ def iter_recent(queryset):
             yield activity
 
 
-def prune(queryset):
+def prune(queryset: QuerySet[Activity]):
     today = datetime.date.today()
     activity_counts = ACTIVITY_MAX.copy()
     for activity in queryset:

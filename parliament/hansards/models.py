@@ -510,7 +510,7 @@ class Statement(models.Model):
         return self.h2
 
     def to_api_dict(self, representation: str) -> dict[str, Any]:
-        d: dict[str, str | dict[str, str] | None] = {
+        d: dict[str, str | dict[str, str] | bool | None] = {
             "time": str(self.time) if self.time else None,
             "attribution": {'en': self.who_en, 'fr': self.who_fr},
             "content": {'en': self.content_en, 'fr': self.content_fr},
